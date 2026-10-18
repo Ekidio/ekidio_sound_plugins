@@ -42,7 +42,7 @@
 
 ## Kiadás (2026-10-18)
 - [x] GitHub: Ekidio/ekidio_sound_plugins, Pages (EN/HU, banner, montázs), v1.0.0 release (pkg + DMG, ad-hoc aláírás)
-- [ ] VST3 változat (az oldalon „VST3 hamarosan”)
+- VST3: most nem tervezzük (Macen szinte minden DAW kezeli az AU-t; kivétel a Cubase/Nuendo). Az oldalon: „AU only”.
 
 ## EQ COLLECTION (ötletlista, 2026-10-18 — még nem indult)
 A kompresszorcsalád mintájára: hang első, AUTO GAIN alapból ki, közös rack-panel, eredeti színvilág, márkanév sehol a UI-n.
