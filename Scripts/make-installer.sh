@@ -26,6 +26,26 @@ for p in "$ROOT"/Plugins/*(/); do
 done
 echo "==> a csomagba kerül: $(ls "$STAGE" | tr '\n' ' ')"
 
+# telepítés előtti szkript: a saját pluginjaink régi példányai (rendszer- és felhasználói mappa) törlődnek,
+# így a frissítés felülír, és nem lesz duplikált plugin (csak a csomagban lévő nevek!)
+NAMES=""
+for p in "$ROOT"/Plugins/*(/); do NAMES+="${p:t} "; done
+cat > "$SCRIPTS/preinstall" <<PRE
+#!/bin/sh
+NAMES="$NAMES"
+USER_NAME=\$(stat -f%Su /dev/console 2>/dev/null)
+USER_HOME=""
+if [ -n "\$USER_NAME" ] && [ "\$USER_NAME" != "root" ]; then
+    USER_HOME=\$(dscl . -read "/Users/\$USER_NAME" NFSHomeDirectory 2>/dev/null | awk '{print \$2}')
+fi
+for n in \$NAMES; do
+    rm -rf "/Library/Audio/Plug-Ins/Components/\$n.component"
+    [ -n "\$USER_HOME" ] && rm -rf "\$USER_HOME/Library/Audio/Plug-Ins/Components/\$n.component"
+done
+exit 0
+PRE
+chmod +x "$SCRIPTS/preinstall"
+
 # telepítés utáni szkript: a régi AU-gyorsítótár frissítése
 cat > "$SCRIPTS/postinstall" <<'EOF'
 #!/bin/sh
@@ -35,9 +55,14 @@ EOF
 chmod +x "$SCRIPTS/postinstall"
 
 echo "==> komponens-csomag"
-pkgbuild --root "$STAGE" --install-location /Library/Audio/Plug-Ins/Components \
+# a bundle-ok ne legyenek "áthelyezhetők": a telepítő mindig a /Library-be tegye őket (ne egy máshol talált régi példány helyére)
+pkgbuild --analyze --root "$STAGE" "$OUT/components.plist" >/dev/null
+i=0
+while plutil -replace $i.BundleIsRelocatable -bool NO "$OUT/components.plist" 2>/dev/null; do i=$((i + 1)); done
+pkgbuild --root "$STAGE" --component-plist "$OUT/components.plist" --install-location /Library/Audio/Plug-Ins/Components \
     --identifier "$BUNDLE_PREFIX.compressors" --version "$VERSION" \
     --scripts "$SCRIPTS" "$OUT/components.pkg"
+rm -f "$OUT/components.plist"
 
 # telepítő szövegek (angol, a csomagban megjelenő üdvözlés és licenc)
 cat > "$RES/welcome.html" <<EOF
