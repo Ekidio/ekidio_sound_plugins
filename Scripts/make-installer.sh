@@ -9,7 +9,7 @@ set -euo pipefail
 
 ROOT=${0:A:h:h}
 source "$ROOT/Scripts/eki.env"
-VERSION="1.0.0"
+VERSION="1.0.1"
 NAME="EKIDIO-SOUND-Compressors-$VERSION"
 OUT="$ROOT/build"
 STAGE="$OUT/pkg-stage"
