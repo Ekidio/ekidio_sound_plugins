@@ -5,7 +5,7 @@ Eight free, analog-inspired compressor plugins for macOS (Audio Unit / AUv2).
 **Website:** https://ekidio.github.io/ekidio_sound_plugins/ · [Magyar](https://ekidio.github.io/ekidio_sound_plugins/hu/)
 **Download:** [latest release (DMG installer)](https://github.com/Ekidio/ekidio_sound_plugins/releases/latest)
 
-![OPTEKI](docs/assets/opteki.png)
+![EKIDIO SOUND compressors](docs/assets/montage.jpg)
 
 | Plugin | Character |
 |---|---|
