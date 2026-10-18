@@ -40,6 +40,24 @@
 - [x] 44,1/48 kHz-en a trafó HF-vágója tompított (−2 dB 18 kHz, −6,7 dB 20 kHz): csak 96 kHz-től él
 - [x] Presetek nem írják át a METER-t (kijelzési paraméter); VU alatti GR/AUTO felirat ki; CELL LED fényudvar nélkül
 
+## Kiadás (2026-10-18)
+- [x] GitHub: Ekidio/ekidio_sound_plugins, Pages (EN/HU, banner, montázs), v1.0.0 release (pkg + DMG, ad-hoc aláírás)
+- [ ] VST3 változat (az oldalon „VST3 hamarosan”)
+
+## EQ COLLECTION (ötletlista, 2026-10-18 — még nem indult)
+A kompresszorcsalád mintájára: hang első, AUTO GAIN alapból ki, közös rack-panel, eredeti színvilág, márkanév sehol a UI-n.
+Javasolt sorrend: PULTEKI → BRITEKI → APEQ → CONSEKI → MASSEKI → AIREKI (a nevek munkanevek).
+- [ ] PULTEKI — passzív csöves program-EQ + középsáv (EQP-1A + MEQ-5 ihletés): mély emelés/vágás trükk, magas emelés sávszélességgel, magas vágás; középsáv az EKI fiókban; műszer helyett LED
+- [ ] BRITEKI — brit tekercses csatorna-EQ (1073 ihletés): lépcsős frekvenciák, HPF, trafószín
+- [ ] APEQ — arányos Q-jú, lépcsős 3–4 sávos EQ (550A ihletés), az APEKI párja
+- [ ] CONSEKI — konzol csatorna-EQ BROWN/BLACK karakterváltóval (E/G ihletés), a BUSEKI párja
+- [ ] MASSEKI — mastering passzív EQ széles, zenei sávokkal (Massive Passive ihletés), a VARIEKI párja
+- [ ] AIREKI — modern „levegő” sáv egy gombbal (EQ4 Air ihletés)
+- [ ] ABBEKI — vintage brit pult-EQ (TG12345 ihletés) — opcionális
+- [ ] TILTEKI — Baxandall / tilt mastering EQ — opcionális
+- Technika: analóg prototípusokból illesztett görbék, a magas sávoknál túlmintavétel (44,1 kHz-en se gyűrődjön), közös Transformer/TubeStage szín
+- Kiadás: külön „EQ Collection” telepítő és aloldal, a kompresszoros oldallal azonos stílusban
+
 ## Szinti (aumu)
 - [ ] 3 oszcillátor + zaj, túlvezérelt 24 dB-es ladder, gyors burkolók, analóg drift, legato/glide, túlmintavételes drive, presetek
 - [ ] Saját panel
