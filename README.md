@@ -18,7 +18,7 @@ Eight free, analog-inspired compressor plugins for macOS (Audio Unit / AUv2).
 | **TUBEKI** | opto tube compressor |
 | **FAIREKI** | variable-mu limiter with LAT/VERT |
 
-Requirements: macOS 11+, Apple Silicon or Intel, an AU host (Logic Pro, GarageBand, Ableton Live, Reaper…).
+Requirements: macOS 11+, Apple Silicon or Intel, an AU host (Logic Pro, GarageBand, Ableton Live, Reaper…). **VST3 coming soon.**
 
 ## Install
 
