@@ -41,25 +41,25 @@ pkgbuild --root "$STAGE" --install-location /Library/Audio/Plug-Ins/Components \
 
 # telepítő szövegek (angol, a csomagban megjelenő üdvözlés és licenc)
 cat > "$RES/welcome.html" <<EOF
-<html><body style="font-family:-apple-system,Helvetica;font-size:13px">
-<h2>EKIDIO SOUND — Compressor Collection $VERSION</h2>
+<html><head><meta charset="utf-8"></head><body style="font-family:-apple-system,Helvetica;font-size:13px">
+<h2>EKIDIO SOUND &mdash; Compressor Collection $VERSION</h2>
 <p>Eight analog-inspired compressors as Audio Unit (AU) plugins for macOS:</p>
-<p><b>OPTEKI</b> optical leveler · <b>FETEKI</b> FET peak limiter · <b>VARIEKI</b> variable-mu dynamics ·
-<b>BUSEKI</b> stereo bus compressor · <b>APEKI</b> punch bus compressor · <b>DBEKI</b> RMS compressor/limiter ·
-<b>TUBEKI</b> opto tube compressor · <b>FAIREKI</b> variable-mu limiter.</p>
+<p><b>OPTEKI</b> optical leveler &middot; <b>FETEKI</b> FET peak limiter &middot; <b>VARIEKI</b> variable-mu dynamics &middot;
+<b>BUSEKI</b> stereo bus compressor &middot; <b>APEKI</b> punch bus compressor &middot; <b>DBEKI</b> RMS compressor/limiter &middot;
+<b>TUBEKI</b> opto tube compressor &middot; <b>FAIREKI</b> variable-mu limiter.</p>
 <p>They are installed to <code>/Library/Audio/Plug-Ins/Components</code>. Restart your DAW afterwards.</p>
 </body></html>
 EOF
 cat > "$RES/license.html" <<EOF
-<html><body style="font-family:-apple-system,Helvetica;font-size:12px">
-<h3>EKIDIO SOUND — Free License</h3>
+<html><head><meta charset="utf-8"></head><body style="font-family:-apple-system,Helvetica;font-size:12px">
+<h3>EKIDIO SOUND &mdash; Free License</h3>
 <p>These plugins are free to download and use, including in commercial music and audio productions.
 You may not sell, rent or redistribute the plugins or their source code, or modify and republish them.</p>
 <p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
 CLAIM, DAMAGES OR OTHER LIABILITY ARISING FROM THE USE OF THE SOFTWARE.</p>
 <p>All product names mentioned on the website are trademarks of their respective owners and are used only to describe
 the sound character; EKIDIO SOUND is not affiliated with them.</p>
-<p>© 2026 EKIDIO SOUND. All rights reserved.</p>
+<p>&copy; 2026 EKIDIO SOUND. All rights reserved.</p>
 </body></html>
 EOF
 cat > "$OUT/distribution.xml" <<EOF
