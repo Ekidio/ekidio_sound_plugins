@@ -9,7 +9,7 @@ set -euo pipefail
 
 ROOT=${0:A:h:h}
 source "$ROOT/Scripts/eki.env"
-VERSION="1.0.1"
+VERSION="1.0.2"
 NAME="EKIDIO-SOUND-Compressors-$VERSION"
 OUT="$ROOT/build"
 STAGE="$OUT/pkg-stage"
@@ -102,6 +102,11 @@ https://ekidio.github.io/ekidio_sound_plugins/
 EOF
 hdiutil create -srcfolder "$DSTAGE" -volname "EKIDIO SOUND Compressors" -fs HFS+ -format UDZO -imagekey zlib-level=9 -ov "$OUT/$NAME.dmg" -quiet
 rm -rf "$DSTAGE" "$STAGE" "$SCRIPTS" "$RES" "$OUT/distribution.xml"
+
+# a pluginok frissítés-figyelője ezt olvassa (a GitHub Pages-ről): commit + push a kiadással együtt
+printf '{\n  "version": "%s",\n  "url": "https://ekidio.github.io/ekidio_sound_plugins/"\n}\n' "$VERSION" > "$ROOT/docs/version.json"
+# a weboldal letöltési linkje az aktuális DMG-re mutasson
+sed -i '' -E "s/EKIDIO-SOUND-Compressors-[0-9.]+[0-9]\.dmg/$NAME.dmg/g" "$ROOT/docs/index.html" "$ROOT/docs/hu/index.html"
 
 echo "Kész:"
 ls -lh "$OUT/$NAME.pkg" "$OUT/$NAME.dmg" | awk '{print "  " $5 "  " $9}'

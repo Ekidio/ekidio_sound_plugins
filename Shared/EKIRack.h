@@ -12,6 +12,7 @@ constexpr CGFloat W = 960, HEAD = 36, H = 330, DRAWER = 132;
 // fejléc-gombok helye
 const CGRect kPrev = CGRectMake(318, 7, 24, 22), kPreset = CGRectMake(346, 7, 268, 22), kNext = CGRectMake(618, 7, 24, 22);
 const CGRect kDrawerBtn = CGRectMake(W - 132, 7, 96, 22);
+const CGRect kUpdate = CGRectMake(W - 262, 8, 118, 20);       // "UPDATE x.y.z" jelzés (csak ha van újabb verzió)
 
 /// előlap- és fiók-színek
 struct Look {
@@ -96,6 +97,12 @@ inline void drawChrome(PanelController& pc, const Look& L, NSString* typeLine, c
 /// a fejléc dinamikus része: az aktuális preset neve
 inline void drawHeaderDynamic(PanelController& pc) {
     textFont(pc.currentPresetName(), @"AvenirNext-DemiBold", CGPointMake(CGRectGetMidX(kPreset), 18), 10.5, rgb(0xEDE3CF), 1.2);
+    if (NSString* v = update::available()) {   // újabb verzió: borostyán keretes jelzés, kattintásra a letöltési oldal
+        NSBezierPath* b = [NSBezierPath bezierPathWithRoundedRect:kUpdate xRadius:10 yRadius:10];
+        [rgb(0xF2A33A, 0.14) setFill]; [b fill];
+        [rgb(0xF2A33A, 0.85) setStroke]; b.lineWidth = 1; [b stroke];
+        textFont([@"UPDATE  " stringByAppendingString:v], @"AvenirNext-DemiBold", CGPointMake(CGRectGetMidX(kUpdate), 18), 9, rgb(0xF2A33A), 1.6);
+    }
 }
 
 /// panel-váz: méret, fiók, fejléc-gombok
@@ -108,6 +115,7 @@ inline std::unique_ptr<PanelController> makePanel(AudioUnit au, const char* key)
         {kNext, [](PanelController& p, CGPoint) { p.selectPreset(p.currentPresetIndex() + 1); }},
         {kPreset, [](PanelController& p, CGPoint) { p.popupPresetMenu(kPreset); }},
         {kDrawerBtn, [](PanelController& p, CGPoint) { p.toggleDrawer(); }},
+        {kUpdate, [](PanelController&, CGPoint) { if (update::available()) update::openPage(); }},
     };
     return pc;
 }

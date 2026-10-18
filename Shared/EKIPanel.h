@@ -9,6 +9,7 @@
 #import <AudioToolbox/AudioToolbox.h>
 #import <AudioToolbox/AUCocoaUIView.h>
 #import <CoreText/CoreText.h>
+#include "EKIUpdate.h"
 #include <dlfcn.h>
 #include <vector>
 #include <memory>
@@ -742,12 +743,14 @@ public:
     CGFloat backing = 2;
     NSBitmapImageRep* staticCache = nil;
     CGFloat cacheScale = 0, cacheBacking = 0; bool cacheDrawer = false;
+    int updateGen = -1;                                             // frissítés-jelzés: utoljára rajzolt állapot
 
     PanelController(AudioUnit unit, CGSize sz, const char* key) : au(unit), size(sz), prefsKey(key) {
         registerBundleFonts();
         NSString* k = [NSString stringWithFormat:@"EKIDIO.%s.uiScale", key];
         double s = [[NSUserDefaults standardUserDefaults] doubleForKey:k];
         if (s >= 0.75 && s <= 2.0) scale = s;
+        update::check();                                             // háttérben: van-e újabb verzió
     }
 
     CGFloat fullHeight() const { return size.height + (drawerOpen ? drawerHeight : 0); }
@@ -839,6 +842,7 @@ public:
     /// paraméterek beolvasása; true, ha újra kell rajzolni
     bool poll() {
         bool changed = false;
+        if (const int g = update::generation(); g != updateGen) { updateGen = g; changed = true; }
         for (auto& c : controls) {
             AudioUnitParameterValue v = 0;
             if (AudioUnitGetParameter(au, c.pid, kAudioUnitScope_Global, 0, &v) == noErr && v != c.value) { c.value = v; changed = true; }
