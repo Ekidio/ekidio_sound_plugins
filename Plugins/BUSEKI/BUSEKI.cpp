@@ -12,14 +12,14 @@ public:
     Buseki(AudioComponentInstance inst, const AudioComponentDescription& desc)
         : AudioUnitBase(inst, desc,
             {
-                {"THRESHOLD", -40, 0, -22, kAudioUnitParameterUnit_Decibels},
+                {"THRESHOLD", -40, 0, -18, kAudioUnitParameterUnit_Decibels},
                 {"MAKEUP", -10, 20, 0, kAudioUnitParameterUnit_Decibels},
                 {"RATIO", 0, 2, 1, kAudioUnitParameterUnit_Indexed, {"2:1", "4:1", "10:1"}},
-                {"ATTACK", 0, 5, 4, kAudioUnitParameterUnit_Indexed, {"0.1 ms", "0.3 ms", "1 ms", "3 ms", "10 ms", "30 ms"}},
-                {"RELEASE", 0, 4, 1, kAudioUnitParameterUnit_Indexed, {"0.1 s", "0.3 s", "0.6 s", "1.2 s", "Auto"}},
+                {"ATTACK", 0, 5, 5, kAudioUnitParameterUnit_Indexed, {"0.1 ms", "0.3 ms", "1 ms", "3 ms", "10 ms", "30 ms"}},
+                {"RELEASE", 0, 4, 4, kAudioUnitParameterUnit_Indexed, {"0.1 s", "0.3 s", "0.6 s", "1.2 s", "Auto"}},
                 {"SC HPF", 0, 4, 0, kAudioUnitParameterUnit_Indexed, {"Off", "60 Hz", "90 Hz", "150 Hz", "250 Hz"}},
                 {"AUTO GAIN", 0, 1, 1, kAudioUnitParameterUnit_Indexed, {"Off", "On"}},
-                {"ANALOG", 0, 100, 45, kAudioUnitParameterUnit_Percent},
+                {"ANALOG", 0, 100, 30, kAudioUnitParameterUnit_Percent},
                 {"MIX", 0, 100, 100, kAudioUnitParameterUnit_Percent},
                 {"METER", 0, 2, 0, kAudioUnitParameterUnit_Indexed, {"Gain Reduction", "Output +4", "Output +10"}, false, nullptr, true},
                 {"VU", -20, 3, -20, kAudioUnitParameterUnit_Decibels, {}, true},
@@ -28,7 +28,7 @@ public:
             },
             {
                 //                  THR  MK RATIO ATK REL HPF AUTO ANLG MIX METER
-                {"Default",         {-22, 0, 1, 4, 1, 0, 1, 45, 100, 0}},
+                {"Default",         {-18, 0, 1, 5, 4, 0, 1, 30, 100, 0}},
                 {"Mix Glue",        {-16, 3, 0, 4, 4, 2, 0, 50, 100, 0}},
                 {"Drum Bus Punch",  {-22, 10, 1, 3, 1, 1, 0, 40, 100, 0}},
                 {"Parallel Smash",  {-30, 18.5f, 2, 0, 0, 0, 0, 50, 40, 0}},

@@ -11,7 +11,7 @@ public:
     Opteki(AudioComponentInstance inst, const AudioComponentDescription& desc)
         : AudioUnitBase(inst, desc,
             {
-                {"PEAK REDUCTION", 0, 100, 60, kAudioUnitParameterUnit_Generic},
+                {"PEAK REDUCTION", 0, 100, 40, kAudioUnitParameterUnit_Generic},
                 {"GAIN", -20, 30, 0, kAudioUnitParameterUnit_Decibels},
                 {"COMPRESS / LIMIT", 0, 1, 0, kAudioUnitParameterUnit_Indexed, {"Compress", "Limit"}},
                 {"HF EMPHASIS", 0, 100, 0, kAudioUnitParameterUnit_Percent},
@@ -26,7 +26,7 @@ public:
             {
                 // Default: AUTO GAIN be (a gain 0-n zárva); a többi preset AUTO GAIN nélkül szól, a presetek kimeneti erősítése a mért makeup (tipikus jelen); a VU/GR helye csak kitöltés
                 //               PR   GAIN MODE HF   ANLG MIX  METER VU GR AUTO
-                {"Default",       {60, 0, 0, 0, 50, 100, 0, 0, 0, 1}},
+                {"Default",       {40, 0, 0, 0, 50, 100, 0, 0, 0, 1}},
                 {"Smooth Vocal",  {50, 4.5f, 0, 25, 50, 100, 0, 0, 0, 0}},
                 {"Vocal Limit",   {60, 12.5f, 1, 30, 50, 100, 0, 0, 0, 0}},
                 {"Bass Leveler",  {55, 5.5f, 0, 0, 65, 100, 0, 0, 0, 0}},

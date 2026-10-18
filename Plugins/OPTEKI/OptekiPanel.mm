@@ -47,10 +47,10 @@ std::unique_ptr<PanelController> buildOptekiPanel(AudioUnit au) {
     auto pct = ^NSString*(float v) { return [NSString stringWithFormat:@"%.0f %%", v]; };
 
     // előlap: a lényeg
-    pc->controls.push_back({Control::Knob, kGain, {345, 196}, 54, @"GAIN", ticks(-20, 5, 11), -20, 30, 4,
+    pc->controls.push_back({Control::Knob, kGain, {345, 196}, 54, @"GAIN", ticks(-20, 5, 11), -20, 30, 0,
         ^NSString*(float v) { return [NSString stringWithFormat:@"%+.1f dB", v]; }});
     pc->controls.back().labelSize = 12; pc->controls.back().cap = 0xFFB23F;   // borostyán jelzőpont
-    pc->controls.push_back({Control::Knob, kPeakReduction, {775, 196}, 54, @"PEAK REDUCTION", ticks(0, 10, 11), 0, 100, 60,
+    pc->controls.push_back({Control::Knob, kPeakReduction, {775, 196}, 54, @"PEAK REDUCTION", ticks(0, 10, 11), 0, 100, 40,
         ^NSString*(float v) { return [NSString stringWithFormat:@"%.0f", v]; }});
     pc->controls.back().labelSize = 12; pc->controls.back().cap = 0xFF3B2A;   // piros jelzőpont
     pc->controls.push_back({Control::LedButton, kAutoGain, {150, 188}, 1.3, @"AUTO GAIN", nil, 0, 1, 0});

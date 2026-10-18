@@ -12,7 +12,7 @@ public:
     Apeki(AudioComponentInstance inst, const AudioComponentDescription& desc)
         : AudioUnitBase(inst, desc,
             {
-                {"THRESHOLD", -40, 0, -22, kAudioUnitParameterUnit_Decibels},
+                {"THRESHOLD", -40, 0, -16, kAudioUnitParameterUnit_Decibels},
                 {"RATIO", 0, 6, 3, kAudioUnitParameterUnit_Indexed, {"1.5:1", "2:1", "3:1", "4:1", "6:1", "10:1", "Inf:1"}},
                 {"ATTACK", 0, 6, 5, kAudioUnitParameterUnit_Indexed, {"0.03 ms", "0.1 ms", "0.3 ms", "1 ms", "3 ms", "10 ms", "30 ms"}},
                 {"RELEASE", 0, 5, 2, kAudioUnitParameterUnit_Indexed, {"0.05 s", "0.1 s", "0.2 s", "0.5 s", "1 s", "2 s"}},
@@ -22,7 +22,7 @@ public:
                 {"OUTPUT", -24, 24, 0, kAudioUnitParameterUnit_Decibels},
                 {"AUTO GAIN", 0, 1, 1, kAudioUnitParameterUnit_Indexed, {"Off", "On"}},
                 {"L/R LINK", 0, 100, 100, kAudioUnitParameterUnit_Percent},
-                {"ANALOG", 0, 100, 55, kAudioUnitParameterUnit_Percent},
+                {"ANALOG", 0, 100, 50, kAudioUnitParameterUnit_Percent},
                 {"MIX", 0, 100, 100, kAudioUnitParameterUnit_Percent},
                 {"METER", 0, 2, 0, kAudioUnitParameterUnit_Indexed, {"Gain Reduction", "Output +4", "Output +10"}, false, nullptr, true},
                 {"VU", -20, 3, -20, kAudioUnitParameterUnit_Decibels, {}, true},
@@ -32,7 +32,7 @@ public:
             {
                 // Default: AUTO GAIN be (a gain 0-n zárva); a többi preset AUTO GAIN nélkül szól, a presetek OUTPUT értéke a mért makeup (tipikus jelen)
                 //                  THR  RATIO ATK REL KNEE THR TYPE OUT AUTO LINK ANLG MIX METER
-                {"Default",         {-22, 3, 5, 2, 1, 1, 0, 0, 1, 100, 55, 100, 0}},
+                {"Default",         {-16, 3, 5, 2, 1, 1, 0, 0, 1, 100, 50, 100, 0}},
                 {"Drum Bus Punch",  {-22, 3, 5, 1, 0, 2, 0, 7, 0, 100, 60, 100, 0}},
                 {"Mix Bus Glue",    {-14, 1, 6, 2, 2, 1, 1, 2.5f, 0, 100, 50, 100, 0}},
                 {"Snare Snap",      {-24, 4, 4, 0, 0, 2, 0, 9.5f, 0, 100, 60, 100, 0}},

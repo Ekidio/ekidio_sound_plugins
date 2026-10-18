@@ -71,7 +71,7 @@ std::unique_ptr<PanelController> buildApekiPanel(AudioUnit au) {
     auto pct = ^NSString*(float v) { return [NSString stringWithFormat:@"%.0f %%", v]; };
 
     // COMPRESSOR
-    pc->controls.push_back({Control::Knob, kThreshold, {372, 134}, 36, @"THRESHOLD", ticks(-40, 8, 6), -40, 0, -22,
+    pc->controls.push_back({Control::Knob, kThreshold, {372, 134}, 36, @"THRESHOLD", ticks(-40, 8, 6), -40, 0, -16,
         ^NSString*(float v) { return [NSString stringWithFormat:@"%.1f dB", v]; }});
     pc->controls.back().labelSize = 10; pc->controls.back().cap = 0xFF3B2A;
     pc->controls.push_back({Control::SteppedKnob, kAttack, {470, 130}, 19, @"ATTACK ms", @[@".03", @".1", @".3", @"1", @"3", @"10", @"30"], 0, 6, 5});
@@ -91,11 +91,11 @@ std::unique_ptr<PanelController> buildApekiPanel(AudioUnit au) {
     pc->controls.back().spread = 50; pc->controls.back().labelDy = 27; pc->controls.back().labelSize = 8.5;
 
     // kék panel: a nagy piros OUTPUT
-    pc->controls.push_back({Control::Knob, kOutput, {830, 168}, 46, @"OUTPUT", ticks(-24, 8, 7), -24, 24, 5,
+    pc->controls.push_back({Control::Knob, kOutput, {830, 168}, 46, @"OUTPUT", ticks(-24, 8, 7), -24, 24, 0,
         ^NSString*(float v) { return [NSString stringWithFormat:@"%+.1f dB", v]; }});
     pc->controls.back().labelSize = 12; pc->controls.back().tint = 0xC8281E;
     pc->controls.push_back({Control::LedButton, kAutoGain, {778, 268}, 0.85, @"AUTO GAIN", nil, 0, 1, 0});
-    pc->controls.push_back({Control::Knob, kAnalog, {886, 264}, 15, @"ANALOG", nil, 0, 100, 55, pct});
+    pc->controls.push_back({Control::Knob, kAnalog, {886, 264}, 15, @"ANALOG", nil, 0, 100, 50, pct});
     pc->controls.back().labelSize = 8.5;
 
     // EKI fiók

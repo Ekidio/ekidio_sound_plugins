@@ -51,16 +51,16 @@ std::unique_ptr<PanelController> buildBusekiPanel(AudioUnit au) {
     pc->controls.back().cap = BLUE;
     pc->controls.back().spread = 60; pc->controls.back().labelSize = 10;
     pc->controls.push_back({Control::LedButton, kAutoGain, {110, 262}, 1.1, @"AUTO GAIN", nil, 0, 1, 0});
-    pc->controls.push_back({Control::Knob, kThreshold, {345, 196}, 54, @"THRESHOLD", ticks(-40, 4, 11), -40, 0, -22,
+    pc->controls.push_back({Control::Knob, kThreshold, {345, 196}, 54, @"THRESHOLD", ticks(-40, 4, 11), -40, 0, -18,
         ^NSString*(float v) { return [NSString stringWithFormat:@"%.1f dB", v]; }});
     pc->controls.back().labelSize = 12; pc->controls.back().cap = RED;
-    pc->controls.push_back({Control::Knob, kMakeup, {775, 196}, 54, @"MAKEUP", ticks(-10, 5, 7), -10, 20, 5,
+    pc->controls.push_back({Control::Knob, kMakeup, {775, 196}, 54, @"MAKEUP", ticks(-10, 5, 7), -10, 20, 0,
         ^NSString*(float v) { return [NSString stringWithFormat:@"%+.1f dB", v]; }});
     pc->controls.back().labelSize = 12; pc->controls.back().cap = BLUE;
-    pc->controls.push_back({Control::SteppedKnob, kAttack, {892, 128}, 19, @"ATTACK ms", @[@".1", @".3", @"1", @"3", @"10", @"30"], 0, 5, 4});
+    pc->controls.push_back({Control::SteppedKnob, kAttack, {892, 128}, 19, @"ATTACK ms", @[@".1", @".3", @"1", @"3", @"10", @"30"], 0, 5, 5});
     pc->controls.back().cap = BLUE;
     pc->controls.back().spread = 120; pc->controls.back().labelSize = 9;
-    pc->controls.push_back({Control::SteppedKnob, kRelease, {892, 256}, 19, @"RELEASE s", @[@".1", @".3", @".6", @"1.2", @"A"], 0, 4, 1});
+    pc->controls.push_back({Control::SteppedKnob, kRelease, {892, 256}, 19, @"RELEASE s", @[@".1", @".3", @".6", @"1.2", @"A"], 0, 4, 4});
     pc->controls.back().cap = BLUE;
     pc->controls.back().spread = 110; pc->controls.back().labelSize = 9;
     pc->controls.push_back({Control::SteppedKnob, kMeterMode, {560, 282}, 14, @"METER", @[@"GR", @"+4", @"+10"], 0, 2, 0});
@@ -71,7 +71,7 @@ std::unique_ptr<PanelController> buildBusekiPanel(AudioUnit au) {
     const CGFloat dy = H + 58;
     pc->controls.push_back({Control::SteppedKnob, kScHpf, {330, dy}, 22, @"SC HPF Hz", @[@"OFF", @"60", @"90", @"150", @"250"], 0, 4, 0});
     pc->controls.back().cap = BLUE; pc->controls.back().drawer = true; pc->controls.back().spread = 110; pc->controls.back().labelSize = 9;
-    pc->controls.push_back({Control::Knob, kAnalog, {530, dy}, 24, @"ANALOG", nil, 0, 100, 45, pct});
+    pc->controls.push_back({Control::Knob, kAnalog, {530, dy}, 24, @"ANALOG", nil, 0, 100, 30, pct});
     pc->controls.back().cap = BLUE;
     pc->controls.back().drawer = true; pc->controls.back().labelSize = 9;
     pc->controls.push_back({Control::Knob, kMix, {730, dy}, 24, @"MIX", nil, 0, 100, 100, pct});

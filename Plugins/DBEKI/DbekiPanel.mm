@@ -101,7 +101,7 @@ std::unique_ptr<PanelController> buildDbekiPanel(AudioUnit au) {
         ^NSString*(float v) { return v >= 59.5f ? @"∞ : 1" : [NSString stringWithFormat:@"%.1f : 1", v]; }});
     pc->controls.back().tint = SILVER; pc->controls.back().labelSize = 11;
     pc->controls.back().taper = {1, 1.5f, 2, 3, 4, 6, 10, 20, 60};
-    pc->controls.push_back({Control::Knob, kOutput, {528, 170}, 38, nil, ticks(-20, 10, 5), -20, 20, 5.5f, dB});
+    pc->controls.push_back({Control::Knob, kOutput, {528, 170}, 38, nil, ticks(-20, 10, 5), -20, 20, 0, dB});
     pc->controls.back().tint = SILVER; pc->controls.back().labelSize = 11;
 
     // alsó sor: OVEREASY, METER gombsor

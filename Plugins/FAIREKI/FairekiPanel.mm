@@ -76,7 +76,7 @@ std::unique_ptr<PanelController> buildFairekiPanel(AudioUnit au) {
     pc->controls.push_back({Control::Knob, kThreshold, {632, 152}, 40, @"THRESHOLD", ticks(-40, 8, 6), -40, 0, -20,
         ^NSString*(float v) { return [NSString stringWithFormat:@"%.1f dB", v]; }});
     pc->controls.back().labelSize = 10; pc->controls.back().cap = RED;
-    pc->controls.push_back({Control::Knob, kOutput, {480, 264}, 22, @"OUTPUT", nil, -20, 20, 6.5f, dB});
+    pc->controls.push_back({Control::Knob, kOutput, {480, 264}, 22, @"OUTPUT", nil, -20, 20, 0, dB});
     pc->controls.back().labelSize = 9.5; pc->controls.back().cap = RED;
     pc->controls.push_back({Control::Knob, kMix, {632, 264}, 22, @"DRY/WET", nil, 0, 100, 100, pct});
     pc->controls.back().labelSize = 9.5; pc->controls.back().cap = RED;

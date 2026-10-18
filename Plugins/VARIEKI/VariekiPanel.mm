@@ -72,12 +72,12 @@ std::unique_ptr<PanelController> buildVariekiPanel(AudioUnit au) {
         pc->controls.push_back({Control::Knob, id, c, R, name, nil, lo, hi, def, fmt});
         pc->controls.back().labelSize = 10; pc->controls.back().logTaper = log; pc->controls.back().cap = dot;
     };
-    knob(kRelRms, {c1, r1}, @"RECOVERY", 20, 2000, 1000, ms, true, -1);
-    knob(kMakeup, {c2, r1}, @"OUTPUT", -12, 24, 5, dB, false, -1);
-    knob(kRatio, {c3, r1}, @"RATIO", 1, 20, 1.6f, ^NSString*(float v) { return [NSString stringWithFormat:@"%.1f : 1", v]; }, true, -1);
-    knob(kThreshold, {c1, r2}, @"THRESHOLD", -40, 0, -30, ^NSString*(float v) { return [NSString stringWithFormat:@"%.1f dBFS", v]; }, false, -1);
-    knob(kAttack, {c2, r2}, @"ATTACK", 0.1f, 100, 50, ms, true, -1);
-    knob(kAnalog, {c3, r2}, @"ANALOG", 0, 100, 85, pct, false, -1);
+    knob(kRelRms, {c1, r1}, @"RECOVERY", 20, 2000, 250, ms, true, -1);
+    knob(kMakeup, {c2, r1}, @"OUTPUT", -12, 24, 0, dB, false, -1);
+    knob(kRatio, {c3, r1}, @"RATIO", 1, 20, 2, ^NSString*(float v) { return [NSString stringWithFormat:@"%.1f : 1", v]; }, true, -1);
+    knob(kThreshold, {c1, r2}, @"THRESHOLD", -40, 0, -18, ^NSString*(float v) { return [NSString stringWithFormat:@"%.1f dBFS", v]; }, false, -1);
+    knob(kAttack, {c2, r2}, @"ATTACK", 0.1f, 100, 10, ms, true, -1);
+    knob(kAnalog, {c3, r2}, @"ANALOG", 0, 100, 35, pct, false, -1);
 
     // bal ablak alatt: AUTO GAIN
     pc->controls.push_back({Control::LedButton, kAutoGain, {NSMidX(kLeftWin), 258}, 0.85, @"AUTO GAIN", nil, 0, 1, 0});
@@ -86,14 +86,14 @@ std::unique_ptr<PanelController> buildVariekiPanel(AudioUnit au) {
     const CGFloat dy = H + 60, x0 = 250, dx = 110;
     struct D { AudioUnitParameterID id; NSString* name; float lo, hi, def; bool log; NSString* (^fmt)(float); };
     std::vector<D> ds = {
-        {kCrest, @"PEAK CREST", 0, 20, 6, false, dB}, {kKnee, @"SOFT KNEE", 0, 24, 12, false, dB},
-        {kRelPeak, @"REL PEAK", 5, 500, 80, true, ms}, {kStereo, @"STEREO SENS", 0, 100, 0, false, pct},
+        {kCrest, @"PEAK CREST", 0, 20, 6, false, dB}, {kKnee, @"SOFT KNEE", 0, 24, 6, false, dB},
+        {kRelPeak, @"REL PEAK", 5, 500, 50, true, ms}, {kStereo, @"STEREO SENS", 0, 100, 0, false, pct},
     };
     for (size_t i = 0; i < ds.size(); ++i) {
         pc->controls.push_back({Control::Knob, ds[i].id, {x0 + dx * i, dy}, 19, ds[i].name, nil, ds[i].lo, ds[i].hi, ds[i].def, ds[i].fmt});
         pc->controls.back().drawer = true; pc->controls.back().labelSize = 8.5; pc->controls.back().logTaper = ds[i].log;
     }
-    pc->controls.push_back({Control::SteppedKnob, kScCut, {x0 + dx * 4, dy}, 17, @"SC LOW CUT", @[@"OFF", @"40", @"80", @"120", @"200"], 0, 4, 1});
+    pc->controls.push_back({Control::SteppedKnob, kScCut, {x0 + dx * 4, dy}, 17, @"SC LOW CUT", @[@"OFF", @"40", @"80", @"120", @"200"], 0, 4, 0});
     pc->controls.back().drawer = true; pc->controls.back().spread = 110; pc->controls.back().labelSize = 8.5;
     pc->controls.push_back({Control::Knob, kMix, {x0 + dx * 5, dy}, 19, @"MIX", nil, 0, 100, 100, pct});
     pc->controls.back().drawer = true; pc->controls.back().labelSize = 8.5;

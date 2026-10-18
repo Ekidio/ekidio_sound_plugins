@@ -47,7 +47,7 @@ std::unique_ptr<PanelController> buildTubekiPanel(AudioUnit au) {
     auto pct = ^NSString*(float v) { return [NSString stringWithFormat:@"%.0f %%", v]; };
 
     // felső sor: GAIN · RATIO · THRESHOLD · METER
-    pc->controls.push_back({Control::Knob, kGain, {258, 128}, 30, @"GAIN", ticks(-10, 10, 5), -10, 30, 7, dB});
+    pc->controls.push_back({Control::Knob, kGain, {258, 128}, 30, @"GAIN", ticks(-10, 10, 5), -10, 30, 0, dB});
     pc->controls.back().labelSize = 10;
     pc->controls.push_back({Control::Knob, kRatio, {386, 128}, 28, @"RATIO", ticks(2, 2, 5), 2, 10, 3,
         ^NSString*(float v) { return [NSString stringWithFormat:@"%.1f : 1", v]; }});
