@@ -21,8 +21,8 @@ public:
                 {"RELEASE RMS", 20, 2000, 1000, kAudioUnitParameterUnit_Milliseconds},
                 {"STEREO SENS", 0, 100, 0, kAudioUnitParameterUnit_Percent},
                 {"SC LOW CUT", 0, 4, 1, kAudioUnitParameterUnit_Indexed, {"Off", "40 Hz", "80 Hz", "120 Hz", "200 Hz"}},
-                {"MAKEUP", -12, 24, 5, kAudioUnitParameterUnit_Decibels},
-                {"AUTO GAIN", 0, 1, 0, kAudioUnitParameterUnit_Indexed, {"Off", "On"}},
+                {"MAKEUP", -12, 24, 0, kAudioUnitParameterUnit_Decibels},
+                {"AUTO GAIN", 0, 1, 1, kAudioUnitParameterUnit_Indexed, {"Off", "On"}},
                 {"ANALOG", 0, 100, 85, kAudioUnitParameterUnit_Percent},
                 {"MIX", 0, 100, 100, kAudioUnitParameterUnit_Percent},
                 {"METER", 0, 2, 0, kAudioUnitParameterUnit_Indexed, {"Gain Reduction", "Output +4", "Output +10"}, false, nullptr, true},
@@ -34,7 +34,7 @@ public:
             },
             {
                 //                  THR  CREST RATIO KNEE ATK  RELP RELR  ST  CUT MK AUTO ANLG MIX METER
-                {"Default",         {-30, 6, 1.6f, 12, 50, 80, 1000, 0, 1, 5, 0, 85, 100, 0}},
+                {"Default",         {-30, 6, 1.6f, 12, 50, 80, 1000, 0, 1, 0, 1, 85, 100, 0}},
                 {"Velvet Bus",      {-20, 6, 2, 10, 15, 60, 350, 15, 2, 4.5f, 0, 45, 100, 0}},
                 {"Vocal Silk",      {-26, 9, 3, 6, 5, 40, 150, 0, 2, 9.5f, 0, 40, 100, 0}},
                 {"Thick Drums",     {-28, 3, 4, 6, 3, 30, 120, 0, 1, 13, 0, 70, 70, 0}},
@@ -43,7 +43,9 @@ public:
                 {"Breathing Room",  {-30, 4, 6, 6, 1, 25, 90, 0, 2, 15.5f, 0, 55, 50, 0}},
                 {"Clean Master",    {-14, 8, 1.5f, 12, 20, 60, 400, 0, 1, 1.5f, 0, 0, 100, 0}},
             },
-            {{1, 1}, {2, 2}}) {}
+            {{1, 1}, {2, 2}}) {
+        lockWhileOn(kMakeup, kAutoGain);   // AUTO GAIN alatt a kimeneti gain 0 dB-en zárva
+    }
 
     void prepare(double sampleRate, UInt32, UInt32) override { dsp.prepare(float(sampleRate)); }
     void reset() override { dsp.reset(); setMeter(kVU, -20); setMeter(kGR, 0); setMeter(kAutoMakeup, 0); setMeter(kGRNeedle, 0); setMeter(kOutVU, -20); }

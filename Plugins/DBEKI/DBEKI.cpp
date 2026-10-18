@@ -13,9 +13,9 @@ public:
             {
                 {"THRESHOLD", -40, 0, -20, kAudioUnitParameterUnit_Decibels},
                 {"COMPRESSION", 1, 60, 4, kAudioUnitParameterUnit_Ratio},
-                {"OUTPUT GAIN", -20, 20, 5.5f, kAudioUnitParameterUnit_Decibels},
+                {"OUTPUT GAIN", -20, 20, 0, kAudioUnitParameterUnit_Decibels},
                 {"OVEREASY", 0, 1, 0, kAudioUnitParameterUnit_Indexed, {"Off", "On"}},
-                {"AUTO GAIN", 0, 1, 0, kAudioUnitParameterUnit_Indexed, {"Off", "On"}},
+                {"AUTO GAIN", 0, 1, 1, kAudioUnitParameterUnit_Indexed, {"Off", "On"}},
                 {"ANALOG", 0, 100, 40, kAudioUnitParameterUnit_Percent},
                 {"MIX", 0, 100, 100, kAudioUnitParameterUnit_Percent},
                 {"METER", 0, 2, 0, kAudioUnitParameterUnit_Indexed, {"Gain Change", "Output", "Input"}, false, nullptr, true},
@@ -25,9 +25,9 @@ public:
                 {"ABOVE THRESHOLD", -30, 30, -30, kAudioUnitParameterUnit_Decibels, {}, true},
             },
             {
-                // AUTO GAIN alapból ki: a presetek OUTPUT GAIN értéke a mért makeup (tipikus jelen)
+                // Default: AUTO GAIN be (a gain 0-n zárva); a többi preset AUTO GAIN nélkül szól, a presetek OUTPUT GAIN értéke a mért makeup (tipikus jelen)
                 //                 THR  RATIO OUT OE AUTO ANLG MIX METER
-                {"Default",        {-20, 4, 5.5f, 0, 0, 40, 100, 0}},
+                {"Default",        {-20, 4, 0, 0, 1, 40, 100, 0}},
                 {"Kick Snap",      {-22, 4, 7, 0, 0, 45, 100, 0}},
                 {"Snare Crack",    {-24, 6, 9, 0, 0, 50, 100, 0}},
                 {"Bass Even",      {-22, 3, 6, 1, 0, 40, 100, 0}},
@@ -36,7 +36,9 @@ public:
                 {"Guitar Thick",   {-20, 3, 5, 1, 0, 65, 100, 0}},
                 {"Master Touch",   {-12, 1.5f, 0.5f, 1, 0, 25, 100, 0}},
             },
-            {{1, 1}, {2, 2}}) {}
+            {{1, 1}, {2, 2}}) {
+        lockWhileOn(kOutput, kAutoGain);   // AUTO GAIN alatt a kimeneti gain 0 dB-en zárva
+    }
 
     void prepare(double sampleRate, UInt32, UInt32) override { dsp.prepare(float(sampleRate)); }
     void reset() override { dsp.reset(); setMeter(kVU, -20); setMeter(kGR, 0); setMeter(kAutoMakeup, 0); setMeter(kOver, -30); }

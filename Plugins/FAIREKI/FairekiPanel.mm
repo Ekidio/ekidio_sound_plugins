@@ -93,6 +93,7 @@ std::unique_ptr<PanelController> buildFairekiPanel(AudioUnit au) {
     // EKI fiók
     pc->controls.push_back({Control::Knob, kAnalog, {480, H + 58}, 24, @"ANALOG", nil, 0, 100, 60, pct});
     pc->controls.back().drawer = true; pc->controls.back().labelSize = 9; pc->controls.back().cap = RED;
+    pc->lock(kOutput, kAutoGain);                          // AUTO GAIN alatt a gain 0-n, nem tekerhető
     return pc;
 }
 

@@ -11,6 +11,7 @@
 #include <cmath>
 #include <algorithm>
 #include <dlfcn.h>
+#include <dispatch/dispatch.h>
 #include "EKIDSP.h"
 
 // EKI_UI_FACTORY: a build.sh adja meg, ha a pluginnak van saját (Cocoa) panelje
@@ -326,9 +327,14 @@ public:
         if (mParams[id].meter) return noErr;
         const ParamDef& d = mParams[id];
         if (!std::isfinite(v)) v = d.defaultValue;
+        if (id == mLockTarget && locked()) v = 0;                  // AUTO GAIN alatt a kimeneti gain 0 dB-en zárva
         mValues[id].store(clampf(v, d.minValue, d.maxValue), std::memory_order_relaxed);
+        if (id == mLockSwitch && enforceLock()) notifyParameterAsync(mLockTarget);
         return noErr;
     }
+
+    /// zár: amíg a `sw` kapcsoló be van kapcsolva, a `target` paraméter 0 és nem állítható (AUTO GAIN → kimeneti gain)
+    void lockWhileOn(AudioUnitParameterID target, AudioUnitParameterID sw) { mLockTarget = target; mLockSwitch = sw; }
 
     OSStatus scheduleParameters(const AudioUnitParameterEvent* events, UInt32 n) {
         for (UInt32 i = 0; i < n; ++i) {
@@ -446,6 +452,7 @@ private:
     std::vector<float> mInBuf, mOutBuf;
     std::vector<Listener> mListeners;
     Notify mNotify[kMaxNotify];
+    AudioUnitParameterID mLockTarget = UINT32_MAX, mLockSwitch = UINT32_MAX;
     MIDIEvent mMIDI[kMaxMIDI];
     UInt32 mMIDICount = 0;
 
@@ -596,11 +603,31 @@ private:
         info.flags = kAudioUnitParameterFlag_HasCFNameString | kAudioUnitParameterFlag_IsReadable;
         if (d.meter) info.flags |= kAudioUnitParameterFlag_MeterReadOnly;
         else info.flags |= kAudioUnitParameterFlag_IsWritable;
+        if (id == mLockSwitch) info.flags |= kAudioUnitParameterFlag_IsGlobalMeta;   // más paramétert is átállít (AUTO GAIN → gain 0)
     }
 
     void notify(AudioUnitPropertyID id, AudioUnitScope scope, AudioUnitElement elem) {
         auto copy = mListeners;
         for (auto& l : copy) if (l.id == id) l.proc(l.user, mInstance, id, scope, elem);
+    }
+
+    bool locked() const {
+        return mLockSwitch < mParams.size() && mLockTarget < mParams.size() && mValues[mLockSwitch].load(std::memory_order_relaxed) >= 0.5f;
+    }
+    /// ha a zár él, a cél 0 lesz; true, ha változott
+    bool enforceLock() {
+        if (!locked() || mValues[mLockTarget].load(std::memory_order_relaxed) == 0.0f) return false;
+        mValues[mLockTarget].store(0.0f, std::memory_order_relaxed);
+        return true;
+    }
+    /// a hostok/panelek értesítése a főszálon (a setParameter jöhet a render-szálról is)
+    void notifyParameterAsync(AudioUnitParameterID id) {
+        auto* p = new AudioUnitParameter{mInstance, id, kAudioUnitScope_Global, 0};
+        dispatch_async_f(dispatch_get_main_queue(), p, [](void* ctx) {
+            auto* q = static_cast<AudioUnitParameter*>(ctx);
+            AUParameterListenerNotify(nullptr, nullptr, q);
+            delete q;
+        });
     }
 
     void notifyAllParameters() {
@@ -624,6 +651,7 @@ private:
         const auto& v = mPresetDefs[idx].values;
         for (size_t i = 0; i < v.size() && i < mParams.size(); ++i)
             if (!mParams[i].meter && !mParams[i].display) mValues[i].store(clampf(v[i], mParams[i].minValue, mParams[i].maxValue));
+        enforceLock();
         notifyAllParameters();
     }
 
@@ -705,6 +733,7 @@ private:
                 }
             }
         }
+        enforceLock();
         auto name = (CFStringRef)CFDictionaryGetValue(d, CFSTR(kAUPresetNameKey));
         if (name && CFGetTypeID(name) == CFStringGetTypeID()) {
             AUPreset p{-1, name};

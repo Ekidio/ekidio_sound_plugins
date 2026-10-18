@@ -66,6 +66,7 @@ std::unique_ptr<PanelController> buildFetekiPanel(AudioUnit au) {
     pc->controls.back().drawer = true; pc->controls.back().labelSize = 9;
     pc->controls.push_back({Control::Knob, kMix, {630, dy}, 24, @"MIX", nil, 0, 100, 100, pct});
     pc->controls.back().drawer = true; pc->controls.back().labelSize = 9;
+    pc->lock(kOutput, kAutoGain);                          // AUTO GAIN alatt a gain 0-n, nem tekerhető
     return pc;
 }
 

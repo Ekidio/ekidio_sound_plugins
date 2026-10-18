@@ -17,7 +17,7 @@ public:
                 {"ATTACK", 1, 7, 3, kAudioUnitParameterUnit_Generic},
                 {"RELEASE", 1, 7, 5, kAudioUnitParameterUnit_Generic},
                 {"RATIO", 0, 4, 0, kAudioUnitParameterUnit_Indexed, {"4:1", "8:1", "12:1", "20:1", "ALL"}},
-                {"AUTO GAIN", 0, 1, 0, kAudioUnitParameterUnit_Indexed, {"Off", "On"}},
+                {"AUTO GAIN", 0, 1, 1, kAudioUnitParameterUnit_Indexed, {"Off", "On"}},
                 {"ANALOG", 0, 100, 50, kAudioUnitParameterUnit_Percent},
                 {"MIX", 0, 100, 100, kAudioUnitParameterUnit_Percent},
                 {"METER", 0, 2, 0, kAudioUnitParameterUnit_Indexed, {"Gain Reduction", "Output +4", "Output +8"}, false, nullptr, true},
@@ -27,7 +27,7 @@ public:
             },
             {
                 //                INPUT OUT ATK REL RATIO AUTO ANLG MIX METER
-                {"Default",       {0, 0, 3, 5, 0, 0, 50, 100, 0}},
+                {"Default",       {0, 0, 3, 5, 0, 1, 50, 100, 0}},
                 {"Vocal Grab",    {12, 5.5f, 3, 6, 0, 0, 50, 100, 0}},
                 {"Drum Smash",    {25, 14, 6, 7, 4, 0, 70, 40, 0}},
                 {"Bass Control",  {10, 7.5f, 2, 4, 1, 0, 50, 100, 0}},
@@ -35,7 +35,9 @@ public:
                 {"Gentle Peak",   {5, 8, 2, 4, 0, 0, 40, 100, 0}},
                 {"Guitar Bite",   {15, 5, 4, 6, 2, 0, 60, 100, 0}},
             },
-            {{1, 1}, {2, 2}}) {}
+            {{1, 1}, {2, 2}}) {
+        lockWhileOn(kOutput, kAutoGain);   // AUTO GAIN alatt a kimeneti gain 0 dB-en zárva
+    }
 
     void prepare(double sampleRate, UInt32, UInt32) override { dsp.prepare(float(sampleRate)); }
     void reset() override { dsp.reset(); setMeter(kVU, -20); setMeter(kGR, 0); setMeter(kAutoMakeup, 0); }

@@ -77,6 +77,7 @@ std::unique_ptr<PanelController> buildBusekiPanel(AudioUnit au) {
     pc->controls.push_back({Control::Knob, kMix, {730, dy}, 24, @"MIX", nil, 0, 100, 100, pct});
     pc->controls.back().cap = BLUE;
     pc->controls.back().drawer = true; pc->controls.back().labelSize = 9;
+    pc->lock(kMakeup, kAutoGain);                          // AUTO GAIN alatt a gain 0-n, nem tekerhető
     return pc;
 }
 

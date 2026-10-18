@@ -693,6 +693,7 @@ struct Control {
     CGFloat labelDy = 0;                 // a felirat távolsága a középponttól (0 = automatikus)
     bool drawer = false;                 // az EKI fiókban van (csak nyitott fióknál látszik)
     CGFloat labelSize = 0;               // feliratméret (0 = automatikus)
+    int lockedBy = -1;                   // zárolva (0-n, halványítva), amíg ez a kapcsoló-paraméter be van kapcsolva (AUTO GAIN)
 
     CGFloat size() const { return r > 0 ? r : 1; }
     CGFloat sweep() const { return spread > 0 ? spread : (kind == Selector ? 55 : 135); }
@@ -821,6 +822,12 @@ public:
         if (sel >= 0 && sel != cur) selectPreset(int(sel));
     }
 
+    /// a `target` gomb zárolása, amíg a `sw` kapcsoló be van kapcsolva (az AU 0-ra állítja és nem engedi állítani)
+    void lock(AudioUnitParameterID target, AudioUnitParameterID sw) {
+        for (auto& c : controls) if (c.pid == target) c.lockedBy = int(sw);
+    }
+    bool isLocked(const Control& c) const { return c.lockedBy >= 0 && get(AudioUnitParameterID(c.lockedBy)) >= 0.5f; }
+
     float get(AudioUnitParameterID pid) const {
         for (auto& w : watched) if (w.first == pid) return w.second;
         for (auto& c : controls) if (c.pid == pid) return c.value;
@@ -852,7 +859,7 @@ public:
                            fraction:1 respectFlipped:YES hints:nil];
         }
         if (drawFace) drawFace(*this);
-        for (auto& c : controls) if (!c.drawer || drawerOpen) drawControl(c);
+        for (auto& c : controls) if (!c.drawer || drawerOpen) { drawControl(c); if (isLocked(c)) drawLockShade(c); }
         if (drawOverlay) drawOverlay(*this);
         drawGrip();
         CGContextRestoreGState(cg());
@@ -1004,6 +1011,15 @@ private:
 
     CGFloat labelFont(const Control& c) const { return c.labelSize > 0 ? c.labelSize : (c.r >= 30 ? 11 : 8.5); }
 
+    /// zárolt gomb: sötétített, a sapka fölé halvány árnyék
+    void drawLockShade(const Control& c) {
+        CGContextRef g = cg();
+        CGContextSaveGState(g);
+        CGContextSetRGBFillColor(g, 0, 0, 0, 0.5);
+        CGContextFillEllipseInRect(g, CGRectMake(c.c.x - c.r - 3, c.c.y - c.r - 3, 2 * c.r + 6, 2 * c.r + 6));
+        CGContextRestoreGState(g);
+    }
+
     void drawControl(const Control& c) {
         const int idx = int(std::lround(c.value - c.minV));
         switch (c.kind) {
@@ -1063,6 +1079,7 @@ private:
         for (int i = 0; i < int(controls.size()); ++i) {
             const Control& c = controls[i];
             if (c.drawer && !drawerOpen) continue;
+            if (isLocked(c)) continue;                        // zárolt gomb: nem tekerhető
             CGFloat dx = p.x - c.c.x, dy = p.y - c.c.y;
             const CGFloat s = c.size();
             switch (c.kind) {

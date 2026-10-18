@@ -19,8 +19,8 @@ public:
                 {"KNEE", 0, 2, 1, kAudioUnitParameterUnit_Indexed, {"Hard", "Med", "Soft"}},
                 {"THRUST", 0, 2, 1, kAudioUnitParameterUnit_Indexed, {"Norm", "Med", "Loud"}},
                 {"TYPE", 0, 1, 0, kAudioUnitParameterUnit_Indexed, {"New (feed-forward)", "Old (feedback)"}},
-                {"OUTPUT", -24, 24, 5, kAudioUnitParameterUnit_Decibels},
-                {"AUTO GAIN", 0, 1, 0, kAudioUnitParameterUnit_Indexed, {"Off", "On"}},
+                {"OUTPUT", -24, 24, 0, kAudioUnitParameterUnit_Decibels},
+                {"AUTO GAIN", 0, 1, 1, kAudioUnitParameterUnit_Indexed, {"Off", "On"}},
                 {"L/R LINK", 0, 100, 100, kAudioUnitParameterUnit_Percent},
                 {"ANALOG", 0, 100, 55, kAudioUnitParameterUnit_Percent},
                 {"MIX", 0, 100, 100, kAudioUnitParameterUnit_Percent},
@@ -30,9 +30,9 @@ public:
                 {"AUTO MAKEUP", -40, 40, 0, kAudioUnitParameterUnit_Decibels, {}, true},
             },
             {
-                // AUTO GAIN alapból ki: a presetek OUTPUT értéke a mért makeup (tipikus jelen)
+                // Default: AUTO GAIN be (a gain 0-n zárva); a többi preset AUTO GAIN nélkül szól, a presetek OUTPUT értéke a mért makeup (tipikus jelen)
                 //                  THR  RATIO ATK REL KNEE THR TYPE OUT AUTO LINK ANLG MIX METER
-                {"Default",         {-22, 3, 5, 2, 1, 1, 0, 5, 0, 100, 55, 100, 0}},
+                {"Default",         {-22, 3, 5, 2, 1, 1, 0, 0, 1, 100, 55, 100, 0}},
                 {"Drum Bus Punch",  {-22, 3, 5, 1, 0, 2, 0, 7, 0, 100, 60, 100, 0}},
                 {"Mix Bus Glue",    {-14, 1, 6, 2, 2, 1, 1, 2.5f, 0, 100, 50, 100, 0}},
                 {"Snare Snap",      {-24, 4, 4, 0, 0, 2, 0, 9.5f, 0, 100, 60, 100, 0}},
@@ -41,7 +41,9 @@ public:
                 {"Room Slam",       {-30, 6, 0, 0, 0, 2, 0, 17.5f, 0, 100, 70, 50, 0}},
                 {"Gentle Master",   {-10, 0, 6, 3, 2, 1, 1, 1, 0, 100, 30, 100, 0}},
             },
-            {{1, 1}, {2, 2}}) {}
+            {{1, 1}, {2, 2}}) {
+        lockWhileOn(kOutput, kAutoGain);   // AUTO GAIN alatt a kimeneti gain 0 dB-en zárva
+    }
 
     void prepare(double sampleRate, UInt32, UInt32) override { dsp.prepare(float(sampleRate)); }
     void reset() override { dsp.reset(); setMeter(kVU, -20); setMeter(kGR, 0); setMeter(kAutoMakeup, 0); }

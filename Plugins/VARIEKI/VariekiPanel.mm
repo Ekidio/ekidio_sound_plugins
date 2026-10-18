@@ -97,6 +97,7 @@ std::unique_ptr<PanelController> buildVariekiPanel(AudioUnit au) {
     pc->controls.back().drawer = true; pc->controls.back().spread = 110; pc->controls.back().labelSize = 8.5;
     pc->controls.push_back({Control::Knob, kMix, {x0 + dx * 5, dy}, 19, @"MIX", nil, 0, 100, 100, pct});
     pc->controls.back().drawer = true; pc->controls.back().labelSize = 8.5;
+    pc->lock(kMakeup, kAutoGain);                          // AUTO GAIN alatt a gain 0-n, nem tekerhető
     return pc;
 }
 

@@ -76,6 +76,7 @@ std::unique_ptr<PanelController> buildTubekiPanel(AudioUnit au) {
     // EKI fiók
     pc->controls.push_back({Control::Knob, kAnalog, {430, H + 58}, 24, @"ANALOG", nil, 0, 100, 50, pct});
     pc->controls.back().drawer = true; pc->controls.back().labelSize = 9;
+    pc->lock(kGain, kAutoGain);                          // AUTO GAIN alatt a gain 0-n, nem tekerhető
     return pc;
 }
 
