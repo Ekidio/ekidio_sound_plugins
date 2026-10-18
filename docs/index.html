@@ -9,7 +9,7 @@
 <link rel="alternate" hreflang="hu" href="https://ekidio.github.io/ekidio_sound_plugins/hu/">
 <meta property="og:title" content="EKIDIO SOUND – Compressor Collection">
 <meta property="og:description" content="Eight free analog-inspired compressor plugins for macOS (AU).">
-<meta property="og:image" content="https://ekidio.github.io/ekidio_sound_plugins/assets/montage.jpg">
+<meta property="og:image" content="https://ekidio.github.io/ekidio_sound_plugins/assets/banner.jpg">
 <style>
   :root{ --bg:#0b0b0d; --panel:#16171c; --line:rgba(255,255,255,.08); --text:#dcdee8; --dim:#8a8d9c; --amber:#f2a33a; --cream:#ede3cf; }
   *{box-sizing:border-box}
@@ -18,7 +18,9 @@
   .wrap{max-width:1120px;margin:0 auto;padding:0 20px}
   nav{display:flex;justify-content:space-between;align-items:center;padding:18px 0;font-size:14px}
   .brand{font-weight:700;letter-spacing:.32em;color:var(--cream)} .brand span{font-weight:400;color:#9c9486}
-  header.hero{text-align:center;padding:48px 0 30px;background:radial-gradient(60% 50% at 50% 30%,rgba(242,163,58,.14),transparent 70%)}
+  .banner{display:block;width:100%;height:auto;border-radius:16px;border:1px solid var(--line);box-shadow:0 30px 80px rgba(0,0,0,.6);margin:0 0 30px}
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+  header.hero{text-align:center;padding:8px 0 30px;background:radial-gradient(60% 50% at 50% 30%,rgba(242,163,58,.14),transparent 70%)}
   h1{font:800 clamp(34px,6vw,60px)/1.05 -apple-system,BlinkMacSystemFont,sans-serif;color:#fff;margin:0 0 14px;letter-spacing:-.01em}
   .tag{font-size:clamp(17px,2.4vw,21px);max-width:780px;margin:0 auto 28px;color:#e9eaf1}
   .cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
@@ -52,7 +54,8 @@
 
 <header class="hero">
   <div class="wrap">
-    <h1>Compressor Collection</h1>
+    <img class="banner" src="assets/banner.jpg" alt="EKIDIO SOUND Compressor Collection">
+    <h1 class="sr">Compressor Collection</h1>
     <p class="tag">Eight analog-inspired compressors for macOS — each with its own character, a faceplate that feels like real gear, and the essential controls right up front. <b>Free.</b></p>
     <div class="cta">
       <a class="btn primary" href="https://github.com/Ekidio/ekidio_sound_plugins/releases/latest/download/EKIDIO-SOUND-Compressors-1.0.0.dmg">Download for macOS</a>
