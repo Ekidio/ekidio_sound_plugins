@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EKIDIO SOUND – Compressor Collection</title>
+<meta name="description" content="Eight free analog-inspired compressor plugins (Audio Unit) for macOS by EKIDIO SOUND: optical, FET, variable-mu, VCA bus, punch bus, RMS, opto-tube and vintage vari-mu limiter.">
+<link rel="alternate" hreflang="en" href="https://ekidio.github.io/ekidio_sound_plugins/">
+<link rel="alternate" hreflang="hu" href="https://ekidio.github.io/ekidio_sound_plugins/hu/">
+<meta property="og:title" content="EKIDIO SOUND – Compressor Collection">
+<meta property="og:description" content="Eight free analog-inspired compressor plugins for macOS (AU).">
+<meta property="og:image" content="assets/opteki.png">
+<style>
+  :root{ --bg:#0b0b0d; --panel:#16171c; --line:rgba(255,255,255,.08); --text:#dcdee8; --dim:#8a8d9c; --amber:#f2a33a; --cream:#ede3cf; }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif}
+  a{color:var(--amber);text-decoration:none} a:hover{text-decoration:underline}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+  nav{display:flex;justify-content:space-between;align-items:center;padding:18px 0;font-size:14px}
+  .brand{font-weight:700;letter-spacing:.32em;color:var(--cream)} .brand span{font-weight:400;color:#9c9486}
+  header.hero{text-align:center;padding:48px 0 30px;background:radial-gradient(60% 50% at 50% 30%,rgba(242,163,58,.14),transparent 70%)}
+  h1{font:800 clamp(34px,6vw,60px)/1.05 -apple-system,BlinkMacSystemFont,sans-serif;color:#fff;margin:0 0 14px;letter-spacing:-.01em}
+  .tag{font-size:clamp(17px,2.4vw,21px);max-width:780px;margin:0 auto 28px;color:#e9eaf1}
+  .cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+  .btn{display:inline-flex;align-items:center;gap:10px;padding:13px 22px;border-radius:12px;font-weight:800;border:1px solid var(--line)}
+  .btn.primary{background:var(--amber);color:#1a1006;box-shadow:0 8px 30px rgba(242,163,58,.25)} .btn.primary:hover{text-decoration:none;filter:brightness(1.08)}
+  .btn.ghost{background:#1e2027;color:var(--text)} .btn.ghost:hover{text-decoration:none;background:#262833}
+  .req{margin-top:12px;font-size:13px;color:var(--dim)}
+  .shot{margin:40px auto 0;border-radius:14px;overflow:hidden;border:1px solid var(--line);box-shadow:0 30px 80px rgba(0,0,0,.6)}
+  .shot img{display:block;width:100%;height:auto}
+  section{padding:56px 0}
+  h2{font:800 clamp(26px,4vw,36px)/1.15 -apple-system,BlinkMacSystemFont,sans-serif;color:#fff;margin:0 0 10px}
+  .lead{color:var(--dim);max-width:760px;margin:0 0 28px} .lead b{color:#fff}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 20px;border-top:3px solid var(--amber)}
+  .card h3{margin:2px 0 6px;color:#fff;font-size:17px} .card p{margin:0;color:#c3c6d3;font-size:14.5px}
+  .plugin{display:grid;grid-template-columns:1.5fr 1fr;gap:30px;align-items:center;padding:30px 0;border-top:1px solid var(--line)}
+  .plugin:nth-child(even){grid-template-columns:1fr 1.5fr} .plugin:nth-child(even) img{order:2}
+  .plugin img{width:100%;border-radius:12px;border:1px solid var(--line);box-shadow:0 20px 60px rgba(0,0,0,.5)}
+  .plugin h3{margin:0 0 2px;color:#fff;font:800 26px/1.2 -apple-system,sans-serif;letter-spacing:.06em}
+  .plugin .kind{color:var(--amber);font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px}
+  .plugin p{margin:0 0 10px;color:#c3c6d3} .plugin .use{font-size:14px;color:var(--dim)}
+  ol li{margin-bottom:8px} code{background:#1e2027;padding:2px 6px;border-radius:5px;font-size:14px}
+  footer{padding:40px 0 60px;color:var(--dim);font-size:13px;border-top:1px solid var(--line)}
+  @media (max-width:760px){ .plugin,.plugin:nth-child(even){grid-template-columns:1fr} .plugin:nth-child(even) img{order:0} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav><div class="brand">EKIDIO <span>SOUND</span></div><a href="hu/">Magyar</a></nav>
+</div>
+
+<header class="hero">
+  <div class="wrap">
+    <h1>Compressor Collection</h1>
+    <p class="tag">Eight analog-inspired compressors for macOS — each with its own character, a faceplate that feels like real gear, and the essential controls right up front. <b>Free.</b></p>
+    <div class="cta">
+      <a class="btn primary" href="https://github.com/Ekidio/ekidio_sound_plugins/releases/latest/download/EKIDIO-SOUND-Compressors-1.0.0.dmg">Download for macOS</a>
+      <a class="btn ghost" href="#install">How to install</a>
+    </div>
+    <div class="req">Audio Unit (AU) · macOS 11 or newer · Apple Silicon &amp; Intel · Logic Pro, GarageBand, Ableton Live, Reaper and other AU hosts</div>
+    <div class="shot"><img src="assets/opteki.png" alt="OPTEKI optical leveling amplifier"></div>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <h2>One family, one way of working</h2>
+    <p class="lead">Every unit gets you there in one or two moves. The rarely touched settings live in the fold-out <b>EKI drawer</b>, so the faceplate stays clean.</p>
+    <div class="grid">
+      <div class="card"><h3>Character first</h3><p>Tube, transformer, FET and console colour you can hear — with a clean setting where it makes sense.</p></div>
+      <div class="card"><h3>AUTO GAIN</h3><p>Off by default, so you hear what the compressor really does. Switch it on to compare at equal loudness.</p></div>
+      <div class="card"><h3>Parallel MIX</h3><p>Phase-aligned dry/wet blend on every unit — no comb filtering, no hollow sound.</p></div>
+      <div class="card"><h3>Living meters</h3><p>Glowing VU meters, gain-reduction scales and LEDs that follow the audio.</p></div>
+      <div class="card"><h3>Presets</h3><p>Starting points for vocals, drums, bass, buses and mastering — level-matched.</p></div>
+      <div class="card"><h3>Resizable</h3><p>Drag the corner from 75 % to 200 %. Each plugin remembers its size.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>The eight units</h2>
+    <div>
+      <div class="plugin"><img src="assets/opteki.png" alt="OPTEKI"><div><h3>OPTEKI</h3><div class="kind">Optical leveling amplifier</div>
+        <p>A smooth optical cell with a two-stage, program-dependent release: the longer it works, the slower it lets go. Just GAIN and PEAK REDUCTION, plus Compress/Limit.</p>
+        <p class="use">Vocals, bass, acoustic instruments.</p></div></div>
+      <div class="plugin"><img src="assets/feteki.png" alt="FETEKI"><div><h3>FETEKI</h3><div class="kind">FET peak limiter</div>
+        <p>Lightning-fast attack (down to 20 µs), ratio buttons 4 · 8 · 12 · 20 and the aggressive ALL mode for over-compressed, exciting smash.</p>
+        <p class="use">Drums, room mics, vocals with attitude, bass.</p></div></div>
+      <div class="plugin"><img src="assets/varieki.png" alt="VARIEKI"><div><h3>VARIEKI</h3><div class="kind">Variable-mu dynamics</div>
+        <p>Precision dual peak + RMS detection for invisibly smooth control, with an optional variable-mu tube colour on top. Two meters: gain reduction and output.</p>
+        <p class="use">Mix bus, mastering, smooth vocal levelling.</p></div></div>
+      <div class="plugin"><img src="assets/buseki.png" alt="BUSEKI"><div><h3>BUSEKI</h3><div class="kind">Stereo bus compressor</div>
+        <p>The console-style VCA glue: stepped ratio, attack and release with a program-dependent AUTO release and a sidechain high-pass so the kick doesn't pump the mix.</p>
+        <p class="use">Mix bus, drum bus, the "glue".</p></div></div>
+      <div class="plugin"><img src="assets/apeki.png" alt="APEKI"><div><h3>APEKI</h3><div class="kind">Punch bus compressor</div>
+        <p>THRUST keeps the low end punching through, KNEE goes from hard to soft, and TYPE switches between tight feed-forward and smooth vintage feedback. The big red OUTPUT says the rest.</p>
+        <p class="use">Drum bus, mix bus, punchy bass.</p></div></div>
+      <div class="plugin"><img src="assets/dbeki.png" alt="DBEKI"><div><h3>DBEKI</h3><div class="kind">RMS compressor / limiter</div>
+        <p>True RMS detection with program-dependent attack and a constant 120 dB/s release — the classic snap on kick and snare. OverEasy soft knee in one click, BELOW/ABOVE threshold LEDs.</p>
+        <p class="use">Kick, snare, bass, guitars.</p></div></div>
+      <div class="plugin"><img src="assets/tubeki.png" alt="TUBEKI"><div><h3>TUBEKI</h3><div class="kind">Opto tube compressor</div>
+        <p>A creamy optical cell feeding a tube gain stage: drive the GAIN for warmth. Fixed, Manual or combined attack/release, plus parallel compression.</p>
+        <p class="use">Vocals, bass, acoustic guitar, mix bus warmth.</p></div></div>
+      <div class="plugin"><img src="assets/faireki.png" alt="FAIREKI"><div><h3>FAIREKI</h3><div class="kind">Variable-mu limiter</div>
+        <p>Feedback variable-mu tube limiting that gets steeper the harder you push, six time constants (5 and 6 program-dependent) and LAT/VERT mid-side mode.</p>
+        <p class="use">Mix bus, mastering, drums and vocals that need weight.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="install">
+  <div class="wrap">
+    <h2>Install</h2>
+    <ol>
+      <li>Download the DMG and open it.</li>
+      <li>Double-click <b>Install EKIDIO SOUND Compressors.pkg</b>. If macOS says it cannot verify the developer: click <b>Done</b>, then open <b>System Settings → Privacy &amp; Security</b> and click <b>Open Anyway</b>.</li>
+      <li>Restart your DAW. In Logic Pro, if a plugin does not show up: <b>Plug-in Manager → Reset &amp; Rescan Selection</b>.</li>
+      <li>The plugins appear under the manufacturer <b>EKIDIO SOUND</b>.</li>
+    </ol>
+    <p class="lead">Uninstall: delete the <code>*EKI.component</code> files from <code>/Library/Audio/Plug-Ins/Components</code>.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p><b>Free to use</b>, including in commercial music and audio productions. You may not sell, rent or redistribute the plugins or their source code. Provided "as is", without warranty.</p>
+    <p>Any product names that may be mentioned are trademarks of their respective owners; EKIDIO SOUND is not affiliated with them. The plugins are inspired by the sound character of classic studio gear.</p>
+    <p>© 2026 EKIDIO SOUND · <a href="https://github.com/Ekidio/ekidio_sound_plugins/releases">All releases</a></p>
+  </div>
+</footer>
+</body>
+</html>
