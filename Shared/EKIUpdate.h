@@ -11,6 +11,9 @@
 #ifndef EKI_VERSION
 #define EKI_VERSION "0.0.0"
 #endif
+#ifndef EKI_PLUGIN_NAME
+#define EKI_PLUGIN_NAME ""
+#endif
 
 namespace eki::ui::update {
 
@@ -18,6 +21,7 @@ inline NSString* const kDefaultURL = @"https://ekidio.github.io/ekidio_sound_plu
 inline NSString* const kKeyLatest = @"EKIDIO.update.latest";
 inline NSString* const kKeyPage = @"EKIDIO.update.url";
 inline NSString* const kKeyChecked = @"EKIDIO.update.checkedAt";
+inline NSString* const kKeyPlugins = @"EKIDIO.update.plugins";   // pluginonkénti verziók (név → verzió)
 constexpr NSTimeInterval kInterval = 12 * 3600;
 
 /// változik, amikor új információ érkezett (a panel ebből tudja, hogy újra kell rajzolni)
@@ -35,8 +39,16 @@ inline bool isNewer(NSString* a, NSString* b) {
 }
 
 /// az elérhető újabb verzió (nil, ha nincs)
+/// pluginonkénti verzió: ha a version.json-ban van "plugins" lista, csak a saját bejegyzés számít
+/// (ha a plugin nincs benne — pl. még nem adtuk ki —, nincs jelzés); régi formátumnál a közös "version"
 inline NSString* available() {
-    NSString* latest = [[NSUserDefaults standardUserDefaults] stringForKey:kKeyLatest];
+    NSUserDefaults* d = [NSUserDefaults standardUserDefaults];
+    NSString* latest = [d stringForKey:kKeyLatest];
+    NSDictionary* plugins = [d dictionaryForKey:kKeyPlugins];
+    if (plugins) {
+        id v = plugins[@EKI_PLUGIN_NAME];
+        latest = [v isKindOfClass:[NSString class]] ? v : nil;
+    }
     return latest && isNewer(latest, @EKI_VERSION) ? latest : nil;
 }
 
@@ -56,7 +68,9 @@ inline void check() {
     started = true;
     NSUserDefaults* d = [NSUserDefaults standardUserDefaults];
     const char* env = getenv("EKI_UPDATE_URL");
-    if (!env && [NSDate timeIntervalSinceReferenceDate] - [d doubleForKey:kKeyChecked] < kInterval) return;
+    // a régi (pluginonkénti lista nélküli) tárolt adat elavult → azonnal újra lekérjük, nem várunk 12 órát
+    const bool stale = [d objectForKey:kKeyPlugins] == nil;
+    if (!env && !stale && [NSDate timeIntervalSinceReferenceDate] - [d doubleForKey:kKeyChecked] < kInterval) return;
     NSURL* url = [NSURL URLWithString:env ? @(env) : kDefaultURL];
     if (!url) return;
     NSURLRequest* req = [NSURLRequest requestWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:15];
@@ -64,12 +78,13 @@ inline void check() {
         if (err || !data) return;
         id json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
         if (![json isKindOfClass:[NSDictionary class]]) return;
-        id v = json[@"version"], u = json[@"url"];
+        id v = json[@"version"], u = json[@"url"], pl = json[@"plugins"];
         if (![v isKindOfClass:[NSString class]]) return;
         dispatch_async(dispatch_get_main_queue(), ^{
             NSUserDefaults* ud = [NSUserDefaults standardUserDefaults];
             [ud setObject:v forKey:kKeyLatest];
             if ([u isKindOfClass:[NSString class]]) [ud setObject:u forKey:kKeyPage];
+            if ([pl isKindOfClass:[NSDictionary class]]) [ud setObject:pl forKey:kKeyPlugins]; else [ud removeObjectForKey:kKeyPlugins];
             [ud setDouble:[NSDate timeIntervalSinceReferenceDate] forKey:kKeyChecked];
             generation()++;
         });

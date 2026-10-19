@@ -25,7 +25,7 @@ inline NSColor* rgb(int hex, CGFloat a = 1) {
     return [NSColor colorWithSRGBRed:((hex >> 16) & 255) / 255.0 green:((hex >> 8) & 255) / 255.0 blue:(hex & 255) / 255.0 alpha:a];
 }
 
-enum KnobStyle { Bakelite, SilverSkirt, Console, ChromeRing, Premium, Machined, ConsoleCap };
+enum KnobStyle { Bakelite, SilverSkirt, Console, ChromeRing, Premium, Machined, ConsoleCap, Fluted };
 
 /// Plugin-téma (bundle-önként egy példány; a panel build-függvénye állítja be)
 struct Theme {
@@ -136,6 +136,55 @@ inline void drawKnob(CGPoint c, CGFloat r, float norm, NSArray<NSString*>* tickL
         NSBezierPath* rim = [NSBezierPath bezierPathWithOvalInRect:circleRect(c, capR)]; rim.lineWidth = 0.8; [rim stroke];
         CGFloat a = deg(-sweep + 2 * sweep * std::clamp(norm, 0.0f, 1.0f));
         line(polar(c, a, capR * 0.15), polar(c, a, r * 0.94), std::max(1.6, r * 0.065), rgb(0xFFFFFF));
+        return;
+    }
+    if (t.knob == Fluted) {   // nagy, hullámos szélű ("csillag") fekete gomb fényes kupolával és fehér háromszög-jelölővel (vintage rack)
+        const CGFloat a = deg(-sweep + 2 * sweep * std::clamp(norm, 0.0f, 1.0f));
+        // skálagyűrű: két vékony körív a vonások két szélén
+        for (CGFloat rr : {r + 3, r + 3 + tl}) {
+            NSBezierPath* arc = [NSBezierPath bezierPath];
+            [arc appendBezierPathWithArcWithCenter:c radius:rr startAngle:(-sweep - 90) endAngle:(sweep - 90) clockwise:NO];
+            arc.lineWidth = 0.7; [[tickColor() colorWithAlphaComponent:0.55] setStroke]; [arc stroke];
+        }
+        // hullámos test (8 karéj), a gombbal együtt forog
+        constexpr int kLobes = 8;
+        NSBezierPath* body = [NSBezierPath bezierPath];
+        for (int i = 0; i <= 240; ++i) {
+            const CGFloat th = 2 * M_PI * i / 240;
+            const CGFloat rad = r * (0.90 + 0.10 * std::pow(std::fabs(std::cos(kLobes * (th - a) / 2)), 0.55));
+            const CGPoint q = polar(c, th, rad);
+            if (i == 0) [body moveToPoint:q]; else [body lineToPoint:q];
+        }
+        [body closePath];
+        shadowed(r * 0.16, r * 0.42, 0.85, ^{ [rgb(0x050505) setFill]; [body fill]; });
+        [[[NSGradient alloc] initWithColorsAndLocations:rgb(0x3C3D42), 0.0, rgb(0x16171A), 0.5, rgb(0x050506), 1.0, nil]
+            drawInBezierPath:body relativeCenterPosition:NSMakePoint(-0.3, 0.45)];
+        body.lineWidth = 1; [rgb(0x000000, 0.9) setStroke]; [body stroke];
+        // karéjok fénye (bal-fent világosabb)
+        for (int k = 0; k < kLobes; ++k) {
+            const CGFloat la = a + 2 * M_PI * k / kLobes;
+            const CGFloat lit = 0.5 + 0.5 * std::cos(la + deg(45));
+            line(polar(c, la, r * 0.80), polar(c, la, r * 0.97), std::max(1.0, r * 0.05), rgb(0xFFFFFF, 0.04 + 0.12 * lit));
+        }
+        // kúpos váll + fényes kupola
+        NSBezierPath* shoulder = [NSBezierPath bezierPathWithOvalInRect:circleRect(c, r * 0.76)];
+        [[[NSGradient alloc] initWithStartingColor:rgb(0x2A2B2F) endingColor:rgb(0x060607)] drawInBezierPath:shoulder angle:-90];
+        NSBezierPath* dome = [NSBezierPath bezierPathWithOvalInRect:circleRect(c, r * 0.6)];
+        [[[NSGradient alloc] initWithColorsAndLocations:rgb(0x4A4B52), 0.0, rgb(0x1B1C1F), 0.55, rgb(0x0A0A0B), 1.0, nil]
+            drawInBezierPath:dome relativeCenterPosition:NSMakePoint(-0.3, 0.45)];
+        CGContextSaveGState(cg());
+        [dome addClip];
+        [[[NSGradient alloc] initWithStartingColor:rgb(0xFFFFFF, 0.28) endingColor:rgb(0xFFFFFF, 0.0)]
+            drawInBezierPath:[NSBezierPath bezierPathWithOvalInRect:circleRect(polar(c, deg(-40), r * 0.3), r * 0.34)] relativeCenterPosition:NSZeroPoint];
+        CGContextRestoreGState(cg());
+        [rgb(0xFFFFFF, 0.10) setStroke]; dome.lineWidth = 0.8; [dome stroke];
+        // fehér háromszög-jelölő a vállon
+        NSBezierPath* tri = [NSBezierPath bezierPath];
+        [tri moveToPoint:polar(c, a, r * 0.86)];
+        [tri lineToPoint:polar(c, a - 0.13, r * 0.66)];
+        [tri lineToPoint:polar(c, a + 0.13, r * 0.66)];
+        [tri closePath];
+        [rgb(0xF4F2EC) setFill]; [tri fill];
         return;
     }
     if (t.knob == Machined) {   // esztergált sötét fém: finom recézés, "pörgetett" sapka csokornyakkendő-csillanással, arany mutató
@@ -343,17 +392,17 @@ inline void drawLedButton(CGPoint c, bool on, NSString* label, CGFloat s) {
 }
 
 /// Gombsor (egy választható), vízszintes vagy függőleges. lightAll: az utolsó ("ALL") mindet felgyújtja
-inline CGPoint radioPos(CGPoint c, int i, int n, bool vertical, CGFloat s) {
-    const CGFloat gap = (vertical ? 24 : 34) * s;
+inline CGPoint radioPos(CGPoint c, int i, int n, bool vertical, CGFloat s, CGFloat widen = 1) {
+    const CGFloat gap = (vertical ? 24 : 34 * widen) * s;
     const CGFloat o = (i - (n - 1) / 2.0) * gap;
     return vertical ? CGPointMake(c.x, c.y + o) : CGPointMake(c.x + o, c.y);
 }
-inline void drawRadioRow(CGPoint c, int index, NSArray<NSString*>* labels, bool lightAll, bool vertical, CGFloat s) {
+inline void drawRadioRow(CGPoint c, int index, NSArray<NSString*>* labels, bool lightAll, bool vertical, CGFloat s, CGFloat widen = 1) {
     const int n = int(labels.count);
-    const CGFloat w = 28 * s, h = 18 * s;
+    const CGFloat w = 28 * s * widen, h = 18 * s;
     const int L = theme().led;
     for (int i = 0; i < n; ++i) {
-        CGPoint bc = radioPos(c, i, n, vertical, s);
+        CGPoint bc = radioPos(c, i, n, vertical, s, widen);
         const bool lit = i == index || (lightAll && index == n - 1);
         NSBezierPath* body = [NSBezierPath bezierPathWithRoundedRect:NSMakeRect(bc.x - w / 2, bc.y - h / 2, w, h) xRadius:2.5 * s yRadius:2.5 * s];
         shadowed(lit ? 1 : 2.5, lit ? 2 : 3.5, 0.9, ^{
@@ -675,6 +724,8 @@ inline NSArray<NSString*>* ticks(int from, int step, int n) {
 
 // MARK: - Vezérlők és vezérlő-logika
 
+class PanelController;
+
 struct Control {
     enum Kind { Knob, SteppedKnob, Toggle, LedButton, Selector, RadioRow, TrimPot } kind;
     AudioUnitParameterID pid;
@@ -694,6 +745,11 @@ struct Control {
     CGFloat labelDy = 0;                 // a felirat távolsága a középponttól (0 = automatikus)
     bool drawer = false;                 // az EKI fiókban van (csak nyitott fióknál látszik)
     CGFloat labelSize = 0;               // feliratméret (0 = automatikus)
+    int knobStyle = -1;                  // saját gombforma (KnobStyle; -1 = a téma szerinti)
+    CGFloat rowWiden = 1;                // RadioRow: a gombok szélesség-szorzója (hosszabb feliratokhoz)
+    bool upIsOn = false;                 // Toggle: a felső állás jelenti a bekapcsolt (1) értéket (mint a vason)
+    int ink = -1;                        // saját feliratszín (skálaszámok, név, érték; pl. sötét szöveg világos mezőn), -1 = téma
+    std::function<bool(const PanelController&)> visibleIf = nullptr;   // feltételes megjelenés (pl. M/S: a MID vagy a SIDE készlet gombjai)
     int lockedBy = -1;                   // zárolva (0-n, halványítva), amíg ez a kapcsoló-paraméter be van kapcsolva (AUTO GAIN)
 
     CGFloat size() const { return r > 0 ? r : 1; }
@@ -744,6 +800,8 @@ public:
     NSBitmapImageRep* staticCache = nil;
     CGFloat cacheScale = 0, cacheBacking = 0; bool cacheDrawer = false;
     int updateGen = -1;                                             // frissítés-jelzés: utoljára rajzolt állapot
+    // POWER LED: a plugin dolgozik-e (a DAW nem kerülte meg / nem állította le) — kEKIProperty_Activity életjelből
+    UInt32 lastRenderCount = 0; CFAbsoluteTime lastRenderTime = 0; bool processing = true;
 
     PanelController(AudioUnit unit, CGSize sz, const char* key) : au(unit), size(sz), prefsKey(key) {
         registerBundleFonts();
@@ -829,6 +887,12 @@ public:
     void lock(AudioUnitParameterID target, AudioUnitParameterID sw) {
         for (auto& c : controls) if (c.pid == target) c.lockedBy = int(sw);
     }
+    /// paraméter állítása egy egyedi kattintható területről (pl. csőablak): a hozzá tartozó (akár rejtett) vezérlőn át,
+    /// automáció-gesztussal együtt
+    void setParamFromUI(AudioUnitParameterID pid, float v) {
+        for (auto& c : controls) if (c.pid == pid) { gesture(c, true); set(c, v); gesture(c, false); return; }
+    }
+    bool shown(const Control& c) const { return !c.visibleIf || c.visibleIf(*this); }
     bool isLocked(const Control& c) const { return c.lockedBy >= 0 && get(AudioUnitParameterID(c.lockedBy)) >= 0.5f; }
 
     float get(AudioUnitParameterID pid) const {
@@ -843,6 +907,16 @@ public:
     bool poll() {
         bool changed = false;
         if (const int g = update::generation(); g != updateGen) { updateGen = g; changed = true; }
+        {   // életjel: ha a feldolgozás leáll (a DAW kikapcsolta a plugint) vagy bypass, a POWER LED kialszik
+            UInt32 act[2] = {0, 0}; UInt32 sz = sizeof(act);
+            bool now = true;
+            if (au && AudioUnitGetProperty(au, 64000 /* kEKIProperty_Activity */, kAudioUnitScope_Global, 0, act, &sz) == noErr) {
+                const CFAbsoluteTime t = CFAbsoluteTimeGetCurrent();
+                if (act[0] != lastRenderCount) { lastRenderCount = act[0]; lastRenderTime = t; }
+                now = act[1] == 0 && t - lastRenderTime < 0.6;
+            }
+            if (now != processing) { processing = now; changed = true; }
+        }
         for (auto& c : controls) {
             AudioUnitParameterValue v = 0;
             if (AudioUnitGetParameter(au, c.pid, kAudioUnitScope_Global, 0, &v) == noErr && v != c.value) { c.value = v; changed = true; }
@@ -863,7 +937,16 @@ public:
                            fraction:1 respectFlipped:YES hints:nil];
         }
         if (drawFace) drawFace(*this);
-        for (auto& c : controls) if (!c.drawer || drawerOpen) { drawControl(c); if (isLocked(c)) drawLockShade(c); }
+        for (auto& c : controls) if ((!c.drawer || drawerOpen) && shown(c)) {
+            if (c.ink >= 0 || c.knobStyle >= 0) {            // saját feliratszín / gombforma: a téma erre a vezérlőre átállítva
+                const Theme saved = theme();
+                if (c.ink >= 0) theme().silk = theme().tick = theme().accent = c.ink;
+                if (c.knobStyle >= 0) theme().knob = KnobStyle(c.knobStyle);
+                drawControl(c);
+                theme() = saved;
+            } else drawControl(c);
+            if (isLocked(c)) drawLockShade(c);
+        }
         if (drawOverlay) drawOverlay(*this);
         drawGrip();
         CGContextRestoreGState(cg());
@@ -915,7 +998,7 @@ public:
                 const int n = int(c.options.count);
                 int best = 0; CGFloat bd = 1e9;
                 for (int i = 0; i < n; ++i) {
-                    CGPoint q = radioPos(c.c, i, n, c.vertical, c.size());
+                    CGPoint q = radioPos(c.c, i, n, c.vertical, c.size(), c.rowWiden);
                     CGFloat d = std::hypot(p.x - q.x, p.y - q.y);
                     if (d < bd) { bd = d; best = i; }
                 }
@@ -1058,7 +1141,7 @@ private:
                 if (c.format) text(c.format(c.value), CGPointMake(c.c.x, c.c.y + (c.labelDy > 0 ? c.labelDy : c.r + 13) + 9), 7, accent(), false, 0.3);
                 break;
             case Control::Toggle:
-                drawToggle(c.c, idx != 0, c.options[0], c.options[1], c.size());
+                drawToggle(c.c, c.upIsOn ? idx == 0 : idx != 0, c.options[0], c.options[1], c.size());
                 break;
             case Control::LedButton:
                 drawLedButton(c.c, idx != 0, c.label, c.size());
@@ -1068,9 +1151,9 @@ private:
                 text(c.label, CGPointMake(c.c.x, c.c.y + (c.labelDy > 0 ? c.labelDy : c.r + 12)), 8.5, silk(), true, 0.8);
                 break;
             case Control::RadioRow: {
-                drawRadioRow(c.c, idx, c.options, [c.options.lastObject isEqualToString:@"ALL"], c.vertical, c.size());
+                drawRadioRow(c.c, idx, c.options, [c.options.lastObject isEqualToString:@"ALL"], c.vertical, c.size(), c.rowWiden);
                 const int n = int(c.options.count);
-                CGPoint last = radioPos(c.c, n - 1, n, c.vertical, c.size());
+                CGPoint last = radioPos(c.c, n - 1, n, c.vertical, c.size(), c.rowWiden);
                 CGPoint lp = c.vertical ? CGPointMake(c.c.x, last.y + 18 * c.size()) : CGPointMake(c.c.x, c.c.y + 19 * c.size());
                 if (c.labelDy > 0) lp = CGPointMake(c.c.x, c.c.y + c.labelDy);
                 text(c.label, lp, 8.5, silk(), true, 0.8);
@@ -1083,6 +1166,7 @@ private:
         for (int i = 0; i < int(controls.size()); ++i) {
             const Control& c = controls[i];
             if (c.drawer && !drawerOpen) continue;
+            if (!shown(c)) continue;
             if (isLocked(c)) continue;                        // zárolt gomb: nem tekerhető
             CGFloat dx = p.x - c.c.x, dy = p.y - c.c.y;
             const CGFloat s = c.size();
@@ -1100,8 +1184,8 @@ private:
                 case Control::RadioRow: {
                     const int n = int(c.options.count);
                     for (int k = 0; k < n; ++k) {
-                        CGPoint q = radioPos(c.c, k, n, c.vertical, s);
-                        if (std::fabs(p.x - q.x) <= 15 * s && std::fabs(p.y - q.y) <= 11 * s) return i;
+                        CGPoint q = radioPos(c.c, k, n, c.vertical, s, c.rowWiden);
+                        if (std::fabs(p.x - q.x) <= 15 * s * c.rowWiden && std::fabs(p.y - q.y) <= 11 * s) return i;
                     }
                     break;
                 }

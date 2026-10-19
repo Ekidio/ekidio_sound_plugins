@@ -15,6 +15,9 @@
 #include "EKIDSP.h"
 
 // EKI_UI_FACTORY: a build.sh adja meg, ha a pluginnak van saját (Cocoa) panelje
+/// saját AU-tulajdonság (a panelnek): { UInt32 renderszámláló, UInt32 bypass } — a POWER LED ebből tudja, hogy a plugin dolgozik-e
+constexpr AudioUnitPropertyID kEKIProperty_Activity = 64000;
+
 #define EKI_STR2(x) #x
 #define EKI_STR(x) EKI_STR2(x)
 
@@ -175,6 +178,11 @@ public:
                 *(OSStatus*)outData = noErr; return noErr;
             case kAudioUnitProperty_BypassEffect:
                 *(UInt32*)outData = mBypass.load() ? 1 : 0; return noErr;
+            case kEKIProperty_Activity: {
+                auto o = (UInt32*)outData;
+                o[0] = mRenderCount.load(std::memory_order_relaxed); o[1] = mBypass.load() ? 1 : 0;
+                return noErr;
+            }
             case kAudioUnitProperty_InPlaceProcessing:
                 *(UInt32*)outData = mInPlace; return noErr;
             case kAudioUnitProperty_ShouldAllocateBuffer:
@@ -402,6 +410,7 @@ public:
                         if (outPtr[c] != inPtr[std::min(c, inCh - 1)]) memmove(outPtr[c], inPtr[std::min(c, inCh - 1)], frames * sizeof(float));
                 } else {
                     process(inPtr, outPtr, outCh, frames);
+                    mRenderCount.fetch_add(1, std::memory_order_relaxed);   // életjel a panelnek
                 }
             } else {
                 for (UInt32 c = 0; c < outCh; ++c) bindOutput(c, &mOutBuf[size_t(c) * mMaxFrames]);
@@ -443,6 +452,7 @@ private:
     bool mIsInstrument = false;
     bool mInitialized = false;
     std::atomic<bool> mBypass{false};
+    std::atomic<uint32_t> mRenderCount{0};
     UInt32 mInPlace = 1, mOffline = 0;
     Float64 mPresentationLatency = 0;
     HostCallbackInfo mHostCallbacks{};
@@ -537,6 +547,8 @@ private:
                 size = sizeof(UInt32); writable = true; return global();
             case kAudioUnitProperty_LastRenderError:
                 size = sizeof(OSStatus); return global();
+            case kEKIProperty_Activity:
+                size = 2 * sizeof(UInt32); return global();
             case kAudioUnitProperty_BypassEffect:
                 if (mIsInstrument) return kAudioUnitErr_InvalidProperty;
                 size = sizeof(UInt32); writable = true; return global();

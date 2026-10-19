@@ -1,7 +1,7 @@
 #!/bin/zsh
 # EKIDIO SOUND — telepítő: minden plugin buildje (ad-hoc aláírva) → .pkg (/Library/Audio/Plug-Ins/Components) → DMG
 #
-#   Scripts/make-installer.sh            # build/EKIDIO-SOUND-Compressors-<verzió>.pkg és .dmg
+#   Scripts/make-installer.sh            # build/EKIDIO-SOUND-Plugins-<verzió>.pkg és .dmg
 #
 # A .pkg a rendszerszintű Components mappába telepít, utána frissíti az AU-listát (AudioComponentRegistrar).
 # A pkg-vel telepített pluginok nem kerülnek "karanténba", így a DAW gond nélkül betölti őket.
@@ -9,8 +9,8 @@ set -euo pipefail
 
 ROOT=${0:A:h:h}
 source "$ROOT/Scripts/eki.env"
-VERSION="1.0.2"
-NAME="EKIDIO-SOUND-Compressors-$VERSION"
+VERSION="1.1.0"
+NAME="EKIDIO-SOUND-Plugins-$VERSION"
 OUT="$ROOT/build"
 STAGE="$OUT/pkg-stage"
 SCRIPTS="$OUT/pkg-scripts"
@@ -67,11 +67,12 @@ rm -f "$OUT/components.plist"
 # telepítő szövegek (angol, a csomagban megjelenő üdvözlés és licenc)
 cat > "$RES/welcome.html" <<EOF
 <html><head><meta charset="utf-8"></head><body style="font-family:-apple-system,Helvetica;font-size:13px">
-<h2>EKIDIO SOUND &mdash; Compressor Collection $VERSION</h2>
-<p>Eight analog-inspired compressors as Audio Unit (AU) plugins for macOS:</p>
-<p><b>OPTEKI</b> optical leveler &middot; <b>FETEKI</b> FET peak limiter &middot; <b>VARIEKI</b> variable-mu dynamics &middot;
+<h2>EKIDIO SOUND &mdash; Plugins $VERSION</h2>
+<p>Ten analog-inspired Audio Unit (AU) plugins for macOS.</p>
+<p>Compressors: <b>OPTEKI</b> optical leveler &middot; <b>FETEKI</b> FET peak limiter &middot; <b>VARIEKI</b> variable-mu dynamics &middot;
 <b>BUSEKI</b> stereo bus compressor &middot; <b>APEKI</b> punch bus compressor &middot; <b>DBEKI</b> RMS compressor/limiter &middot;
 <b>TUBEKI</b> opto tube compressor &middot; <b>FAIREKI</b> variable-mu limiter.</p>
+<p>EQ &amp; color: <b>DYNEKI-6</b> six-band character EQ + dynamics &middot; <b>SATEKI</b> soft tube air enhancer.</p>
 <p>They are installed to <code>/Library/Audio/Plug-Ins/Components</code>. Restart your DAW afterwards.</p>
 </body></html>
 EOF
@@ -90,7 +91,7 @@ EOF
 cat > "$OUT/distribution.xml" <<EOF
 <?xml version="1.0" encoding="utf-8"?>
 <installer-gui-script minSpecVersion="2">
-    <title>EKIDIO SOUND Compressors $VERSION</title>
+    <title>EKIDIO SOUND Plugins $VERSION</title>
     <welcome file="welcome.html"/>
     <license file="license.html"/>
     <options customize="never" require-scripts="false" hostArchitectures="arm64,x86_64"/>
@@ -111,11 +112,11 @@ echo "==> DMG"
 DSTAGE="$OUT/dmg-stage"
 rm -rf "$DSTAGE" "$OUT/$NAME.dmg"
 mkdir -p "$DSTAGE"
-cp "$OUT/$NAME.pkg" "$DSTAGE/Install EKIDIO SOUND Compressors.pkg"
+cp "$OUT/$NAME.pkg" "$DSTAGE/Install EKIDIO SOUND Plugins.pkg"
 cat > "$DSTAGE/Read Me.txt" <<EOF
-EKIDIO SOUND — Compressor Collection $VERSION
+EKIDIO SOUND — Plugins $VERSION
 
-1. Double-click "Install EKIDIO SOUND Compressors.pkg".
+1. Double-click "Install EKIDIO SOUND Plugins.pkg".
    If macOS says it cannot verify the developer: click Done, then open
    System Settings → Privacy & Security and click "Open Anyway".
 2. Restart your DAW (Logic Pro: Plug-in Manager → Reset & Rescan if needed).
@@ -125,13 +126,19 @@ Uninstall: delete the *EKI.component files from /Library/Audio/Plug-Ins/Componen
 
 https://ekidio.github.io/ekidio_sound_plugins/
 EOF
-hdiutil create -srcfolder "$DSTAGE" -volname "EKIDIO SOUND Compressors" -fs HFS+ -format UDZO -imagekey zlib-level=9 -ov "$OUT/$NAME.dmg" -quiet
+hdiutil create -srcfolder "$DSTAGE" -volname "EKIDIO SOUND Plugins" -fs HFS+ -format UDZO -imagekey zlib-level=9 -ov "$OUT/$NAME.dmg" -quiet
 rm -rf "$DSTAGE" "$STAGE" "$SCRIPTS" "$RES" "$OUT/distribution.xml"
 
 # a pluginok frissítés-figyelője ezt olvassa (a GitHub Pages-ről): commit + push a kiadással együtt
-printf '{\n  "version": "%s",\n  "url": "https://ekidio.github.io/ekidio_sound_plugins/"\n}\n' "$VERSION" > "$ROOT/docs/version.json"
+# pluginonkénti verziók (Plugins/*/plugin.env VERSION) — a pluginok a saját bejegyzésüket nézik
+PLIST=""
+for p in "$ROOT"/Plugins/*(/); do
+    PV=$(grep '^VERSION=' "$p/plugin.env" | cut -d'"' -f2)
+    PLIST+="${PLIST:+,\n}    \"${p:t}\": \"$PV\""
+done
+printf '{\n  "version": "%s",\n  "url": "https://ekidio.github.io/ekidio_sound_plugins/",\n  "plugins": {\n'"$PLIST"'\n  }\n}\n' "$VERSION" > "$ROOT/docs/version.json"
 # a weboldal letöltési linkje az aktuális DMG-re mutasson
-sed -i '' -E "s/EKIDIO-SOUND-Compressors-[0-9.]+[0-9]\.dmg/$NAME.dmg/g" "$ROOT/docs/index.html" "$ROOT/docs/hu/index.html"
+sed -i '' -E "s/EKIDIO-SOUND-(Compressors|Plugins)-[0-9.]+[0-9]\.dmg/$NAME.dmg/g" "$ROOT/docs/index.html" "$ROOT/docs/hu/index.html"
 
 echo "Kész:"
 ls -lh "$OUT/$NAME.pkg" "$OUT/$NAME.dmg" | awk '{print "  " $5 "  " $9}'

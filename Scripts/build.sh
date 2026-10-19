@@ -47,7 +47,7 @@ build_one() {
   local MM=("$PDIR"/*.mm(N))
   if (( ${#MM} )); then
     SOURCES+=("${MM[@]}")
-    UIFLAGS=(-fobjc-arc -DEKI_UI_FACTORY=${NAME}_ViewFactory_$(date +%Y%m%d%H%M%S) -DEKI_VERSION=\"$VERSION\" -framework AppKit)
+    UIFLAGS=(-fobjc-arc -DEKI_UI_FACTORY=${NAME}_ViewFactory_$(date +%Y%m%d%H%M%S) -DEKI_VERSION=\"$VERSION\" -DEKI_PLUGIN_NAME=\"$NAME\" -framework AppKit)
   fi
 
   clang++ -std=c++20 -O3 -fno-math-errno -arch arm64 -arch x86_64 -mmacosx-version-min=$MIN_MACOS \

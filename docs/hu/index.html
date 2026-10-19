@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>EKIDIO SOUND – Kompresszorcsalád</title>
-<meta name="description" content="Nyolc ingyenes, analóg ihletésű kompresszor plugin (Audio Unit) macOS-re az EKIDIO SOUND-tól: optikai, FET, vari-mu, VCA busz, punch busz, RMS, opto-csöves és vintage vari-mu limiter.">
+<title>EKIDIO SOUND – Ingyenes Audio Unit pluginok</title>
+<meta name="description" content="Tíz ingyenes, analóg ihletésű plugin (Audio Unit) macOS-re az EKIDIO SOUND-tól: nyolc kompresszor (optikai, FET, vari-mu, VCA busz, punch busz, RMS, opto-csöves, vari-mu limiter), a DYNEKI-6 karakteres EQ és a SATEKI lágy, csöves levegő-emelő.">
 <link rel="alternate" hreflang="en" href="https://ekidio.github.io/ekidio_sound_plugins/">
 <link rel="alternate" hreflang="hu" href="https://ekidio.github.io/ekidio_sound_plugins/hu/">
-<meta property="og:title" content="EKIDIO SOUND – Kompresszorcsalád">
-<meta property="og:description" content="Nyolc ingyenes, analóg ihletésű kompresszor plugin macOS-re (AU).">
-<meta property="og:image" content="https://ekidio.github.io/ekidio_sound_plugins/assets/banner.jpg">
+<meta property="og:title" content="EKIDIO SOUND – Ingyenes Audio Unit pluginok">
+<meta property="og:description" content="Tíz ingyenes, analóg ihletésű plugin macOS-re (AU): nyolc kompresszor, egy karakteres EQ és egy lágy, csöves levegő-emelő.">
+<meta property="og:image" content="https://ekidio.github.io/ekidio_sound_plugins/assets/montage.jpg">
 <style>
   :root{ --bg:#0b0b0d; --panel:#16171c; --line:rgba(255,255,255,.08); --text:#dcdee8; --dim:#8a8d9c; --amber:#f2a33a; --cream:#ede3cf; }
   *{box-sizing:border-box}
@@ -54,15 +54,14 @@
 
 <header class="hero">
   <div class="wrap">
-    <img class="banner" src="../assets/banner.jpg" alt="EKIDIO SOUND kompresszorcsalád">
-    <h1 class="sr">Kompresszorcsalád</h1>
-    <p class="tag">Nyolc analóg ihletésű kompresszor macOS-re — mindegyiknek saját karaktere van, az előlapja igazi hardvert idéz, és a lényeges gombok elöl vannak. <b>Ingyenes.</b></p>
+    <h1>EKIDIO SOUND pluginok</h1>
+    <p class="tag">Tíz analóg ihletésű plugin macOS-re — nyolc kompresszor, egy karakteres EQ és egy lágy, csöves levegő-emelő. Mindegyiknek saját karaktere van, az előlapja igazi hardvert idéz, és a lényeges gombok elöl vannak. <b>Ingyenes.</b></p>
     <div class="cta">
-      <a class="btn primary" href="https://github.com/Ekidio/ekidio_sound_plugins/releases/latest/download/EKIDIO-SOUND-Compressors-1.0.2.dmg">Letöltés macOS-re</a>
+      <a class="btn primary" href="https://github.com/Ekidio/ekidio_sound_plugins/releases/latest/download/EKIDIO-SOUND-Plugins-1.1.0.dmg">Letöltés macOS-re</a>
       <a class="btn ghost" href="#telepites">Telepítés</a>
     </div>
     <div class="req"><b style="color:var(--amber)">Csak Audio Unit (AU)</b> · macOS 11 vagy újabb · Apple Silicon és Intel · Logic Pro, GarageBand, Ableton Live, Reaper és más AU-hostok</div>
-    <div class="shot"><img src="../assets/montage.jpg" alt="Mind a nyolc EKIDIO SOUND kompresszor"></div>
+    <div class="shot"><img src="../assets/montage.jpg" alt="Mind a tíz EKIDIO SOUND plugin"></div>
   </div>
 </header>
 
@@ -83,7 +82,9 @@
 
 <section>
   <div class="wrap">
-    <h2>A nyolc tag</h2>
+    <img class="banner" src="../assets/banner.jpg" alt="EKIDIO SOUND kompresszorcsalád">
+    <h2>Kompresszorcsalád</h2>
+    <p class="lead">Nyolc kompresszor, a legselymesebb optikai szintszabályzótól a legvadabb FET-es zúzásig.</p>
     <div>
       <div class="plugin"><img src="../assets/opteki.png" alt="OPTEKI"><div><h3>OPTEKI</h3><div class="kind">Optikai szintszabályzó</div>
         <p>Selymes optikai cella kétlépcsős, programfüggő elengedéssel: minél tovább dolgozik, annál lassabban enged el. Csak GAIN és PEAK REDUCTION, plusz Compress/Limit.</p>
@@ -113,12 +114,27 @@
   </div>
 </section>
 
+<section>
+  <div class="wrap">
+    <h2>EQ és szín</h2>
+    <p class="lead">Hangszínformálás és fényes teteje ugyanabban a családi stílusban — és ugyanazzal az AUTO GAIN-nel.</p>
+    <div>
+      <div class="plugin"><img src="../assets/dyneki.png" alt="DYNEKI-6"><div><h3>DYNEKI-6</h3><div class="kind">Hatsávos karakteres EQ + dinamika</div>
+        <p>HPF, négy zenei sáv és egy arany AIR sáv, két hangkarakterrel: BRIT (selymes, zenei) és PUNCH (feszes, előre jövő). M/S módban külön Mid és Side EQ, a SAT melegít, az egygombos COMP összefog.</p>
+        <p class="use">Ének, dob, basszus, buszok, mastering.</p></div></div>
+      <div class="plugin"><img src="../assets/sateki.png" alt="SATEKI"><div><h3>SATEKI</h3><div class="kind">Lágy, csöves levegő-emelő</div>
+        <p>Három csőfokozat, mindegyik csak a saját frekvenciája fölött dolgozik — LOW, MID és HIGH, 5 és 16 kHz között hangolva. A halk magas részleteket sokat, a hangos csúcsokat alig emeli, a klasszikus stúdiós zajcsökkentő „levegő-trükk” szellemében: selymes fény, ami sosem szúr. A MIX-szel párhuzamosan keverhető.</p>
+        <p class="use">Ének, overhead, akusztikus hangszerek, mixbusz.</p></div></div>
+    </div>
+  </div>
+</section>
+
 <section id="telepites">
   <div class="wrap">
     <h2>Telepítés</h2>
     <ol>
       <li>Töltsd le a DMG-t, és nyisd meg.</li>
-      <li>Kattints duplán az <b>Install EKIDIO SOUND Compressors.pkg</b> fájlra. Ha a macOS szerint nem tudja ellenőrizni a fejlesztőt: kattints a <b>Kész</b> gombra, majd <b>Rendszerbeállítások → Adatvédelem és biztonság</b>, és ott <b>Megnyitás mindenképp</b>.</li>
+      <li>Kattints duplán az <b>Install EKIDIO SOUND Plugins.pkg</b> fájlra. Ha a macOS szerint nem tudja ellenőrizni a fejlesztőt: kattints a <b>Kész</b> gombra, majd <b>Rendszerbeállítások → Adatvédelem és biztonság</b>, és ott <b>Megnyitás mindenképp</b>.</li>
       <li>Indítsd újra a DAW-ot. Logic Próban, ha egy plugin nem jelenik meg: <b>Plug-in Manager → Reset &amp; Rescan Selection</b>.</li>
       <li>A pluginok az <b>EKIDIO SOUND</b> gyártó alatt jelennek meg.</li>
     </ol>
