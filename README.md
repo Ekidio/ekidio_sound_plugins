@@ -1,11 +1,11 @@
 # EKIDIO SOUND — Plugins
 
-Ten free, analog-inspired plugins for macOS (Audio Unit / AUv2): eight compressors, a character EQ and a soft tube air enhancer.
+Eleven free, analog-inspired plugins for macOS (Audio Unit / AUv2): eight compressors, a character EQ, a soft tube air enhancer and an analog tape machine.
 
 **Website:** https://ekidio.github.io/ekidio_sound_plugins/ · [Magyar](https://ekidio.github.io/ekidio_sound_plugins/hu/)
 **Download:** [latest release (DMG installer)](https://github.com/Ekidio/ekidio_sound_plugins/releases/latest)
 
-![EKIDIO SOUND plugins](docs/assets/montage.jpg)
+![New plugin: TAPEKI](docs/assets/new-plugin.jpg)
 
 | Plugin | Character |
 |---|---|
@@ -19,6 +19,7 @@ Ten free, analog-inspired plugins for macOS (Audio Unit / AUv2): eight compresso
 | **FAIREKI** | variable-mu limiter with LAT/VERT |
 | **DYNEKI-6** | six-band character EQ (BRIT / PUNCH), M/S, SAT and one-knob COMP |
 | **SATEKI** | soft tube air enhancer (three tube stages, 5–16 kHz) |
+| **TAPEKI** | analog tape machine (STUDIO / MASTER / CASSETTE, hysteresis tape model, spinning reels) |
 
 Requirements: macOS 11+, Apple Silicon or Intel, an AU host (Logic Pro, GarageBand, Ableton Live, Reaper…). **Audio Unit (AU) only** — no VST3 version is planned.
 

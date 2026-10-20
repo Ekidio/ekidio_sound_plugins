@@ -9,7 +9,7 @@ set -euo pipefail
 
 ROOT=${0:A:h:h}
 source "$ROOT/Scripts/eki.env"
-VERSION="1.1.0"
+VERSION="1.2.0"
 NAME="EKIDIO-SOUND-Plugins-$VERSION"
 OUT="$ROOT/build"
 STAGE="$OUT/pkg-stage"
@@ -68,11 +68,11 @@ rm -f "$OUT/components.plist"
 cat > "$RES/welcome.html" <<EOF
 <html><head><meta charset="utf-8"></head><body style="font-family:-apple-system,Helvetica;font-size:13px">
 <h2>EKIDIO SOUND &mdash; Plugins $VERSION</h2>
-<p>Ten analog-inspired Audio Unit (AU) plugins for macOS.</p>
+<p>Eleven analog-inspired Audio Unit (AU) plugins for macOS.</p>
 <p>Compressors: <b>OPTEKI</b> optical leveler &middot; <b>FETEKI</b> FET peak limiter &middot; <b>VARIEKI</b> variable-mu dynamics &middot;
 <b>BUSEKI</b> stereo bus compressor &middot; <b>APEKI</b> punch bus compressor &middot; <b>DBEKI</b> RMS compressor/limiter &middot;
 <b>TUBEKI</b> opto tube compressor &middot; <b>FAIREKI</b> variable-mu limiter.</p>
-<p>EQ &amp; color: <b>DYNEKI-6</b> six-band character EQ + dynamics &middot; <b>SATEKI</b> soft tube air enhancer.</p>
+<p>EQ, color &amp; tape: <b>DYNEKI-6</b> six-band character EQ + dynamics &middot; <b>SATEKI</b> soft tube air enhancer &middot; <b>TAPEKI</b> analog tape machine.</p>
 <p>They are installed to <code>/Library/Audio/Plug-Ins/Components</code>. Restart your DAW afterwards.</p>
 </body></html>
 EOF

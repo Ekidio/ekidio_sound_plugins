@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>EKIDIO SOUND – Free Audio Unit Plugins</title>
-<meta name="description" content="Ten free analog-inspired plugins (Audio Unit) for macOS by EKIDIO SOUND: eight compressors (optical, FET, variable-mu, VCA bus, punch bus, RMS, opto-tube, vari-mu limiter), the DYNEKI-6 character EQ and the SATEKI soft tube air enhancer.">
+<meta name="description" content="Eleven free analog-inspired plugins (Audio Unit) for macOS by EKIDIO SOUND: eight compressors (optical, FET, variable-mu, VCA bus, punch bus, RMS, opto-tube, vari-mu limiter), the DYNEKI-6 character EQ, the SATEKI soft tube air enhancer and the TAPEKI analog tape machine.">
 <link rel="alternate" hreflang="en" href="https://ekidio.github.io/ekidio_sound_plugins/">
 <link rel="alternate" hreflang="hu" href="https://ekidio.github.io/ekidio_sound_plugins/hu/">
 <meta property="og:title" content="EKIDIO SOUND – Free Audio Unit Plugins">
-<meta property="og:description" content="Ten free analog-inspired plugins for macOS (AU): eight compressors, a character EQ and a soft tube air enhancer.">
-<meta property="og:image" content="https://ekidio.github.io/ekidio_sound_plugins/assets/montage.jpg">
+<meta property="og:description" content="Eleven free analog-inspired plugins for macOS (AU): eight compressors, a character EQ, a soft tube air enhancer and an analog tape machine. New: TAPEKI.">
+<meta property="og:image" content="https://ekidio.github.io/ekidio_sound_plugins/assets/new-plugin.jpg">
 <style>
   :root{ --bg:#0b0b0d; --panel:#16171c; --line:rgba(255,255,255,.08); --text:#dcdee8; --dim:#8a8d9c; --amber:#f2a33a; --cream:#ede3cf; }
   *{box-sizing:border-box}
@@ -55,13 +55,13 @@
 <header class="hero">
   <div class="wrap">
     <h1>EKIDIO SOUND Plugins</h1>
-    <p class="tag">Ten analog-inspired plugins for macOS — eight compressors, a character EQ and a soft tube air enhancer. Each has its own character, a faceplate that feels like real gear, and the essential controls right up front. <b>Free.</b></p>
+    <p class="tag">Eleven analog-inspired plugins for macOS — eight compressors, a character EQ, a soft tube air enhancer and an analog tape machine. Each has its own character, a faceplate that feels like real gear, and the essential controls right up front. <b>Free.</b></p>
     <div class="cta">
-      <a class="btn primary" href="https://github.com/Ekidio/ekidio_sound_plugins/releases/latest/download/EKIDIO-SOUND-Plugins-1.1.0.dmg">Download for macOS</a>
+      <a class="btn primary" href="https://github.com/Ekidio/ekidio_sound_plugins/releases/latest/download/EKIDIO-SOUND-Plugins-1.2.0.dmg">Download for macOS</a>
       <a class="btn ghost" href="#install">How to install</a>
     </div>
     <div class="req"><b style="color:var(--amber)">Audio Unit (AU) only</b> · macOS 11 or newer · Apple Silicon &amp; Intel · Logic Pro, GarageBand, Ableton Live, Reaper and other AU hosts</div>
-    <div class="shot"><img src="assets/montage.jpg" alt="All ten EKIDIO SOUND plugins"></div>
+    <a class="shot" href="#tapeki" style="display:block"><img src="assets/new-plugin.jpg" alt="New plugin: TAPEKI analog tape machine"></a>
   </div>
 </header>
 
@@ -116,8 +116,8 @@
 
 <section>
   <div class="wrap">
-    <h2>EQ &amp; Color</h2>
-    <p class="lead">Tone shaping and top-end sheen with the same family feel — and the same AUTO GAIN.</p>
+    <h2>EQ, Color &amp; Tape</h2>
+    <p class="lead">Tone shaping, top-end sheen and tape warmth with the same family feel — and the same AUTO GAIN.</p>
     <div>
       <div class="plugin"><img src="assets/dyneki.png" alt="DYNEKI-6"><div><h3>DYNEKI-6</h3><div class="kind">Six-band character EQ + dynamics</div>
         <p>HPF, four musical bands and a gold AIR band, with two voices: BRIT (smooth and musical) and PUNCH (tight and forward). Switch to M/S for separate Mid and Side EQ, then add warmth with SAT and glue with the one-knob COMP.</p>
@@ -125,6 +125,9 @@
       <div class="plugin"><img src="assets/sateki.png" alt="SATEKI"><div><h3>SATEKI</h3><div class="kind">Soft tube air enhancer</div>
         <p>Three tube stages that each work only above their own frequency — LOW, MID and HIGH, tunable from 5 to 16 kHz. Quiet high-frequency detail is lifted a lot, loud peaks hardly at all, in the spirit of the classic studio noise-reduction "air trick": silky shine that never gets harsh. MIX for a parallel blend.</p>
         <p class="use">Vocals, overheads, acoustic instruments, mix bus.</p></div></div>
+      <div class="plugin" id="tapeki"><img src="assets/tapeki.png" alt="TAPEKI"><div><h3>TAPEKI</h3><div class="kind">Analog tape machine</div>
+        <p>Three machines — STUDIO, MASTER and CASSETTE — each with its own reels, tape and character. A magnetic hysteresis model gives real tape compression and glue, with head bump, speed-dependent top end (7.5 · 15 · 30 ips), calibration, bias and repro EQ. WOW &amp; FLUTTER pulls the tape (with a little dirt at the top), NOISE brings the hiss — and the reels spin while it plays.</p>
+        <p class="use">Drums, bass, mix bus, anything that needs warmth and glue.</p></div></div>
     </div>
   </div>
 </section>

@@ -16,6 +16,7 @@ AUv2 (.component) Audio Unit pluginok macOS-re, közös DSP-alapra és build-scr
 | FAIREKI — vari-mu csöves limiter (LAT/VERT) | aufx | `Frek` / `Ekid` | hang + saját panel kész, auval PASS |
 | DYNEKI-6 — hatsávos karakteres EQ + SAT + DYN, M/S | aufx | `Dyek` / `Ekid` | hang + saját panel kész, auval PASS |
 | SATEKI — lágy, csöves levegő-emelő (3 cső, 5–16 kHz) | aufx | `Satk` / `Ekid` | hang + saját panel kész, auval PASS |
+| TAPEKI — analóg szalagos magnó (STUDIO / MASTER / CASSETTE, hiszterézis) | aufx | `Tpek` / `Ekid` | hang + saját panel kész, auval PASS |
 | (szinti) — analóg mono szinti | aumu | — | tervezve |
 
 ## Build

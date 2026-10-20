@@ -791,6 +791,7 @@ public:
     std::function<void(PanelController&)> drawOverlay;             // a vezérlők fölött
     std::function<void()> onResize;                                // a nézet állítja be
     std::function<void(PanelController&)> drawStatic;              // statikus előlap (bitképbe gyorsítótárazva)
+    std::function<bool(PanelController&)> animate;                 // folyamatos animáció (pl. forgó orsók): true = újra kell rajzolni
     CGFloat drawerHeight = 0;                                       // EKI fiók magassága (0 = nincs fiók)
     bool drawerOpen = false;
     struct HotSpot { CGRect r; std::function<void(PanelController&, CGPoint)> action; };
@@ -925,6 +926,7 @@ public:
             AudioUnitParameterValue v = 0;
             if (AudioUnitGetParameter(au, w.first, kAudioUnitScope_Global, 0, &v) == noErr && std::fabs(v - w.second) > 0.01f) { w.second = v; changed = true; }
         }
+        if (animate && animate(*this)) changed = true;
         return changed;
     }
 

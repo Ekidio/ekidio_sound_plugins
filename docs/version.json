@@ -1,5 +1,5 @@
 {
-  "version": "1.1.0",
+  "version": "1.2.0",
   "url": "https://ekidio.github.io/ekidio_sound_plugins/",
   "plugins": {
     "APEKI": "1.0.2",
@@ -10,6 +10,7 @@
     "FETEKI": "1.0.2",
     "OPTEKI": "1.0.2",
     "SATEKI": "1.0.0",
+    "TAPEKI": "1.0.0",
     "TUBEKI": "1.0.2",
     "VARIEKI": "1.0.2"
   }
