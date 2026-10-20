@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>EKIDIO SOUND – Free Audio Unit Plugins</title>
-<meta name="description" content="Eleven free analog-inspired plugins (Audio Unit) for macOS by EKIDIO SOUND: eight compressors (optical, FET, variable-mu, VCA bus, punch bus, RMS, opto-tube, vari-mu limiter), the DYNEKI-6 character EQ, the SATEKI soft tube air enhancer and the TAPEKI analog tape machine.">
+<meta name="description" content="Twelve free analog-inspired plugins (Audio Unit) for macOS by EKIDIO SOUND: eight compressors (optical, FET, variable-mu, VCA bus, punch bus, RMS, opto-tube, vari-mu limiter), the DYNEKI-6 character EQ, the SATEKI soft tube air enhancer, the TAPEKI analog tape machine and the LIMEKI density &amp; clean limiter.">
 <link rel="alternate" hreflang="en" href="https://ekidio.github.io/ekidio_sound_plugins/">
 <link rel="alternate" hreflang="hu" href="https://ekidio.github.io/ekidio_sound_plugins/hu/">
 <meta property="og:title" content="EKIDIO SOUND – Free Audio Unit Plugins">
-<meta property="og:description" content="Eleven free analog-inspired plugins for macOS (AU): eight compressors, a character EQ, a soft tube air enhancer and an analog tape machine. New: TAPEKI.">
+<meta property="og:description" content="Twelve free analog-inspired plugins for macOS (AU): eight compressors, a character EQ, a soft tube air enhancer, an analog tape machine and a limiter. New: LIMEKI.">
 <meta property="og:image" content="https://ekidio.github.io/ekidio_sound_plugins/assets/new-plugin.jpg">
 <style>
   :root{ --bg:#0b0b0d; --panel:#16171c; --line:rgba(255,255,255,.08); --text:#dcdee8; --dim:#8a8d9c; --amber:#f2a33a; --cream:#ede3cf; }
@@ -55,13 +55,14 @@
 <header class="hero">
   <div class="wrap">
     <h1>EKIDIO SOUND Plugins</h1>
-    <p class="tag">Eleven analog-inspired plugins for macOS — eight compressors, a character EQ, a soft tube air enhancer and an analog tape machine. Each has its own character, a faceplate that feels like real gear, and the essential controls right up front. <b>Free.</b></p>
+    <p class="tag">Twelve analog-inspired plugins for macOS — eight compressors, a character EQ, a soft tube air enhancer, an analog tape machine and a limiter. Each has its own character, a faceplate that feels like real gear, and the essential controls right up front. <b>Free.</b></p>
     <div class="cta">
-      <a class="btn primary" href="https://github.com/Ekidio/ekidio_sound_plugins/releases/latest/download/EKIDIO-SOUND-Plugins-1.2.0.dmg">Download for macOS</a>
+      <a class="btn primary" href="https://github.com/Ekidio/ekidio_sound_plugins/releases/download/v1.2.0/EKIDIO-SOUND-Plugins-1.2.0.dmg">Download the collection</a>
+      <a class="btn primary" href="https://github.com/Ekidio/ekidio_sound_plugins/releases/download/limeki-v1.0.0/EKIDIO-SOUND-LIMEKI-1.0.0.dmg">Download LIMEKI</a>
       <a class="btn ghost" href="#install">How to install</a>
     </div>
     <div class="req"><b style="color:var(--amber)">Audio Unit (AU) only</b> · macOS 11 or newer · Apple Silicon &amp; Intel · Logic Pro, GarageBand, Ableton Live, Reaper and other AU hosts</div>
-    <a class="shot" href="#tapeki" style="display:block"><img src="assets/new-plugin.jpg" alt="New plugin: TAPEKI analog tape machine"></a>
+    <a class="shot" href="#limeki" style="display:block"><img src="assets/new-plugin.jpg" alt="New plugin: LIMEKI density &amp; clean limiter"></a>
   </div>
 </header>
 
@@ -132,16 +133,30 @@
   </div>
 </section>
 
+<section id="limiter">
+  <div class="wrap">
+    <h2>Limiter</h2>
+    <p class="lead">The last step before the bounce — with its own installer, so you can add it next to the collection.</p>
+    <div>
+      <div class="plugin" id="limeki"><img src="assets/limeki.png" alt="LIMEKI"><div><h3>LIMEKI</h3><div class="kind">Density &amp; clean limiter</div>
+        <p>Two limiters in one rack, wired left to right. <b>DENSITY</b> (burgundy) is the thick, analog-style loudness stage: THRESHOLD pushes the signal into a fast peak catcher with a smooth, musical release (SLOW / FAST, STEREO / DUAL), a soft-clip top and a parallel MIX. <b>CLEAN</b> (blue) is a transparent look-ahead true-peak limiter: PUSH the level, set the CEILING, and an adaptive hold keeps even the low end free of distortion.</p>
+        <p>Use either half, or both. The <b>AUTO −14 LUFS</b> button in the EKI drawer rides PUSH to streaming loudness, with a short-term LUFS display and a glass LED output meter. No AUTO GAIN here — its whole job is to make things louder.</p>
+        <p class="use">Mix bus, mastering, drum bus, streaming masters.</p>
+        <p><a class="btn primary" href="https://github.com/Ekidio/ekidio_sound_plugins/releases/download/limeki-v1.0.0/EKIDIO-SOUND-LIMEKI-1.0.0.dmg">Download LIMEKI</a></p></div></div>
+    </div>
+  </div>
+</section>
+
 <section id="install">
   <div class="wrap">
     <h2>Install</h2>
     <ol>
-      <li>Download the DMG and open it.</li>
-      <li>Double-click <b>Install EKIDIO SOUND Plugins.pkg</b>. If macOS says it cannot verify the developer: click <b>Done</b>, then open <b>System Settings → Privacy &amp; Security</b> and click <b>Open Anyway</b>.</li>
+      <li>Download the DMG and open it. The collection (eleven plugins) and LIMEKI have separate installers — install one or both.</li>
+      <li>Double-click <b>Install EKIDIO SOUND Plugins.pkg</b> (or <b>Install EKIDIO SOUND LIMEKI.pkg</b>). If macOS says it cannot verify the developer: click <b>Done</b>, then open <b>System Settings → Privacy &amp; Security</b> and click <b>Open Anyway</b>.</li>
       <li>Restart your DAW. In Logic Pro, if a plugin does not show up: <b>Plug-in Manager → Reset &amp; Rescan Selection</b>.</li>
       <li>The plugins appear under the manufacturer <b>EKIDIO SOUND</b>.</li>
     </ol>
-    <p class="lead">Uninstall: delete the <code>*EKI.component</code> files from <code>/Library/Audio/Plug-Ins/Components</code>.</p>
+    <p class="lead">Uninstall: delete the <code>*EKI.component</code> files (LIMEKI: <code>LIMEKI.component</code>) from <code>/Library/Audio/Plug-Ins/Components</code>.</p>
   </div>
 </section>
 

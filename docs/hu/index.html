@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>EKIDIO SOUND – Ingyenes Audio Unit pluginok</title>
-<meta name="description" content="Tizenegy ingyenes, analóg ihletésű plugin (Audio Unit) macOS-re az EKIDIO SOUND-tól: nyolc kompresszor (optikai, FET, vari-mu, VCA busz, punch busz, RMS, opto-csöves, vari-mu limiter), a DYNEKI-6 karakteres EQ, a SATEKI lágy, csöves levegő-emelő és a TAPEKI analóg szalagos magnó.">
+<meta name="description" content="Tizenkét ingyenes, analóg ihletésű plugin (Audio Unit) macOS-re az EKIDIO SOUND-tól: nyolc kompresszor (optikai, FET, vari-mu, VCA busz, punch busz, RMS, opto-csöves, vari-mu limiter), a DYNEKI-6 karakteres EQ, a SATEKI lágy, csöves levegő-emelő, a TAPEKI analóg szalagos magnó és a LIMEKI density és clean limiter.">
 <link rel="alternate" hreflang="en" href="https://ekidio.github.io/ekidio_sound_plugins/">
 <link rel="alternate" hreflang="hu" href="https://ekidio.github.io/ekidio_sound_plugins/hu/">
 <meta property="og:title" content="EKIDIO SOUND – Ingyenes Audio Unit pluginok">
-<meta property="og:description" content="Tizenegy ingyenes, analóg ihletésű plugin macOS-re (AU): nyolc kompresszor, egy karakteres EQ, egy lágy, csöves levegő-emelő és egy analóg szalagos magnó. Új: TAPEKI.">
+<meta property="og:description" content="Tizenkét ingyenes, analóg ihletésű plugin macOS-re (AU): nyolc kompresszor, egy karakteres EQ, egy lágy, csöves levegő-emelő, egy analóg szalagos magnó és egy limiter. Új: LIMEKI.">
 <meta property="og:image" content="https://ekidio.github.io/ekidio_sound_plugins/assets/new-plugin.jpg">
 <style>
   :root{ --bg:#0b0b0d; --panel:#16171c; --line:rgba(255,255,255,.08); --text:#dcdee8; --dim:#8a8d9c; --amber:#f2a33a; --cream:#ede3cf; }
@@ -55,13 +55,14 @@
 <header class="hero">
   <div class="wrap">
     <h1>EKIDIO SOUND pluginok</h1>
-    <p class="tag">Tizenegy analóg ihletésű plugin macOS-re — nyolc kompresszor, egy karakteres EQ, egy lágy, csöves levegő-emelő és egy analóg szalagos magnó. Mindegyiknek saját karaktere van, az előlapja igazi hardvert idéz, és a lényeges gombok elöl vannak. <b>Ingyenes.</b></p>
+    <p class="tag">Tizenkét analóg ihletésű plugin macOS-re — nyolc kompresszor, egy karakteres EQ, egy lágy, csöves levegő-emelő, egy analóg szalagos magnó és egy limiter. Mindegyiknek saját karaktere van, az előlapja igazi hardvert idéz, és a lényeges gombok elöl vannak. <b>Ingyenes.</b></p>
     <div class="cta">
-      <a class="btn primary" href="https://github.com/Ekidio/ekidio_sound_plugins/releases/latest/download/EKIDIO-SOUND-Plugins-1.2.0.dmg">Letöltés macOS-re</a>
+      <a class="btn primary" href="https://github.com/Ekidio/ekidio_sound_plugins/releases/download/v1.2.0/EKIDIO-SOUND-Plugins-1.2.0.dmg">A gyűjtemény letöltése</a>
+      <a class="btn primary" href="https://github.com/Ekidio/ekidio_sound_plugins/releases/download/limeki-v1.0.0/EKIDIO-SOUND-LIMEKI-1.0.0.dmg">LIMEKI letöltése</a>
       <a class="btn ghost" href="#telepites">Telepítés</a>
     </div>
     <div class="req"><b style="color:var(--amber)">Csak Audio Unit (AU)</b> · macOS 11 vagy újabb · Apple Silicon és Intel · Logic Pro, GarageBand, Ableton Live, Reaper és más AU-hostok</div>
-    <a class="shot" href="#tapeki" style="display:block"><img src="../assets/new-plugin.jpg" alt="Új plugin: TAPEKI analóg szalagos magnó"></a>
+    <a class="shot" href="#limeki" style="display:block"><img src="../assets/new-plugin.jpg" alt="Új plugin: LIMEKI density és clean limiter"></a>
   </div>
 </header>
 
@@ -132,16 +133,30 @@
   </div>
 </section>
 
+<section id="limiter">
+  <div class="wrap">
+    <h2>Limiter</h2>
+    <p class="lead">Az utolsó lépés a bounce előtt — saját telepítővel, így a gyűjtemény mellé teheted.</p>
+    <div>
+      <div class="plugin" id="limeki"><img src="../assets/limeki.png" alt="LIMEKI"><div><h3>LIMEKI</h3><div class="kind">Density és clean limiter</div>
+        <p>Két limiter egy rackben, balról jobbra kötve. A <b>DENSITY</b> (bordó) a sűrű, analóg jellegű hangosító fokozat: a THRESHOLD egy gyors csúcsfogóba nyomja a jelet, lágy, zenei elengedéssel (SLOW / FAST, STEREO / DUAL), soft-clip tetővel és párhuzamos MIX-szel. A <b>CLEAN</b> (kék) átlátszó, előretekintő true-peak limiter: a PUSH emeli a szintet, a CEILING a plafon, az adaptív tartás pedig a mélyeket is torzításmentesen hagyja.</p>
+        <p>Használhatod bármelyik felét, vagy mindkettőt. Az EKI-fiók <b>AUTO −14 LUFS</b> gombja a PUSH-t a streaming-hangosságra állítja; rövid idejű LUFS-kijelző és üveg LED-es kimeneti mérő segít. AUTO GAIN itt nincs — a dolga éppen az, hogy hangosabb legyen.</p>
+        <p class="use">Mix busz, mastering, dobbusz, streaming masterek.</p>
+        <p><a class="btn primary" href="https://github.com/Ekidio/ekidio_sound_plugins/releases/download/limeki-v1.0.0/EKIDIO-SOUND-LIMEKI-1.0.0.dmg">LIMEKI letöltése</a></p></div></div>
+    </div>
+  </div>
+</section>
+
 <section id="telepites">
   <div class="wrap">
     <h2>Telepítés</h2>
     <ol>
-      <li>Töltsd le a DMG-t, és nyisd meg.</li>
-      <li>Kattints duplán az <b>Install EKIDIO SOUND Plugins.pkg</b> fájlra. Ha a macOS szerint nem tudja ellenőrizni a fejlesztőt: kattints a <b>Kész</b> gombra, majd <b>Rendszerbeállítások → Adatvédelem és biztonság</b>, és ott <b>Megnyitás mindenképp</b>.</li>
+      <li>Töltsd le a DMG-t, és nyisd meg. A gyűjtemény (tizenegy plugin) és a LIMEKI külön telepítőt kapott — telepítsd az egyiket vagy mindkettőt.</li>
+      <li>Kattints duplán az <b>Install EKIDIO SOUND Plugins.pkg</b> (vagy az <b>Install EKIDIO SOUND LIMEKI.pkg</b>) fájlra. Ha a macOS szerint nem tudja ellenőrizni a fejlesztőt: kattints a <b>Kész</b> gombra, majd <b>Rendszerbeállítások → Adatvédelem és biztonság</b>, és ott <b>Megnyitás mindenképp</b>.</li>
       <li>Indítsd újra a DAW-ot. Logic Próban, ha egy plugin nem jelenik meg: <b>Plug-in Manager → Reset &amp; Rescan Selection</b>.</li>
       <li>A pluginok az <b>EKIDIO SOUND</b> gyártó alatt jelennek meg.</li>
     </ol>
-    <p class="lead">Eltávolítás: töröld a <code>*EKI.component</code> fájlokat a <code>/Library/Audio/Plug-Ins/Components</code> mappából.</p>
+    <p class="lead">Eltávolítás: töröld a <code>*EKI.component</code> fájlokat (LIMEKI: <code>LIMEKI.component</code>) a <code>/Library/Audio/Plug-Ins/Components</code> mappából.</p>
   </div>
 </section>
 
