@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 # "NEW PLUGIN" borítókép a weboldal tetejére (és a link-előnézethez): a legújabb plugin nagy panelképe, jelvény, név, alcím.
 #   python3 -I Tools/make_cover.py <panel.png (ui_snapshot, 2x)> <NÉV> "<alcím>" "<rövid mondat>" docs/assets/new-plugin.jpg [glow hex]
+#   (a jelvény szövege a BADGE környezeti változóval állítható, alapból "NEW PLUGIN")
 # A panelkép: build/ui_snapshot aufx <subtype> Ekid panel.png (zárt fiókkal).
-import sys
+import os, sys
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
 panel_path, name, subtitle, line, out = sys.argv[1:6]
@@ -25,7 +26,7 @@ bg = Image.composite(Image.new("RGB", (W, H), tuple(int(c * 0.42) for c in glow)
 d = ImageDraw.Draw(bg)
 # jelvény
 badge_font = font(AVN, 30, 2)
-bt = "NEW PLUGIN"
+bt = os.environ.get("BADGE", "NEW PLUGIN")
 bw = d.textlength(bt, font=badge_font) + 56
 d.rounded_rectangle(((W - bw) / 2, 64, (W + bw) / 2, 64 + 58), 29, fill=glow)
 d.text((W / 2, 64 + 29), bt, font=badge_font, fill=(26, 16, 6), anchor="mm")

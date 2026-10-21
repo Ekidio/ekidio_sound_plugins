@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>EKIDIO SOUND – Ingyenes Audio Unit pluginok</title>
-<meta name="description" content="Tizenkét ingyenes, analóg ihletésű plugin (Audio Unit) macOS-re az EKIDIO SOUND-tól: nyolc kompresszor (optikai, FET, vari-mu, VCA busz, punch busz, RMS, opto-csöves, vari-mu limiter), a DYNEKI-6 karakteres EQ, a SATEKI lágy, csöves Air-fresher, a TAPEKI analóg szalagos magnó és a LIMEKI density és clean limiter.">
+<meta name="description" content="Tizenöt ingyenes, analóg ihletésű plugin (Audio Unit) macOS-re az EKIDIO SOUND-tól: nyolc kompresszor (optikai, FET, vari-mu, VCA busz, punch busz, RMS, opto-csöves, vari-mu limiter), a DYNEKI-6 karakteres EQ, a SATEKI lágy, csöves Air-fresher, a TAPEKI analóg szalagos magnó, a LIMEKI density és clean limiter, valamint három mastering-eszköz: az EK1 mastering-lánc, a MASTEQUI mastering EQ és az EKIPPER soft clipper.">
 <link rel="alternate" hreflang="en" href="https://ekidio.github.io/ekidio_sound_plugins/">
 <link rel="alternate" hreflang="hu" href="https://ekidio.github.io/ekidio_sound_plugins/hu/">
 <meta property="og:title" content="EKIDIO SOUND – Ingyenes Audio Unit pluginok">
-<meta property="og:description" content="Tizenkét ingyenes, analóg ihletésű plugin macOS-re (AU): nyolc kompresszor, egy karakteres EQ, egy lágy, csöves Air-fresher, egy analóg szalagos magnó és egy limiter. Új: LIMEKI.">
+<meta property="og:description" content="Tizenöt ingyenes, analóg ihletésű plugin macOS-re (AU): nyolc kompresszor, egy karakteres EQ, egy lágy, csöves Air-fresher, egy analóg szalagos magnó, egy limiter és három mastering-eszköz. Új: EK1, MASTEQUI, EKIPPER.">
 <meta property="og:image" content="https://ekidio.github.io/ekidio_sound_plugins/assets/new-plugin.jpg">
 <style>
   :root{ --bg:#0b0b0d; --panel:#16171c; --line:rgba(255,255,255,.08); --text:#dcdee8; --dim:#8a8d9c; --amber:#f2a33a; --cream:#ede3cf; }
@@ -55,14 +55,15 @@
 <header class="hero">
   <div class="wrap">
     <h1>EKIDIO SOUND pluginok</h1>
-    <p class="tag">Tizenkét analóg ihletésű plugin macOS-re — nyolc kompresszor, egy karakteres EQ, egy lágy, csöves Air-fresher, egy analóg szalagos magnó és egy limiter. Mindegyiknek saját karaktere van, próbáld ki még ma! <b>Ingyenes.</b></p>
+    <p class="tag">Tizenöt analóg ihletésű plugin macOS-re — nyolc kompresszor, egy karakteres EQ, egy lágy, csöves Air-fresher, egy analóg szalagos magnó, egy limiter és három mastering-eszköz. Mindegyiknek saját karaktere van, próbáld ki még ma! <b>Ingyenes.</b></p>
     <div class="cta">
       <a class="btn primary" href="https://github.com/Ekidio/ekidio_sound_plugins/releases/download/v1.2.0/EKIDIO-SOUND-Plugins-1.2.0.dmg">A gyűjtemény letöltése</a>
       <a class="btn primary" href="https://github.com/Ekidio/ekidio_sound_plugins/releases/download/limeki-v1.0.0/EKIDIO-SOUND-LIMEKI-1.0.0.dmg">LIMEKI letöltése</a>
+      <a class="btn primary" href="#mastering">Új: mastering-eszközök</a>
       <a class="btn ghost" href="#telepites">Telepítés</a>
     </div>
     <div class="req"><b style="color:var(--amber)">Csak Audio Unit (AU)</b> · macOS 11 vagy újabb · Apple Silicon és Intel · Logic Pro, GarageBand, Ableton Live, Reaper és más AU-hostok</div>
-    <a class="shot" href="#limeki" style="display:block"><img src="../assets/new-plugin.jpg" alt="Új plugin: LIMEKI density és clean limiter"></a>
+    <a class="shot" href="#mastering" style="display:block"><img src="../assets/new-plugin.jpg" alt="Három új plugin: EK1 mastering-lánc, MASTEQUI és EKIPPER"></a>
   </div>
 </header>
 
@@ -72,7 +73,7 @@
     <p class="lead">Mindegyikkel egy-két mozdulattal célba érsz. A ritkán állított beállítások a lenyitható <b>EKI fiókban</b> vannak, így az előlap letisztult marad.</p>
     <div class="grid">
       <div class="card"><h3>A karakter az első</h3><p>Hallható cső-, trafó-, FET- és konzolszín — ahol van értelme, tiszta beállítással is.</p></div>
-      <div class="card"><h3>AUTO GAIN</h3><p>Induláskor bekapcsolva: a kimenet a bemenet szintjén marad, a gain gomb 0 dB-en zárolva. Kikapcsolva te állítod a szintet.</p></div>
+      <div class="card"><h3>AUTO GAIN</h3><p>A kimenetet a bemenet szintjén tartja, a gain gombot 0 dB-en zárolja. A kompresszorokon induláskor bekapcsolva; a mastering-eszközökön az EKI fiókban vár, kikapcsolva.</p></div>
       <div class="card"><h3>Párhuzamos MIX</h3><p>Fázishelyes száraz/kompresszált keverés mindegyiken — nincs fésűszűrő, nincs „üres” hang.</p></div>
       <div class="card"><h3>Élő műszerek</h3><p>Világító VU-műszerek, gain-reduction skálák és LED-ek, amelyek a hangot követik.</p></div>
       <div class="card"><h3>Presetek</h3><p>Kiindulópontok énekre, dobra, basszusra, buszra és masteringre — hangerőre illesztve.</p></div>
@@ -133,6 +134,29 @@
   </div>
 </section>
 
+<section id="mastering">
+  <div class="wrap">
+    <h2>Mastering</h2>
+    <p class="lead">Három új eszköz a lánc végére — mindegyik saját telepítővel. AUTO GAIN mindháromban van, de alapból kikapcsolva, és minden gomb semleges 0-n indul: ha semmit nem tekersz, a jel érintetlenül megy át.</p>
+    <div>
+      <div class="plugin" id="ek1"><img src="../assets/ek1.png" alt="EK1"><div><h3>EK1</h3><div class="kind">Egy gomb egy feladat — mastering-lánc</div>
+        <p>Egy teljes mastering-lánc egyetlen világos, szálcsiszolt előlapon. <b>TONE</b>: AIR (11,6 kHz-es polc), FOCUS (jelenlét-harang, ami emeléskor a 2–3 kHz-es tartomány felé szélesedik) és BASS PUNCH (41 Hz-es polc) — ugyanazok a görbék, mint a MASTEQUI-ban. <b>LOUDNESS</b>: a PUSH analóg jellegű sűrűséget ad, a nagy <b>VOLUME</b> gomb pedig egy kétfokozatú limitert hajt: a lassú szintfokozat stabilan tartja a hangzás testét, a sima, gyors csúcsfokozat pedig elkapja az ütéseket — így hangos lesz, és feszes marad, nem lüktet, és nem tompítja a tranzienseket. <b>SHAPE</b>: TRANSIENT, WIDTH (csak 150 Hz felett, a mély mono marad) és OUTPUT, háttérvilágításos VU-val.</p>
+        <p>Az EKI fiókban a finomhangolás: FOCUS FREQ (300 Hz – 5 kHz), a TRANSIENT attack és release, a VOLUME elengedése és az AUTO GAIN.</p>
+        <p class="use">Mastering, mix busz, gyors hangos referenciák.</p>
+        <p><a class="btn primary" href="https://github.com/Ekidio/ekidio_sound_plugins/releases/download/ek1-v1.0.0/EKIDIO-SOUND-EK1-1.0.0.dmg">EK1 letöltése</a></p></div></div>
+      <div class="plugin" id="mastequi"><img src="../assets/mastequi.png" alt="MASTEQUI"><div><h3>MASTEQUI</h3><div class="kind">Háromsávos mastering EQ</div>
+        <p>Három léptetett harang — LOW (11–570 Hz), MID (125 Hz – 6,2 kHz) és HIGH (3,4–25 kHz), sávonként 24 frekvencia-lépéssel és öt Q-állással —, plusz egy mély polc (41 Hz, LOW SHIFT-tel 83 Hz) és egy 11,6 kHz-es levegő-polc. Analóg mintára épített görbék, 2× lineáris fázisú túlmintavételezés, így a felső harangok is megtartják a formájukat 20 kHz-ig.</p>
+        <p>Az EKI fiók RANGE gombja ±6, ±9 vagy ±12 dB-re állítja a gain-gombokat — finom vagy bátor mozdulatokhoz.</p>
+        <p class="use">Mastering, mix busz, stemek.</p>
+        <p><a class="btn primary" href="https://github.com/Ekidio/ekidio_sound_plugins/releases/download/mastequi-v1.0.0/EKIDIO-SOUND-MASTEQUI-1.0.0.dmg">MASTEQUI letöltése</a></p></div></div>
+      <div class="plugin" id="ekipper"><img src="../assets/ekipper.png" alt="EKIPPER"><div><h3>EKIPPER</h3><div class="kind">Soft clipper</div>
+        <p>Egy feladat, lágyan: a DRIVE egy meleg, kerekített vágógörbébe nyomja a jelet, ami sosem válik keménnyé, az OUTPUT pedig a szintet állítja. Faragd le vele a csúcsokat a limiter előtt, vagy dőlj rá a sűrűségért és a ragasztásért. 2×, 4× vagy 8× túlmintavételezés az EKI fiókban.</p>
+        <p class="use">Dob, mix busz, a limiter elé.</p>
+        <p><a class="btn primary" href="https://github.com/Ekidio/ekidio_sound_plugins/releases/download/ekipper-v1.0.0/EKIDIO-SOUND-EKIPPER-1.0.0.dmg">EKIPPER letöltése</a></p></div></div>
+    </div>
+  </div>
+</section>
+
 <section id="limiter">
   <div class="wrap">
     <h2>Limiter</h2>
@@ -151,12 +175,12 @@
   <div class="wrap">
     <h2>Telepítés</h2>
     <ol>
-      <li>Töltsd le a DMG-t, és nyisd meg. A gyűjtemény (tizenegy plugin) és a LIMEKI külön telepítőt kapott — telepítsd az egyiket vagy mindkettőt.</li>
-      <li>Kattints duplán az <b>Install EKIDIO SOUND Plugins.pkg</b> (vagy az <b>Install EKIDIO SOUND LIMEKI.pkg</b>) fájlra. Ha a macOS szerint nem tudja ellenőrizni a fejlesztőt: kattints a <b>Kész</b> gombra, majd <b>Rendszerbeállítások → Adatvédelem és biztonság</b>, és ott <b>Megnyitás mindenképp</b>.</li>
+      <li>Töltsd le a DMG-t, és nyisd meg. A gyűjtemény (tizenegy plugin), a LIMEKI, az EK1, a MASTEQUI és az EKIPPER mind saját telepítőt kapott — azt telepítsd, amelyiket szeretnéd.</li>
+      <li>Kattints duplán az <b>Install EKIDIO SOUND Plugins.pkg</b> (vagy az egy-pluginos, pl. <b>Install EKIDIO SOUND EK1.pkg</b>) fájlra. Ha a macOS szerint nem tudja ellenőrizni a fejlesztőt: kattints a <b>Kész</b> gombra, majd <b>Rendszerbeállítások → Adatvédelem és biztonság</b>, és ott <b>Megnyitás mindenképp</b>.</li>
       <li>Indítsd újra a DAW-ot. Logic Próban, ha egy plugin nem jelenik meg: <b>Plug-in Manager → Reset &amp; Rescan Selection</b>.</li>
       <li>A pluginok az <b>EKIDIO SOUND</b> gyártó alatt jelennek meg.</li>
     </ol>
-    <p class="lead">Eltávolítás: töröld a <code>*EKI.component</code> fájlokat (LIMEKI: <code>LIMEKI.component</code>) a <code>/Library/Audio/Plug-Ins/Components</code> mappából.</p>
+    <p class="lead">Eltávolítás: töröld a <code>*EKI.component</code> fájlokat (és a <code>LIMEKI</code>, <code>EK1</code>, <code>MASTEQUI</code>, <code>EKIPPER.component</code> fájlokat) a <code>/Library/Audio/Plug-Ins/Components</code> mappából.</p>
   </div>
 </section>
 

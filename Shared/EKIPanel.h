@@ -25,7 +25,7 @@ inline NSColor* rgb(int hex, CGFloat a = 1) {
     return [NSColor colorWithSRGBRed:((hex >> 16) & 255) / 255.0 green:((hex >> 8) & 255) / 255.0 blue:(hex & 255) / 255.0 alpha:a];
 }
 
-enum KnobStyle { Bakelite, SilverSkirt, Console, ChromeRing, Premium, Machined, ConsoleCap, Fluted };
+enum KnobStyle { Bakelite, SilverSkirt, Console, ChromeRing, Premium, Machined, ConsoleCap, Fluted, Pointer };
 
 /// Plugin-téma (bundle-önként egy példány; a panel build-függvénye állítja be)
 struct Theme {
@@ -45,6 +45,8 @@ struct Theme {
     int ledStyle = 0;                                 // 0: szögletes LED-gomb, 1: kerek fém gomb világító gyűrűvel
     bool valueGlow = false;                           // az értékkijelzés halványan izzik
     bool coloredLine = false;                         // esztergált gomb: izzó pont helyett színes mutatóvonal + vékony színes kupakperem
+    bool dotTicks = false;                            // skála: vonások helyett pöttyök (vintage hardver-előlap)
+    int arc = -1;                                     // esztergált gomb: világító érték-ív a peremen (-1 = nincs), pl. neonkék
 };
 inline Theme& theme() { static Theme t; return t; }
 
@@ -103,19 +105,54 @@ inline CGFloat tickLen(CGFloat r) { return std::max(3.0, r * 0.16); }
 inline CGFloat tickFont(CGFloat r) { return r >= 30 ? 9.5 : 7.5; }
 
 /// Forgatógomb skálával. norm 0…1 → −sweep…+sweep fok. tickLabels: skálafeliratok (nil = csak vonások)
-inline void drawKnob(CGPoint c, CGFloat r, float norm, NSArray<NSString*>* tickLabels, CGFloat sweep = 135, int capColor = -1, int ticks = 11, int capTint = -1) {
+inline void drawKnob(CGPoint c, CGFloat r, float norm, NSArray<NSString*>* tickLabels, CGFloat sweep = 135, int capColor = -1, int ticks = 11, int capTint = -1, int rimColor = -1, bool bipolar = false) {
     const Theme& t = theme();
     const int n = tickLabels ? int(tickLabels.count) : ticks;
     const CGFloat tl = tickLen(r);
     for (int i = 0; i < n && n > 1; ++i) {
         CGFloat a = deg(-sweep + 2 * sweep * i / (n - 1));
-        line(polar(c, a, r + 3), polar(c, a, r + 3 + tl), r >= 30 ? 1.4 : 1.0, tickColor());
+        if (t.dotTicks) { [tickColor() setFill]; [[NSBezierPath bezierPathWithOvalInRect:circleRect(polar(c, a, r + 3 + tl * 0.5), r >= 30 ? 1.5 : 1.15)] fill]; }
+        else line(polar(c, a, r + 3), polar(c, a, r + 3 + tl), r >= 30 ? 1.4 : 1.0, tickColor());
         if (tickLabels) text(tickLabels[i], polar(c, a, r + 3 + tl + tickFont(r) * 0.95), tickFont(r), tickColor(), false, 0.2);
         if (r >= 30 && i < n - 1)
             for (int m = 1; m <= t.minorTicks; ++m) {
                 CGFloat am = deg(-sweep + 2 * sweep * (i + m / CGFloat(t.minorTicks + 1)) / (n - 1));
                 line(polar(c, am, r + 3), polar(c, am, r + 3 + tl * 0.5), 0.8, [tickColor() colorWithAlphaComponent:0.7]);
             }
+    }
+    if (t.knob == Pointer) {   // "kakasfej" mutatós gomb (vintage hardver): kerek agy + elnyújtott, lekerekített mutató, festett műanyag
+        const int col = capColor >= 0 ? capColor : t.capTop;
+        const CGFloat a = deg(-sweep + 2 * sweep * std::clamp(norm, 0.0f, 1.0f)), ca = std::cos(a), sa = std::sin(a);
+        auto P = [&](CGFloat x, CGFloat y) { return NSMakePoint(c.x + x * ca - y * sa, c.y + x * sa + y * ca); };   // helyi (fel = −y) → nézet
+        // egybefüggő, lapos test: hegyes orr, széles váll, lekerekített farok (a forgástengely a váll közepén)
+        NSBezierPath* body = [NSBezierPath bezierPath];
+        [body moveToPoint:P(0, -r * 1.04)];
+        [body curveToPoint:P(r * 0.50, r * 0.02) controlPoint1:P(r * 0.10, -r * 0.92) controlPoint2:P(r * 0.50, -r * 0.40)];
+        [body curveToPoint:P(0, r * 0.66) controlPoint1:P(r * 0.50, r * 0.42) controlPoint2:P(r * 0.30, r * 0.66)];
+        [body curveToPoint:P(-r * 0.50, r * 0.02) controlPoint1:P(-r * 0.30, r * 0.66) controlPoint2:P(-r * 0.50, r * 0.42)];
+        [body curveToPoint:P(0, -r * 1.04) controlPoint1:P(-r * 0.50, -r * 0.40) controlPoint2:P(-r * 0.10, -r * 0.92)];
+        [body closePath];
+        shadowed(r * 0.14, r * 0.35, 0.75, ^{ [rgb(col) setFill]; [body fill]; });
+        [[[NSGradient alloc] initWithColorsAndLocations:[rgb(col) blendedColorWithFraction:0.30 ofColor:NSColor.whiteColor], 0.0, rgb(col), 0.5,
+                                                        [rgb(col) blendedColorWithFraction:0.45 ofColor:NSColor.blackColor], 1.0, nil]
+            drawInBezierPath:body relativeCenterPosition:NSMakePoint(-0.3, 0.35)];
+        // a test teteje: lapos gerinc (fényes él a hossztengely mentén) és finom domborulat
+        CGContextSaveGState(cg()); [body addClip];
+        NSBezierPath* ridge = [NSBezierPath bezierPath];
+        [ridge moveToPoint:P(-r * 0.16, -r * 0.70)]; [ridge lineToPoint:P(r * 0.16, -r * 0.70)]; [ridge lineToPoint:P(r * 0.26, r * 0.40)]; [ridge lineToPoint:P(-r * 0.26, r * 0.40)]; [ridge closePath];
+        [rgb(0xFFFFFF, 0.10) setFill]; [ridge fill];
+        [[[NSGradient alloc] initWithStartingColor:rgb(0xFFFFFF, 0.30) endingColor:rgb(0xFFFFFF, 0.0)]
+            drawInBezierPath:[NSBezierPath bezierPathWithOvalInRect:NSMakeRect(c.x - r * 0.55, c.y - r * 0.75, r * 0.8, r * 0.6)] angle:-90];
+        CGContextRestoreGState(cg());
+        [rgb(0x000000, 0.5) setStroke]; body.lineWidth = 0.8; [body stroke];
+        // mutató: fehér háromszög a csúcs felé (sötét gombon), krém vonal (színes gombon)
+        const bool dark = ((col >> 16 & 255) + (col >> 8 & 255) + (col & 255)) < 240;
+        if (dark) {
+            NSBezierPath* tri = [NSBezierPath bezierPath];
+            [tri moveToPoint:P(0, -r * 0.94)]; [tri lineToPoint:P(r * 0.14, -r * 0.52)]; [tri lineToPoint:P(-r * 0.14, -r * 0.52)]; [tri closePath];
+            [rgb(0xF4F1EA) setFill]; [tri fill];
+        } else line(P(0, -r * 0.48), P(0, -r * 0.92), std::max(1.4, r * 0.07), rgb(0xFFF6E8, 0.95));
+        return;
     }
     if (t.knob == ConsoleCap) {   // konzolgomb: sima világosszürke test, fényes színes kupak, fehér mutatóvonal
         shadowed(r * 0.16, r * 0.45, 0.8, ^{ [rgb(0x101112) setFill]; [[NSBezierPath bezierPathWithOvalInRect:circleRect(c, r)] fill]; });
@@ -191,6 +228,10 @@ inline void drawKnob(CGPoint c, CGFloat r, float norm, NSArray<NSString*>* tickL
         shadowed(r * 0.18, r * 0.5, 0.9, ^{ [rgb(0x050505) setFill]; [[NSBezierPath bezierPathWithOvalInRect:circleRect(c, r)] fill]; });
         [[[NSGradient alloc] initWithColorsAndLocations:rgb(0x2C2D31), 0.0, rgb(0x121214), 0.6, rgb(0x060607), 1.0, nil]
             drawInBezierPath:[NSBezierPath bezierPathWithOvalInRect:circleRect(c, r)] relativeCenterPosition:NSMakePoint(-0.25, 0.4)];
+        if (rimColor >= 0)   // színezett (eloxált) karima: a recézett külső gyűrű a megadott színben
+            [[[NSGradient alloc] initWithColorsAndLocations:[rgb(rimColor) blendedColorWithFraction:0.22 ofColor:NSColor.whiteColor], 0.0, rgb(rimColor), 0.45,
+                                                            [rgb(rimColor) blendedColorWithFraction:0.55 ofColor:NSColor.blackColor], 1.0, nil]
+                drawInBezierPath:[NSBezierPath bezierPathWithOvalInRect:circleRect(c, r)] relativeCenterPosition:NSMakePoint(-0.25, 0.4)];
         const int knurls = r >= 30 ? 110 : 60;
         for (int i = 0; i < knurls; ++i) {
             CGFloat a = 2 * M_PI * i / knurls;
@@ -226,6 +267,23 @@ inline void drawKnob(CGPoint c, CGFloat r, float norm, NSArray<NSString*>* tickL
         [rgb(0x000000, 0.9) setStroke];
         NSBezierPath* rim = [NSBezierPath bezierPathWithOvalInRect:circleRect(c, r - 0.4)]; rim.lineWidth = 1; [rim stroke];
         CGFloat a = deg(-sweep + 2 * sweep * std::clamp(norm, 0.0f, 1.0f));
+        if (t.arc >= 0) {   // világító érték-ív a peremen: halvány pálya + fényes ív (bipoláris gombnál középről)
+            const CGFloat ar = r * 0.88, lw = std::max(2.6, r * 0.11);
+            auto arcPath = [&](CGFloat a0, CGFloat a1) {   // a szög a "fel" iránytól, óramutató szerint (flipped nézet)
+                NSBezierPath* p = [NSBezierPath bezierPath];
+                const int n = std::max(2, int(std::fabs(a1 - a0) / 0.05));
+                for (int i = 0; i <= n; ++i) { const CGPoint q = polar(c, a0 + (a1 - a0) * i / n, ar); if (i == 0) [p moveToPoint:q]; else [p lineToPoint:q]; }
+                p.lineWidth = lw; p.lineCapStyle = NSLineCapStyleRound; p.lineJoinStyle = NSLineJoinStyleRound; return p;
+            };
+            [rgb(0x000000, 0.45) setStroke]; [arcPath(deg(-sweep), deg(sweep)) stroke];
+            const CGFloat a0 = bipolar ? 0 : deg(-sweep);
+            if (std::fabs(a - a0) > 0.01) {
+                CGContextSaveGState(cg());
+                CGContextSetShadowWithColor(cg(), CGSizeZero, lw * 2.2, rgb(t.arc, 0.85).CGColor);
+                [rgb(t.arc) setStroke]; [arcPath(a0, a) stroke];
+                CGContextRestoreGState(cg());
+            }
+        }
         if (t.coloredLine && capColor >= 0) {   // színes mutatóvonal
             line(polar(c, a, capR * 0.22), polar(c, a, capR * 0.9), std::max(2.0, r * 0.06), rgb(capColor));
         } else if (capColor >= 0 && r >= 30) {   // izzó jelzőpont (mint egy beépített LED)
@@ -350,6 +408,23 @@ inline void drawToggle(CGPoint c, bool on, NSString* offLabel, NSString* onLabel
 
 /// Világító nyomógomb (LED-del), felirat alatta
 inline void drawLedButton(CGPoint c, bool on, NSString* label, CGFloat s) {
+    if (theme().ledStyle == 2) {   // szögletes, belülről világító nyomógomb (vintage hardver): kikapcsolva matt fehér, bekapcsolva kékesfehér fény
+        const int L = theme().led;
+        const CGFloat h = 15 * s;
+        const NSRect bez = NSMakeRect(c.x - h - 3 * s, c.y - h - 3 * s, 2 * h + 6 * s, 2 * h + 6 * s), cap = NSMakeRect(c.x - h, c.y - h, 2 * h, 2 * h);
+        shadowed(2 * s, 4 * s, 0.7, ^{ [[[NSGradient alloc] initWithStartingColor:rgb(0x2A2C30) endingColor:rgb(0x08090A)] drawInBezierPath:[NSBezierPath bezierPathWithRoundedRect:bez xRadius:3 * s yRadius:3 * s] angle:-90]; });
+        NSBezierPath* face = [NSBezierPath bezierPathWithRoundedRect:cap xRadius:2 * s yRadius:2 * s];
+        CGContextSaveGState(cg());
+        if (on) CGContextSetShadowWithColor(cg(), CGSizeZero, 16 * s, rgb(L, 0.95).CGColor);
+        [[[NSGradient alloc] initWithStartingColor:(on ? [rgb(L) blendedColorWithFraction:0.75 ofColor:NSColor.whiteColor] : rgb(0xBFC0BE))
+                                       endingColor:(on ? [rgb(L) blendedColorWithFraction:0.25 ofColor:NSColor.whiteColor] : rgb(0x8E908E))] drawInBezierPath:face angle:-90];
+        CGContextRestoreGState(cg());
+        if (on) [[[NSGradient alloc] initWithStartingColor:rgb(0xFFFFFF, 0.85) endingColor:rgb(0xFFFFFF, 0.0)]
+                    drawInBezierPath:[NSBezierPath bezierPathWithOvalInRect:NSInsetRect(cap, h * 0.25, h * 0.25)] relativeCenterPosition:NSZeroPoint];
+        [rgb(0x000000, 0.5) setStroke]; face.lineWidth = 0.8; [face stroke];
+        text(label, CGPointMake(c.x, c.y + h + 13 * s), 8.5 * std::max(0.9, s), silk(), true, 0.5);
+        return;
+    }
     if (theme().ledStyle == 1) {   // kerek fém nyomógomb világító gyűrűvel
         const int L = theme().led;
         const CGFloat R = 17 * s;
@@ -468,7 +543,7 @@ inline void registerBundleFonts() {
 
 struct VUStyle {
     int bezel = 0;        // 0: fekete, 1: króm, 2: acél-fekete szögletes, 3: keret nélküli, borostyán háttérfénnyel
-    int face = 0;         // 0: krém/borostyán, 1: fehér, 2: halvány zöldes, 3: meleg, belülről világító
+    int face = 0;         // 0: krém/borostyán, 1: fehér, 2: halvány zöldes, 3: meleg, belülről világító, 4: kék, belülről világító
     bool grScale = false; // true: GR-skála (0 jobbra, 20 balra, dB-ben lineáris)
     NSString* legend = @"VU";
     NSString* legendFont = nil;   // a számlap feliratának betűtípusa (nil = a téma félkövére)
@@ -476,6 +551,7 @@ struct VUStyle {
     CGFloat legendKern = 1.2;
     NSString* subLegend = nil;    // kis második sor a felirat alatt (pl. "VU")
     bool legendBox = false;       // a felirat vékony keretben (mint egy gyári logó a számlapon)
+    int needleTop = -1, needleBottom = -1;   // kétszínű mutató: felső rész / alsó (tő) rész színe (-1 = alapértelmezett)
 };
 
 /// "Pajzs" forma: felül lekerekített sarkok, alul ferdén levágott sarkok (flipped koordináták)
@@ -525,7 +601,13 @@ inline void drawVU(NSRect rc, float db, const VUStyle& st) {
     const CGFloat fr = st.bezel == 3 ? 16 * k : shield ? 10 * k : 4 * k;
     NSBezierPath* facePath = shield ? shieldPath(face, fr, face.size.width * 0.14, face.size.height * 0.32)
                                     : [NSBezierPath bezierPathWithRoundedRect:face xRadius:fr yRadius:fr];
-    if (st.face == 3)
+    if (st.face == 4) {   // kék, belülről világító számlap + halvány kék fény a keret körül
+        CGContextSaveGState(ctx);
+        CGContextSetShadowWithColor(ctx, CGSizeZero, 18 * k, rgb(0x22C3F0, 0.55).CGColor);
+        [rgb(0x1B9FD6) setFill]; [facePath fill];
+        CGContextRestoreGState(ctx);
+        [[[NSGradient alloc] initWithColorsAndLocations:rgb(0xD8F7FF), 0.0, rgb(0x8FE3FB), 0.35, rgb(0x3FC1EE), 0.7, rgb(0x1586C0), 1.0, nil] drawInBezierPath:facePath relativeCenterPosition:NSMakePoint(0, 0.25)];
+    } else if (st.face == 3)
         [[[NSGradient alloc] initWithColorsAndLocations:rgb(0xFFF3D2), 0.0, rgb(0xF6D592), 0.55, rgb(0xD9A453), 0.85, rgb(0xA8732E), 1.0, nil] drawInBezierPath:facePath relativeCenterPosition:NSMakePoint(0, 0.25)];
     else if (st.face == 1)
         [[[NSGradient alloc] initWithColorsAndLocations:rgb(0xFFFFFF), 0.0, rgb(0xF1F1EE), 0.6, rgb(0xD6D6D2), 1.0, nil] drawInBezierPath:facePath relativeCenterPosition:NSMakePoint(0, 0.35)];
@@ -539,7 +621,7 @@ inline void drawVU(NSRect rc, float db, const VUStyle& st) {
     const CGPoint piv = CGPointMake(NSMidX(face), NSMaxY(face) + face.size.height * 0.32);
     const CGFloat R = face.size.height * 1.02;
     const CGFloat span = 39;
-    const int ink = 0x1A1408, red = 0xB02A20;
+    const int ink = st.face == 4 ? 0x06283A : 0x1A1408, red = 0xB02A20;
     auto ang = [&](float d) {
         float pos;
         if (st.grScale) pos = 1.0f + std::clamp(d, -21.0f, 0.5f) / 20.0f;
@@ -590,8 +672,15 @@ inline void drawVU(NSRect rc, float db, const VUStyle& st) {
     if (st.subLegend) text(st.subLegend, CGPointMake(piv.x, lp.y + st.legendSize * (st.legendBox ? 1.35 : (st.subLegend.length > 4 ? 1.08 : 0.85)) * k), 7.5 * k, rgb(ink, 0.7), true, 2 * k);
     CGFloat a = ang(db);
     CGContextSetShadowWithColor(ctx, CGSizeMake(2 * k, -3 * k), 2.5 * k, rgb(0, 0.35).CGColor);
-    line(polar(piv, a, R * 0.35), polar(piv, a, R + 14 * k), 1.5 * k, rgb(0x111111));
-    if (shield) line(polar(piv, a, R * 0.33), polar(piv, a, R * 0.62), 2.2 * k, rgb(0xB8261C));   // piros mutatótő
+    if (st.needleTop >= 0 || st.needleBottom >= 0) {   // kétszínű mutató: fent (a skálán) az egyik, lent (a tőnél) a másik szín
+        const int top = st.needleTop >= 0 ? st.needleTop : 0x111111, bot = st.needleBottom >= 0 ? st.needleBottom : 0xB8261C;
+        line(polar(piv, a, R * 0.62), polar(piv, a, R + 14 * k), 2.6 * k, rgb(0x000000, 0.55));   // vékony sötét kontúr a világos számlapon
+        line(polar(piv, a, R * 0.62), polar(piv, a, R + 14 * k), 1.6 * k, rgb(top));
+        line(polar(piv, a, R * 0.33), polar(piv, a, R * 0.64), 2.4 * k, rgb(bot));
+    } else {
+        line(polar(piv, a, R * 0.35), polar(piv, a, R + 14 * k), 1.5 * k, rgb(0x111111));
+        if (shield) line(polar(piv, a, R * 0.33), polar(piv, a, R * 0.62), 2.2 * k, rgb(0xB8261C));   // piros mutatótő
+    }
     CGContextRestoreGState(ctx);
     // üveg csillanás
     CGContextSaveGState(ctx);
@@ -605,7 +694,7 @@ inline void drawVU(NSRect rc, float db, const VUStyle& st) {
         [facePath addClip];
         for (int i = 0; i < 7; ++i) {
             NSBezierPath* e = shieldPath(NSInsetRect(face, i * 1.1 * k, i * 1.1 * k), std::max(1.0, fr - i * k), face.size.width * 0.14, face.size.height * 0.32);
-            e.lineWidth = 2.2 * k; [rgb(0x2A1A06, 0.26 - i * 0.035) setStroke]; [e stroke];
+            e.lineWidth = 2.2 * k; [rgb(st.face == 4 ? 0x03202E : 0x2A1A06, 0.26 - i * 0.035) setStroke]; [e stroke];
         }
         NSBezierPath* g = [NSBezierPath bezierPath];
         [g moveToPoint:NSMakePoint(NSMaxX(face) - face.size.width * 0.34, NSMinY(face))];
@@ -739,6 +828,8 @@ struct Control {
     CGFloat spread = 0;                  // Knob/SteppedKnob: félszög (0 = 135°), Selector: szélső állások szöge (0 = 55°)
     int cap = -1;                        // sapkaszín / jelzőpont színe (-1 = téma)
     int tint = -1;                       // esztergált gomb: színezett (eloxált) sapka (-1 = nincs)
+    int rim = -1;                        // esztergált gomb: színezett (eloxált) karima / recézett külső gyűrű (-1 = nincs)
+    bool bipolar = false;                // érték-ív középről (± gombok)
     std::vector<float> taper = {};       // egyedi skála: az egyenletesen elosztott skálajelekhez tartozó értékek (szakaszonként lineáris)
     bool logTaper = false;               // logaritmikus skála (idők, arány)
     bool vertical = false;               // RadioRow: függőleges
@@ -1113,7 +1204,7 @@ private:
         const int idx = int(std::lround(c.value - c.minV));
         switch (c.kind) {
             case Control::Knob: {
-                drawKnob(c.c, c.r, c.toNorm(c.value), c.options, c.sweep(), c.cap, 11, c.tint);
+                drawKnob(c.c, c.r, c.toNorm(c.value), c.options, c.sweep(), c.cap, 11, c.tint, c.rim, c.bipolar);
                 const CGFloat lf = labelFont(c);
                 CGFloat dy = c.labelDy;
                 if (dy <= 0) {
@@ -1135,6 +1226,7 @@ private:
                 const CGFloat lf = labelFont(c);
                 const CGFloat dy = c.labelDy > 0 ? c.labelDy : c.r + 8 + lf * 0.9;
                 text(c.label, CGPointMake(c.c.x, c.c.y + dy), lf, silk(), true, 0.8);
+                if (c.format) text(c.format(c.value), CGPointMake(c.c.x, c.c.y + dy + lf + 1), lf * 0.85, accent(), false, 0.3);   // pontos érték (sokállású gomboknál)
                 break;
             }
             case Control::TrimPot:
