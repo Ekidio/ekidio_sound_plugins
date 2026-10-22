@@ -1,5 +1,8 @@
 // LIMEKI — DENSITY & CLEAN LIMITER (aufx), EKIDIO SOUND. Két kikapcsolható fokozat, együtt balról jobbra.
 // AUTO GAIN nincs (a user döntése: a limiter célja a hangerő emelése — az egyetlen kivétel a családban).
+// 2026-10-23: a CLEAN motorja az EK1 VOLUME-limitere (Shared/EKILoudLimiter.h), PUSH 0–15 dB; a RELEASE, TRUE PEAK, CLEAN LINK és
+// LOOK-AHEAD megszűnt (a motor maga variálja az elengedést, mindig true-peak és csatolt) — az azonosítójuk rejtve megmarad.
+// Alapállás: THRESHOLD 0, PUSH 0 (a user "nullázása").
 #include "EKIAUBase.h"
 #include "LimekiDSP.h"
 
@@ -14,19 +17,19 @@ public:
     Limeki(AudioComponentInstance inst, const AudioComponentDescription& desc)
         : AudioUnitBase(inst, desc,
             {
-                {"THRESHOLD", 0, 30, 6, kAudioUnitParameterUnit_Decibels},                     // lehúzás (a kijelzőn negatív)
+                {"THRESHOLD", 0, 30, 0, kAudioUnitParameterUnit_Decibels},                     // lehúzás (a kijelzőn negatív)
                 {"DENSITY CEILING", -12, 0, 0, kAudioUnitParameterUnit_Decibels},
                 {"DENSITY RELEASE", 0.5f, 2, 1, kAudioUnitParameterUnit_Generic},              // az időállandó szorzója
                 {"LINK", 0, 1, 0, kAudioUnitParameterUnit_Indexed, {"Stereo", "Dual"}},
                 {"DENSITY MODE", 0, 1, 0, kAudioUnitParameterUnit_Indexed, {"Slow", "Fast"}},
                 {"DENSITY ON", 0, 1, 1, kAudioUnitParameterUnit_Indexed, {"Off", "On"}},
-                {"PUSH", 0, 12, 0, kAudioUnitParameterUnit_Decibels},
+                {"PUSH", 0, 15, 0, kAudioUnitParameterUnit_Decibels},
                 {"CEILING", -3, 0, -1, kAudioUnitParameterUnit_Decibels},
-                {"RELEASE", 0, 5, 0, kAudioUnitParameterUnit_Indexed, {"Auto", "10 ms", "30 ms", "100 ms", "300 ms", "1 s"}},
-                {"TRUE PEAK", 0, 1, 1, kAudioUnitParameterUnit_Indexed, {"Off", "On"}},
+                {"RELEASE", 0, 5, 0, kAudioUnitParameterUnit_Indexed, {"Auto", "10 ms", "30 ms", "100 ms", "300 ms", "1 s"}, false, nullptr, false, true},
+                {"TRUE PEAK", 0, 1, 1, kAudioUnitParameterUnit_Indexed, {"Off", "On"}, false, nullptr, false, true},
                 {"CLEAN ON", 0, 1, 1, kAudioUnitParameterUnit_Indexed, {"Off", "On"}},
-                {"CLEAN LINK", 0, 100, 0, kAudioUnitParameterUnit_Percent},
-                {"LOOK-AHEAD", 0, 2, 1, kAudioUnitParameterUnit_Indexed, {"1 ms", "3 ms", "5 ms"}},
+                {"CLEAN LINK", 0, 100, 0, kAudioUnitParameterUnit_Percent, {}, false, nullptr, false, true},
+                {"LOOK-AHEAD", 0, 2, 1, kAudioUnitParameterUnit_Indexed, {"1 ms", "3 ms", "5 ms"}, false, nullptr, false, true},
                 {"DENSITY MIX", 0, 100, 100, kAudioUnitParameterUnit_Percent},
                 {"AUTO -14 LUFS", 0, 1, 0, kAudioUnitParameterUnit_Indexed, {"Off", "On"}},
                 {"DENSITY GR", -40, 0, 0, kAudioUnitParameterUnit_Decibels, {}, true},
@@ -36,11 +39,11 @@ public:
                 {"PEAK L", -60, 6, -60, kAudioUnitParameterUnit_Decibels, {}, true},
                 {"PEAK R", -60, 6, -60, kAudioUnitParameterUnit_Decibels, {}, true},
                 {"LUFS", -70, 0, -70, kAudioUnitParameterUnit_Generic, {}, true},
-                {"PUSH APPLIED", 0, 18, 0, kAudioUnitParameterUnit_Decibels, {}, true},
+                {"PUSH APPLIED", 0, 15, 0, kAudioUnitParameterUnit_Decibels, {}, true},
             },
             {
                 //                    THR CEIL REL LINK MODE DON PUSH CEIL REL TP CON CLINK LA MIX AUTO
-                {"Default",          {6,  0,   1,  0,   0,   1,  0,   -1,  0,  1, 1, 0,  1, 100, 0}},
+                {"Default",          {0,  0,   1,  0,   0,   1,  0,   -1,  0,  1, 1, 0,  1, 100, 0}},
                 {"Dense Bus",        {24, 0,   1,  0,   0,   1,  0,   -1,  0,  1, 1, 0,  1, 100, 0}},
                 {"Heavy Press",      {30, 0,   1,  0,   0,   1,  0,   -1,  0,  1, 1, 0,  1, 100, 0}},
                 {"Punchy Drums",     {12, 0,   1,  0,   1,   1,  0,   -1,  0,  1, 1, 0,  1, 100, 0}},
@@ -66,11 +69,7 @@ public:
         p.denOn = param(kDenOn);
         p.pushDb = param(kPush);
         p.ceilDb = param(kCeiling);
-        p.release = int(param(kRelease) + 0.5f);
-        p.truePeak = param(kTruePeak);
         p.cleanOn = param(kCleanOn);
-        p.cleanLink = param(kCleanLink);
-        p.lookahead = int(param(kLookahead) + 0.5f);
         p.denMix = param(kDenMix);
         p.autoLufs = param(kAutoLufs);
         dsp.process(in, out, int(channels), int(frames), p);

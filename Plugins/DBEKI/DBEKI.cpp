@@ -11,10 +11,10 @@ public:
     Dbeki(AudioComponentInstance inst, const AudioComponentDescription& desc)
         : AudioUnitBase(inst, desc,
             {
-                {"THRESHOLD", -40, 0, -20, kAudioUnitParameterUnit_Decibels},
+                {"THRESHOLD", -40, 0, -16, kAudioUnitParameterUnit_Decibels},   // lágy módban ≈ 3–4 dB GR egy átlagos mixen
                 {"COMPRESSION", 1, 60, 4, kAudioUnitParameterUnit_Ratio},
                 {"OUTPUT GAIN", -20, 20, 0, kAudioUnitParameterUnit_Decibels},
-                {"OVEREASY", 0, 1, 0, kAudioUnitParameterUnit_Indexed, {"Off", "On"}},
+                {"OVEREASY", 0, 1, 1, kAudioUnitParameterUnit_Indexed, {"Off", "On"}},   // lágy mód, alapból BE (2026-10-23)
                 {"AUTO GAIN", 0, 1, 1, kAudioUnitParameterUnit_Indexed, {"Off", "On"}},
                 {"ANALOG", 0, 100, 40, kAudioUnitParameterUnit_Percent},
                 {"MIX", 0, 100, 100, kAudioUnitParameterUnit_Percent},
@@ -27,7 +27,7 @@ public:
             {
                 // Default: AUTO GAIN be (a gain 0-n zárva); a többi preset AUTO GAIN nélkül szól, a presetek OUTPUT GAIN értéke a mért makeup (tipikus jelen)
                 //                 THR  RATIO OUT OE AUTO ANLG MIX METER
-                {"Default",        {-20, 4, 0, 0, 1, 40, 100, 0}},
+                {"Default",        {-16, 4, 0, 1, 1, 40, 100, 0}},
                 {"Kick Snap",      {-22, 4, 7, 0, 0, 45, 100, 0}},
                 {"Snare Crack",    {-24, 6, 9, 0, 0, 50, 100, 0}},
                 {"Bass Even",      {-22, 3, 6, 1, 0, 40, 100, 0}},

@@ -1,4 +1,6 @@
-// DYNEKI-6 — hatsávos karakteres csatorna-EQ (BRIT / PUNCH), M/S kettős EQ, SAT és egygombos DYN (aufx), EKIDIO SOUND
+// DYNEKI-6 — hatsávos karakteres csatorna-EQ (BRIT / PUNCH), M/S kettős EQ és egygombos, ultra tiszta automata COMP (aufx), EKIDIO SOUND
+// 2026-10-23 (a user nullázása): a SAT megszűnt (az azonosítója rejtve megmarad), minden gain 0, AIR +5 dB 20 kHz-en,
+// COMP ≈ 1–2 dB GR egy átlagos mixen, ANALOG alapból KI; az AUTO GAIN alapból BE marad (a user döntése).
 #include "EKIAUBase.h"
 #include "DynekiDSP.h"
 #include <array>
@@ -16,20 +18,22 @@ enum : UInt32 {
 
 namespace {
 
-/// main = a fő (L/R vagy MID) készlet: a user alapbeállítása (LOW 60 Hz +6, HIGH 8 kHz +2, AIR +5); a SIDE készlet sima
+constexpr float COMP_DEFAULT = 3;   // ≈ 1–2 dB GR egy átlagos mixen (mérve)
+
+/// main = a fő (L/R vagy MID) készlet: minden gain 0, csak az AIR +5 dB (20 kHz); a SIDE készlet sima
 std::vector<ParamDef> eqSetParams(const char* pfx, bool main) {
     // a nevek a plugin élettartamáig élnek (ParamDef csak mutatót tárol)
     auto n = [&](const char* s) -> const char* { return strdup((std::string(pfx) + s).c_str()); };
     return {
         {n("HPF"), 0, 4, 0, kAudioUnitParameterUnit_Indexed, {"Off", "50 Hz", "80 Hz", "160 Hz", "300 Hz"}},
-        {n("LOW GAIN"), -16, 16, main ? 6.0f : 0.0f, kAudioUnitParameterUnit_Decibels},
+        {n("LOW GAIN"), -16, 16, 0, kAudioUnitParameterUnit_Decibels},
         {n("LOW FREQ"), 0, 4, 2, kAudioUnitParameterUnit_Indexed, {"15 Hz", "35 Hz", "60 Hz", "110 Hz", "220 Hz"}},
         {n("LOW MID GAIN"), -16, 16, 0, kAudioUnitParameterUnit_Decibels},
         {n("LOW MID FREQ"), 0, 4, 1, kAudioUnitParameterUnit_Indexed, {"200 Hz", "400 Hz", "800 Hz", "1.5 kHz", "3 kHz"}},
         {n("HIGH MID GAIN"), -16, 16, 0, kAudioUnitParameterUnit_Decibels},
         {n("HIGH MID FREQ"), 0, 4, 2, kAudioUnitParameterUnit_Indexed, {"1.5 kHz", "3 kHz", "5 kHz", "7 kHz", "10 kHz"}},
-        {n("HIGH GAIN"), -16, 16, main ? 2.0f : 0.0f, kAudioUnitParameterUnit_Decibels},
-        {n("HIGH FREQ"), 0, 3, main ? 0.0f : 2.0f, kAudioUnitParameterUnit_Indexed, {"8 kHz", "10 kHz", "12 kHz", "16 kHz"}},
+        {n("HIGH GAIN"), -16, 16, 0, kAudioUnitParameterUnit_Decibels},
+        {n("HIGH FREQ"), 0, 3, 2, kAudioUnitParameterUnit_Indexed, {"8 kHz", "10 kHz", "12 kHz", "16 kHz"}},
         {n("AIR GAIN"), 0, 15, main ? 5.0f : 0.0f, kAudioUnitParameterUnit_Decibels},
         {n("AIR FREQ"), 0, 4, 3, kAudioUnitParameterUnit_Indexed, {"2.5 kHz", "5 kHz", "10 kHz", "20 kHz", "40 kHz"}},
     };
@@ -40,11 +44,11 @@ std::vector<ParamDef> allParams() {
     std::vector<ParamDef> common = {
         {"VOICE", 0, 1, 1, kAudioUnitParameterUnit_Indexed, {"Brit", "Punch"}},
         {"MODE", 0, 1, 0, kAudioUnitParameterUnit_Indexed, {"L/R", "M/S"}},
-        {"SAT", 0, 10, 0, kAudioUnitParameterUnit_Generic},
-        {"COMP", 0, 10, 5, kAudioUnitParameterUnit_Generic},
+        {"SAT", 0, 10, 0, kAudioUnitParameterUnit_Generic, {}, false, nullptr, false, true},   // megszűnt (rejtett)
+        {"COMP", 0, 10, COMP_DEFAULT, kAudioUnitParameterUnit_Generic},
         {"OUTPUT", -12, 12, 0, kAudioUnitParameterUnit_Decibels},
         {"AUTO GAIN", 0, 1, 1, kAudioUnitParameterUnit_Indexed, {"Off", "On"}},
-        {"ANALOG", 0, 100, 60, kAudioUnitParameterUnit_Percent},
+        {"ANALOG", 0, 100, 0, kAudioUnitParameterUnit_Percent},
         {"LOW MID Q", 0, 4, 0, kAudioUnitParameterUnit_Indexed, {"Auto", "0.5", "1.0", "2.0", "4.0"}},
         {"HIGH MID Q", 0, 4, 0, kAudioUnitParameterUnit_Indexed, {"Auto", "0.5", "1.0", "2.0", "4.0"}},
         {"MIX", 0, 100, 100, kAudioUnitParameterUnit_Percent},
@@ -63,10 +67,10 @@ std::vector<ParamDef> allParams() {
 using Set = std::array<float, 11>;
 constexpr Set kFlat = {0, 0, 2, 0, 1, 0, 2, 0, 2, 0, 3};
 PresetDef preset(const char* name, Set a, float voice, float mode, float sat, float comp, Set b = kFlat,
-                 float analog = 60, float mix = 100) {
+                 float analog = 60, float mix = 100, float autoGain = 1) {
     std::vector<float> v(a.begin(), a.end());
     //                VOICE  MODE  SAT  COMP OUT AUTO ANALOG LMQ HMQ MIX
-    for (float x : {voice, mode, sat, comp, 0.0f, 1.0f, analog, 0.0f, 0.0f, mix}) v.push_back(x);
+    for (float x : {voice, mode, sat, comp, 0.0f, autoGain, analog, 0.0f, 0.0f, mix}) v.push_back(x);
     v.insert(v.end(), b.begin(), b.end());
     return {name, v};
 }
@@ -74,7 +78,8 @@ PresetDef preset(const char* name, Set a, float voice, float mode, float sat, fl
 std::vector<PresetDef> allPresets() {
     //               HPF  LOW G F    LM G  F    HM G  F    HIGH G F   AIR G F
     return {
-        preset("Default",         {0,   6,   2,   0,   1,   0,    2,   2,   0,   5,   3}, 1, 0, 0, 5),   // a user alapbeállítása (2026-10-19)
+        preset("Default",         {0,   0,   2,   0,   1,   0,    2,   0,   2,   5,   3}, 1, 0, 0, COMP_DEFAULT, kFlat, 0, 100, 1),   // a user nullázása (2026-10-23)
+        preset("EKI Classic",     {0,   6,   2,   0,   1,   0,    2,   2,   0,   5,   3}, 1, 0, 0, 5),   // a korábbi alapbeállítás (2026-10-19)
         preset("Vocal Presence",  {2,   0,   2,   -2,  1,   2.5f, 1,   0,   2,   4,   3}, 0, 0, 3, 4),
         preset("Drum Bus Punch",  {0,   3,   2,   -2.5f, 1, 2,    2,   1.5f, 1,  0,   3}, 1, 0, 4, 5),
         preset("Mix Bus Air",     {0,   1,   1,   0,   1,   0,    2,   0,   2,   3,   4}, 0, 0, 2, 3),
@@ -104,7 +109,6 @@ public:
         readSet(p.b, kSHpf);
         p.voice = idx(kVoice);
         p.ms = idx(kMode);
-        p.sat = param(kSat);
         p.comp = param(kComp);
         p.outputDb = param(kOutput);
         p.autoGain = param(kAutoGain);

@@ -1,6 +1,6 @@
 // DYNEKI-6 saját panel — EKIDIO SOUND rack-stílus (a jóváhagyott GUI-terv: Tools/dyneki_mockup.mm):
 //   sötét grafit szálcsiszolt előlap, balra a hat EQ-sáv (piros/kék/szürke jelölésű esztergált gombok, arany AIR mező),
-//   középen a fekete SAT + DYN modul a pajzs-VU-val (GR), jobbra OUTPUT, AUTO GAIN és POWER.
+//   középen a fekete COMP modul a pajzs-VU-val (GR; 2026-10-23 óta a SAT nélkül), jobbra OUTPUT, AUTO GAIN és POWER.
 //   M/S módban az EDIT kapcsoló választja, hogy a gombok a MID vagy a SIDE készletet mutassák (SIDE-nál borostyán sávcímek).
 #include "EKIRack.h"
 
@@ -35,13 +35,13 @@ bool editSide(const PanelController& pc) { return msOn(pc) && pc.get(kEdit) >= 0
 
 void drawStatic(PanelController& pc) {
     drawChrome(pc, LOOK, nil, {{330, @"color amount"}, {520, @"mid bandwidth (AUTO = proportional)"}, {780, @"parallel"},
-                               {110, @"signal flow:  EQ  ›  SAT  ›  DYN  ›  OUT"}});
+                               {110, @"signal flow:  EQ  ›  COMP  ›  OUT"}});
     // AIR: arany eloxált mező
     NSBezierPath* a = [NSBezierPath bezierPathWithRoundedRect:kAir xRadius:8 yRadius:8];
     shadowed(1, 4, 0.5, ^{ [[[NSGradient alloc] initWithColorsAndLocations:rgb(0xD9B25C), 0.0, rgb(0xB88F3A), 0.55, rgb(0x9A752B), 1.0, nil]
                                drawInBezierPath:a angle:-90]; });
     [rgb(0xFFF2C8, 0.35) setStroke]; a.lineWidth = 0.8; [a stroke];
-    // SAT + DYN modul: fekete betét csavarokkal
+    // COMP modul: fekete betét csavarokkal
     NSBezierPath* d = [NSBezierPath bezierPathWithRoundedRect:kDyn xRadius:9 yRadius:9];
     shadowed(2, 6, 0.6, ^{ [[[NSGradient alloc] initWithStartingColor:rgb(0x1C1D20) endingColor:rgb(0x0F1012)] drawInBezierPath:d angle:-90]; });
     [rgb(0xFFFFFF, 0.10) setStroke]; d.lineWidth = 0.8; [d stroke];
@@ -102,13 +102,13 @@ std::unique_ptr<PanelController> buildDynekiPanel(AudioUnit au) {
                        : std::function<bool(const PanelController&)>([](const PanelController& p) { return !editSide(p); });
         cs.push_back({Control::SteppedKnob, kHpf + o, {COL[0], 168}, 22, @"FREQ Hz", @[@"OFF", @"50", @"80", @"160", @"300"], 0, 4, 0});
         cs.back().spread = 120; cs.back().cap = GREY; cs.back().labelSize = 8.5; cs.back().visibleIf = vis;
-        // gDef/fDefMain: a fő készlet alapja (a user alapbeállítása); a SIDE készlet sima (0 dB, fDef)
+        // gDef/fDefMain: a fő készlet alapja (a nullázás: minden 0, csak az AIR +5 dB 20 kHz-en); a SIDE készlet sima (0 dB, fDef)
         struct B { AudioUnitParameterID g, f; int col, cap; NSArray* freqs; NSString* unit; int fDef; float lo, hi; float gDef; int fDefMain; };
         const B bands[] = {
-            {kLowG, kLowF, 1, BLUE, @[@"15", @"35", @"60", @"110", @"220"], @"Hz", 2, -16, 16, 6, 2},
+            {kLowG, kLowF, 1, BLUE, @[@"15", @"35", @"60", @"110", @"220"], @"Hz", 2, -16, 16, 0, 2},
             {kLmG, kLmF, 2, RED, @[@".2", @".4", @".8", @"1.5", @"3"], @"kHz", 1, -16, 16, 0, 1},
             {kHmG, kHmF, 3, RED, @[@"1.5", @"3", @"5", @"7", @"10"], @"kHz", 2, -16, 16, 0, 2},
-            {kHighG, kHighF, 4, BLUE, @[@"8", @"10", @"12", @"16"], @"kHz", 2, -16, 16, 2, 0},
+            {kHighG, kHighF, 4, BLUE, @[@"8", @"10", @"12", @"16"], @"kHz", 2, -16, 16, 0, 2},
             {kAirG, kAirF, 5, GOLD, @[@"2.5", @"5", @"10", @"20", @"40"], @"kHz", 3, 0, 15, 5, 3},
         };
         for (const auto& b : bands) {
@@ -126,10 +126,8 @@ std::unique_ptr<PanelController> buildDynekiPanel(AudioUnit au) {
     cs.push_back({Control::Selector, kVoice, {COL[0], 262}, 20, @"VOICE", @[@"BRIT", @"PUNCH"], 0, 1, 1});
     cs.back().spread = 45; cs.back().labelDy = 30;
 
-    // ---- SAT + DYN (értékkijelzés nélkül: amire tekered, az a jó) ----
-    cs.push_back({Control::Knob, kSat, {636, 260}, 24, @"SAT", ticks(0, 2, 6), 0, 10, 0});
-    cs.back().labelSize = 9.5; cs.back().cap = GOLD;
-    cs.push_back({Control::Knob, kComp, {774, 260}, 24, @"COMP", ticks(0, 2, 6), 0, 10, 5});
+    // ---- COMP (értékkijelzés nélkül: amire tekered, az a jó) ----
+    cs.push_back({Control::Knob, kComp, {NSMidX(kDyn), 260}, 24, @"COMP", ticks(0, 2, 6), 0, 10, 3});
     cs.back().labelSize = 9.5; cs.back().cap = RED;
 
     // ---- OUTPUT + AUTO GAIN ----
@@ -139,7 +137,7 @@ std::unique_ptr<PanelController> buildDynekiPanel(AudioUnit au) {
 
     // ---- EKI fiók ----
     const CGFloat dy = H + 58;
-    cs.push_back({Control::Knob, kAnalog, {330, dy}, 22, @"ANALOG", nil, 0, 100, 60, pct});
+    cs.push_back({Control::Knob, kAnalog, {330, dy}, 22, @"ANALOG", nil, 0, 100, 0, pct});
     cs.back().drawer = true; cs.back().labelSize = 9; cs.back().cap = RED;
     NSArray* qs = @[@"AUTO", @".5", @"1", @"2", @"4"];
     cs.push_back({Control::SteppedKnob, kLmQ, {470, dy}, 17, @"LOW MID Q", qs, 0, 4, 0});

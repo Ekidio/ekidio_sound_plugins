@@ -1,7 +1,7 @@
 // LIMEKI saját panel — a jóváhagyott, kettéosztott GUI-terv (Tools/limeki_mockup.mm) szerint:
 //   bal fél DENSITY (borvörös): meleg GR-VU, STEREO / DUAL, SLOW / FAST, THRESHOLD, CEILING, RELEASE (szorzó), ON
-//   jobb fél CLEAN (kék): PUSH, CEILING (dBTP), RELEASE (AUTO + idők), TRUE PEAK, ON, üvegablakos LED-mérő (csúcstartó, plafonjelölő),
-//   világító LUFS-kijelző, POWER; fiók: CLEAN LINK, LOOK-AHEAD, DENSITY MIX, AUTO −14 LUFS (bekapcsolva a PUSH zárolva, a ténylegesen
+//   jobb fél CLEAN (kék, 2026-10-23 óta az EK1 VOLUME motorja): PUSH (0–15), CEILING (dBTP), ON, üvegablakos LED-mérő (csúcstartó,
+//   plafonjelölő), világító LUFS-kijelző, POWER; fiók: DENSITY MIX, AUTO −14 LUFS (bekapcsolva a PUSH zárolva, a ténylegesen
 //   beállt érték látszik). A kikapcsolt fél elhalványul. AUTO GAIN nincs (a user döntése).
 #include "EKIRack.h"
 
@@ -27,6 +27,7 @@ constexpr CGFloat SPLIT = 480;                       // a két lemez határa
 const NSRect kVU = NSMakeRect(30, 58, 180, 112);    // bal: GR-VU
 const NSRect kMeter = NSMakeRect(742, 62, 60, 212); // jobb: kimeneti LED-mérő
 constexpr CGFloat NAME_X = 870;
+constexpr CGFloat kBigLabelDy = 66;                  // THRESHOLD és PUSH: a felirat mindkét oldalon egy szintben
 constexpr CGFloat THR_X = 318, DEN_X = 430, PUSH_X = 572, CL_X = 680;
 
 void bracket(CGFloat x0, CGFloat x1, CGFloat y, NSString* name, int ink) {
@@ -85,7 +86,7 @@ void drawLedMeter(NSRect r, float dbL, float dbR, float pkL, float pkR, float ce
 }
 
 void drawStatic(PanelController& pc) {
-    drawChrome(pc, LOOK, nil, {{330, @"clean stereo link"}, {450, @"look-ahead"}, {570, @"parallel density"}, {700, @"PUSH sets itself to -14 LUFS"}});
+    drawChrome(pc, LOOK, nil, {{390, @"parallel density"}, {570, @"PUSH sets itself to -14 LUFS"}});
     // jobb fél: titán lemez a borvörös fölé (ugyanazon a lekerekített lemezen belül)
     const NSRect plateR = NSMakeRect(13, HEAD + 13, W - 26, H - HEAD - 26);
     NSBezierPath* plate = [NSBezierPath bezierPathWithRoundedRect:plateR xRadius:15 yRadius:15];
@@ -163,7 +164,7 @@ std::unique_ptr<PanelController> buildLimekiPanel(AudioUnit au) {
     pc->drawFace = drawFace;
     pc->drawOverlay = drawOverlay;
     auto& cs = pc->controls;
-    auto negDb = ^NSString*(float v) { return [NSString stringWithFormat:@"%.1f dB", -v]; };
+    auto negDb = ^NSString*(float v) { return v < 0.05f ? @"0.0 dB" : [NSString stringWithFormat:@"%.1f dB", -v]; };
     auto dB = ^NSString*(float v) { return [NSString stringWithFormat:@"%+.1f dB", v]; };
     auto dBTP = ^NSString*(float v) { return [NSString stringWithFormat:@"%.1f dBTP", v]; };
     auto pct = ^NSString*(float v) { return [NSString stringWithFormat:@"%.0f %%", v]; };
@@ -172,26 +173,21 @@ std::unique_ptr<PanelController> buildLimekiPanel(AudioUnit au) {
     // ---- bal fél: DENSITY ----
     cs.push_back({Control::RadioRow, kLink, {120, 232}, 1.0, nil, @[@"STEREO", @"DUAL"], 0, 1, 0}); cs.back().rowWiden = 1.6;
     cs.push_back({Control::RadioRow, kDenMode, {120, 270}, 1.0, nil, @[@"SLOW", @"FAST"], 0, 1, 0}); cs.back().rowWiden = 1.6;
-    cs.push_back({Control::Knob, kThreshold, {THR_X, 156}, 50, @"THRESHOLD", @[@"0", @"-5", @"-10", @"-15", @"-20", @"-25", @"-30"], 0, 30, 6, negDb});
-    cs.back().knobStyle = Fluted; cs.back().labelSize = 11;
+    cs.push_back({Control::Knob, kThreshold, {THR_X, 156}, 50, @"THRESHOLD", @[@"0", @"-5", @"-10", @"-15", @"-20", @"-25", @"-30"], 0, 30, 0, negDb});
+    cs.back().knobStyle = Fluted; cs.back().labelSize = 11; cs.back().labelDy = kBigLabelDy;
     cs.push_back({Control::Knob, kDenCeiling, {DEN_X, 100}, 20, @"CEILING", @[@"-12", @"-6", @"0"], -12, 0, 0, dB}); cs.back().labelSize = 8.5; cs.back().cap = AMBER;
     cs.push_back({Control::Knob, kDenRelease, {DEN_X, 200}, 20, @"RELEASE", @[@"½×", @"1×", @"2×"], 0.5f, 2, 1, mult}); cs.back().labelSize = 8.5; cs.back().cap = AMBER;
     cs.push_back({Control::LedButton, kDenOn, {DEN_X, 266}, 0.75, @"ON", nil, 0, 1, 1});
 
     // ---- jobb fél: CLEAN (világos feliratok a kéken) ----
-    cs.push_back({Control::Knob, kPush, {PUSH_X, 150}, 46, @"PUSH", ticks(0, 2, 7), 0, 12, 0, dB}); cs.back().labelSize = 11; cs.back().ink = TI_INK;
-    cs.push_back({Control::Knob, kCeiling, {CL_X, 112}, 20, @"CEILING", @[@"-3", @"-2", @"-1", @"0"], -3, 0, -1, dBTP}); cs.back().labelSize = 8.5; cs.back().cap = AMBER; cs.back().ink = TI_INK;
-    cs.push_back({Control::SteppedKnob, kRelease, {CL_X, 200}, 18, @"RELEASE ms", @[@"AUTO", @"10", @"30", @"100", @"300", @"1k"], 0, 5, 0});
-    cs.back().labelSize = 8; cs.back().cap = AMBER; cs.back().spread = 120; cs.back().ink = TI_INK;
-    cs.push_back({Control::LedButton, kTruePeak, {PUSH_X, 266}, 0.75, @"TRUE PEAK", nil, 0, 1, 1}); cs.back().ink = TI_INK;
+    cs.push_back({Control::Knob, kPush, {PUSH_X, 156}, 46, @"PUSH", ticks(0, 3, 6), 0, 15, 0, dB}); cs.back().labelSize = 11; cs.back().labelDy = kBigLabelDy; cs.back().ink = TI_INK;
+    cs.push_back({Control::Knob, kCeiling, {CL_X, 156}, 22, @"CEILING", @[@"-3", @"-2", @"-1", @"0"], -3, 0, -1, dBTP}); cs.back().labelSize = 8.5; cs.back().cap = AMBER; cs.back().ink = TI_INK;
     cs.push_back({Control::LedButton, kCleanOn, {CL_X, 266}, 0.75, @"ON", nil, 0, 1, 1}); cs.back().ink = TI_INK;
 
     // ---- EKI fiók ----
     const CGFloat dy = H + 58;
-    cs.push_back({Control::Knob, kCleanLink, {330, dy}, 22, @"CLEAN LINK", nil, 0, 100, 0, pct}); cs.back().drawer = true; cs.back().labelSize = 9; cs.back().cap = AMBER;
-    cs.push_back({Control::SteppedKnob, kLookahead, {450, dy}, 20, @"LOOK-AHEAD ms", @[@"1", @"3", @"5"], 0, 2, 1}); cs.back().drawer = true; cs.back().labelSize = 9; cs.back().cap = AMBER; cs.back().spread = 70;
-    cs.push_back({Control::Knob, kDenMix, {570, dy}, 22, @"DENSITY MIX", nil, 0, 100, 100, pct}); cs.back().drawer = true; cs.back().labelSize = 9; cs.back().cap = AMBER;
-    cs.push_back({Control::LedButton, kAutoLufs, {700, dy - 8}, 0.85, @"AUTO -14 LUFS", nil, 0, 1, 0}); cs.back().drawer = true;
+    cs.push_back({Control::Knob, kDenMix, {390, dy}, 22, @"DENSITY MIX", nil, 0, 100, 100, pct}); cs.back().drawer = true; cs.back().labelSize = 9; cs.back().cap = AMBER;
+    cs.push_back({Control::LedButton, kAutoLufs, {570, dy - 8}, 0.85, @"AUTO -14 LUFS", nil, 0, 1, 0}); cs.back().drawer = true;
 
     pc->lock(kPush, kAutoLufs);   // AUTO −14 LUFS alatt a PUSH magától áll (a fedőkijelző mutatja)
     return pc;

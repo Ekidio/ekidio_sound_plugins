@@ -31,6 +31,8 @@ struct ParamDef {
     bool meter = false;                            // csak olvasható mérő (VU, GR)
     const char* unitName = nullptr;                // CustomUnit felirat
     bool display = false;                          // kijelzési beállítás (pl. METER): a presetek nem írják át
+    bool hidden = false;                           // megszűnt kezelő: az azonosító (és a mentett érték) megmarad, de a
+                                                   // paraméterlistában nem szerepel — a régi projektek így nem csúsznak el
 };
 
 struct PresetDef {
@@ -150,7 +152,9 @@ public:
                 *(AudioStreamBasicDescription*)outData = mFormat[scope == kAudioUnitScope_Input ? 0 : 1]; return noErr;
             case kAudioUnitProperty_ParameterList: {
                 auto ids = (AudioUnitParameterID*)outData;
-                for (UInt32 i = 0; i < size / sizeof(AudioUnitParameterID); ++i) ids[i] = i;
+                UInt32 k = 0;
+                for (UInt32 i = 0; i < mParams.size() && k < size / sizeof(AudioUnitParameterID); ++i)
+                    if (!mParams[i].hidden) ids[k++] = i;
                 return noErr;
             }
             case kAudioUnitProperty_ParameterInfo:
@@ -526,7 +530,8 @@ private:
                 writable = !mInitialized; return noErr;
             }
             case kAudioUnitProperty_ParameterList:
-                size = scope == kAudioUnitScope_Global ? UInt32(mParams.size() * sizeof(AudioUnitParameterID)) : 0;
+                size = scope == kAudioUnitScope_Global
+                     ? UInt32(std::count_if(mParams.begin(), mParams.end(), [](const ParamDef& d) { return !d.hidden; }) * sizeof(AudioUnitParameterID)) : 0;
                 return noErr;
             case kAudioUnitProperty_ParameterInfo:
                 if (scope != kAudioUnitScope_Global) return kAudioUnitErr_InvalidScope;

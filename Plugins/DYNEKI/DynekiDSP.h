@@ -1,15 +1,18 @@
-// DynekiDSP.h — DYNEKI-6: hatsávos karakteres csatorna-EQ + SAT + egygombos DYN, AU-független.
+// DynekiDSP.h — DYNEKI-6: hatsávos karakteres csatorna-EQ + egygombos, ultra tiszta automata kompresszor, AU-független.
 //
-// Jelút (2x túlmintavételezve):  EQ (L/R vagy M/S kettős EQ) → SAT → DYN → ANALOG szín → MIX → OUTPUT / AUTO GAIN
+// Jelút (2x túlmintavételezve):  EQ (L/R vagy M/S kettős EQ) → COMP → ANALOG szín → MIX → OUTPUT / AUTO GAIN
+// (2026-10-23, a user kérésére: a SAT kikerült; a COMP motorja a DBEKI helyett egy színezés nélküli automata kompresszor)
 //   EQ: HPF (18 dB/okt) · LOW polc · LOW MID / HIGH MID harang · HIGH polc · AIR (széles, csak emel)
 //       VOICE: BRIT = széles, tekercses görbék (polcok enyhe púppal/bemélyedéssel, állandó Q) + vas/trafó szín
 //              PUNCH = arányos Q (nagyobb emelés → szűkebb harang), feszesebb polcok + op-amp/szalag szín
 //       A szűrők az analóg prototípus "illesztett" (matched) digitális megfelelői: a pólusok pontosan,
 //       a nagyság DC-n, Nyquist-en és a sáv frekvenciáján egyezik → nincs "összegyűrődés" a magasban.
-//   SAT: lágy, aszimmetrikus telítés (a legmélyebb tartományt kíméli, felül szalagszerűen kerekít), a VOICE-t követi
-//   DYN: a DBEKI motorja egy gombbal (valódi RMS, programfüggő felfutás, 120 dB/s elengedés, lágy térd), mindig sztereó
-//   AUTO GAIN: EQ = a görbéből számolt állandó kompenzáció (nem pumpál) + SAT/DYN = energia-összevetés
-//   MIX: a SAT+DYN rész párhuzamos keverése az EQ-zott jellel (azonos időalapon, nincs fésűszűrés)
+//   COMP: egy gomb → küszöb és arány együtt (0 = ki); valódi RMS-érzékelés (25 ms-os mozgóátlag + 5 ms), lágy térd, csatolt sztereó;
+//         automata időzítés két burkolóval: a gyors (10 ms fel / 80 ms le) a csúcsokat fogja, a lassú (300 ms / 1,2 s) az átlagos
+//         összenyomást tartja — a csillapítás a kettő közül a nagyobb, így rövid csúcs után gyorsan, tartós résznél lassan enged
+//         (nem lüktet); 2 ms-os simítás a végén (a mélyben sem modulál). Semmi telítés vagy szín: tiszta erősítésszabályzás.
+//   AUTO GAIN: EQ = a görbéből számolt állandó kompenzáció (nem pumpál) + COMP = energia-összevetés
+//   MIX: a COMP párhuzamos keverése az EQ-zott jellel (azonos időalapon, nincs fésűszűrés)
 #pragma once
 #include "EKIAnalog.h"
 #include "EKIFilters.h"
@@ -38,13 +41,12 @@ struct DynekiParams {
     EqSet a, b;                // a = L/R vagy MID, b = SIDE
     int voice = 0;             // 0 = BRIT, 1 = PUNCH
     int ms = 0;                // 0 = L/R, 1 = M/S
-    float sat = 0;             // 0…10
     float comp = 0;            // 0…10
     float outputDb = 0;        // −12…+12 dB
     float autoGain = 1;
     float analog = 60;         // 0…100 %
     int lmQ = 0, hmQ = 0;      // kQTable index (0 = AUTO)
-    float mix = 100;           // 0…100 % (SAT + DYN párhuzamos keverése)
+    float mix = 100;           // 0…100 % (a COMP párhuzamos keverése)
 };
 
 // MARK: - a DSP
@@ -58,16 +60,14 @@ public:
     void prepare(float sampleRate) {
         sr = sampleRate; sr2 = 2 * sampleRate;
         for (int c = 0; c < kMaxCh; ++c) {
-            satLow[c].set(90.0f, sr2);
-            satHf[c].set(15000.0f, sr2);
-            satPre[c].designMatched(Analog2::bell(500.0, 5.0, 0.7), sr2, 500.0);
-            satDe[c].designMatched(Analog2::bell(500.0, -5.0, 0.7), sr2, 500.0);
             iron[c].prepare(sr2, 60000.0f, 90.0f);
             dc[c].set(sr, 3.0f);
         }
-        kRms = 1.0f - onePoleCoef(0.004f, sr2);
-        kSatEnv = 1.0f - onePoleCoef(0.3f, sr2);
-        relPerSample = 120.0f / sr2;
+        kRms = 1.0f - onePoleCoef(0.005f, sr2);
+        rmsBox.assign(size_t(std::lround(0.025f * sr2)), 0.0f);   // 25 ms-os mozgóátlag: a mély szinusz hullámzása kioltódik
+        kFastA = 1.0f - onePoleCoef(0.010f, sr2); kFastR = 1.0f - onePoleCoef(0.080f, sr2);
+        kSlowA = 1.0f - onePoleCoef(0.300f, sr2); kSlowR = 1.0f - onePoleCoef(1.200f, sr2);
+        kGrSm = 1.0f - onePoleCoef(0.002f, sr2);
         autoMk.prepare(sr2);
         for (Biquad* k : {&kwIn[0], &kwOut[0]}) k->designMatched(Analog2::highShelf(1681.0, 4.0, 0.71), sr2, 1681.0);
         for (Biquad* k : {&kwIn[1], &kwOut[1]}) k->designMatched(Analog2::highPass(38.0, 0.5), sr2, 38.0);
@@ -79,10 +79,10 @@ public:
 
     void reset() {
         for (int c = 0; c < kMaxCh; ++c) {
-            os[c].reset(); dc[c].reset(); satLow[c].reset(); satHf[c].reset(); iron[c].reset(); satPre[c].reset(); satDe[c].reset();
+            os[c].reset(); dc[c].reset(); iron[c].reset();
             for (auto& f : eq[c]) f.reset();
         }
-        rms = 0; grDb = 0; gNow = 1; satEnv = 0.0625f; satK = 1;
+        rms = 0; grDb = 0; grFast = grSlow = 0; gNow = 1; std::fill(rmsBox.begin(), rmsBox.end(), 0.0f); rmsSum = 0; rmsPos = 0;
         autoMk.reset(); meter.reset();
         for (auto& k : kwIn) k.reset();
         for (auto& k : kwOut) k.reset();
@@ -94,19 +94,15 @@ public:
         const bool msOn = p.ms == 1 && ch == 2;
         const bool punch = p.voice == 1;
         const bool autoOn = p.autoGain >= 0.5f;
-        const float satA = clampf(p.sat, 0, 10) * 0.1f;
-        const float compA = clampf(p.comp, 0, 10) * 0.06f;   // a gomb teljes útja = a korábbi 0…60 % (felette már túl sok volt)
+        const float compA = clampf(p.comp, 0, 10) * 0.1f;
         const float an = clampf(p.analog, 0, 100) * 0.01f;
         const float mixT = clampf(p.mix, 0, 100) * 0.01f;
         const float outT = clampf(p.outputDb, -12, 12);
 
-        // SAT: VOICE szerint — BRIT: vas (több páros felharmonikus), PUNCH: szalag/op-amp (feszesebb, páratlan)
-        satStage.set(0, punch ? 0.07f : 0.24f, 4.0f);
-        satStage.headroom = dbToGain(10.0f - (punch ? 22.0f : 20.0f) * satA);   // a −12 dBFS-es munkaszinthez: +10 dB (tiszta) … −10/−12 dB (dús)
         // ANALOG szín: BRIT = trafó, PUNCH = op-amp
         opamp.set(an * 0.45f, 0.04f, 16.0f);
-        // DYN: egy gomb → küszöb és arány együtt (0 = ki)
-        const float thrT = -8.0f - 22.0f * compA, slopeT = 1.0f - 1.0f / (1.5f + 4.0f * compA);
+        // COMP: egy gomb → küszöb és arány együtt (0 = ki): −6 … −30 dB, 1,5:1 … 4:1
+        const float thrT = -6.0f - 24.0f * compA, slopeT = 1.0f - 1.0f / (1.5f + 2.5f * compA);
 
         if (!primed) {
             sOut = outT; sMix = mixT; sThr = thrT; sSlope = slopeT;
@@ -149,45 +145,24 @@ public:
                     }
                     if (msOn) { const float l = x[0] + x[1], r = x[0] - x[1]; x[0] = l; x[1] = r; }
 
-                    // ---- SAT ----
-                    // lassú (≈0,3 s) összekapcsolt szintkövető: a SAT mindig −12 dBFS RMS munkaszinten dolgozik,
-                    // így halk és hangos sávon is ugyanannyit dúsít (a kimenet szintje nem változik)
-                    if (satA > 0) {
-                        float sp = 0;
-                        for (int c = 0; c < ch; ++c) sp = std::max(sp, x[c] * x[c]);
-                        satEnv += (sp - satEnv) * kSatEnv;
-                        satK = 0.25f / std::sqrt(std::max(satEnv, 1e-6f));
-                    }
                     float e[kMaxCh];
-                    for (int c = 0; c < ch; ++c) {
-                        e[c] = x[c];
-                        if (satA > 0) {
-                            const float lo = satLow[c].lowpass(x[c]) * 0.6f;           // a legmélyebb tartományt kíméli
-                            // "dúsítás": az alsó közép (≈500 Hz) kiemelve hajtja a telítőt, utána pontosan visszavéve →
-                            // a felharmonikusok főleg a testes középből születnek (vastagabb, melegebb, nem recsegős)
-                            const float v = (x[c] - lo) * satK;                           // munkaszintre hozva (szintfüggetlen)
-                            float y = satDe[c].tick(satStage.tick(satPre[c].tick(v))) / satK + lo;
-                            const float hf = satHf[c].lowpass(y);                      // szalagszerű kerekítés felül
-                            y += (hf - y) * satA * (punch ? 0.35f : 0.2f);
-                            x[c] = y;
-                        }
-                    }
+                    for (int c = 0; c < ch; ++c) e[c] = x[c];
 
-                    // ---- DYN (összekapcsolt sztereó, valódi RMS) ----
+                    // ---- COMP (csatolt sztereó, valódi RMS, automata időzítés két burkolóval) ----
                     float pw = 0;
-                    for (int c = 0; c < ch; ++c) pw = std::max(pw, x[c] * x[c]);
+                    for (int c = 0; c < ch; ++c) pw += x[c] * x[c];
+                    pw /= float(ch);
+                    rmsSum += double(pw) - double(rmsBox[rmsPos]); rmsBox[rmsPos] = pw; rmsPos = (rmsPos + 1) % rmsBox.size();
+                    rms += (float(std::max(rmsSum, 0.0) / double(rmsBox.size())) - rms) * kRms;
+                    float target = 0;
                     if (compA > 0) {
-                        rms += (pw - rms) * kRms;
-                        const float lvl = 10.0f * std::log10(std::max(rms * 2.0f, 1e-12f));
-                        const float target = std::max(softKneeGR(lvl - thr, slope, 10.0f), -40.0f);
-                        const float err = target - grDb;
-                        if (err < 0) {
-                            const float tau = clampf(0.004f * std::pow(10.0f / std::max(-err, 0.5f), 1.6f), 0.0005f, 0.040f);
-                            grDb += err * (1.0f - std::exp(-1.0f / (tau * sr2)));
-                        } else grDb += std::min(err, relPerSample);
-                    } else {
-                        rms = 0; grDb = std::min(0.0f, grDb + relPerSample);
+                        const float lvl = 10.0f * std::log10(std::max(rms * 2.0f, 1e-12f));   // szinuszon a csúcsszint
+                        target = std::max(softKneeGR(lvl - thr, slope, 10.0f), -40.0f);
                     }
+                    grFast += (target - grFast) * (target < grFast ? kFastA : kFastR);
+                    grSlow += (target - grSlow) * (target < grSlow ? kSlowA : kSlowR);
+                    grDb += (std::min(grFast, grSlow) - grDb) * kGrSm;
+                    if (compA <= 0 && grDb > -1e-4f) grDb = grFast = grSlow = 0;   // kikapcsolva pontosan 0 dB
                     gNow = dbToGain(grDb);
 
                     // ---- szín, keverés, kimenet ----
@@ -197,7 +172,7 @@ public:
                         y = e[c] + (y - e[c]) * mx;
                         x[c] = y;
                     }
-                    // a SAT/DYN kompenzáció hangerő-érzet szerint (K-súlyozott mono összeg) méri az energiát
+                    // a COMP kompenzáció hangerő-érzet szerint (K-súlyozott mono összeg) méri az energiát
                     float sIn = 0, sOut2 = 0;
                     for (int c = 0; c < ch; ++c) { sIn += e[c]; sOut2 += x[c]; }
                     const float kIn = kwIn[1].tick(kwIn[0].tick(sIn)), kOut = kwOut[1].tick(kwOut[0].tick(sOut2));
@@ -217,7 +192,7 @@ public:
 
     float gainReductionDb() const { return grDb; }
     float vuDb() const { return meter.db(); }
-    /// az AUTO GAIN teljes kompenzációja (EQ + SAT/DYN), dB
+    /// az AUTO GAIN teljes kompenzációja (EQ + COMP), dB
     float autoMakeupDb() const { return eqCompDb + autoMk.value(); }
     float eqCompensationDb() const { return eqCompDb; }
 
@@ -234,17 +209,16 @@ private:
     Oversampler2x os[kMaxCh];
     DCBlocker dc[kMaxCh];
     Biquad eq[kMaxCh][kBands];
-    OnePole satLow[kMaxCh], satHf[kMaxCh];
-    Biquad satPre[kMaxCh], satDe[kMaxCh];   // SAT: alsó-közép kiemelés / visszavétel
     Transformer iron[kMaxCh];
-    TubeStage satStage, opamp;
+    TubeStage opamp;
     AutoMakeup autoMk;
     Biquad kwIn[2], kwOut[2];     // K-súlyozás az AUTO GAIN energia-méréséhez
     VUMeter meter;
     float sG[2][5] = {};
     float sOut = 0, sMix = 1, sThr = 0, sSlope = 0;
-    float rms = 0, kRms = 0, grDb = 0, gNow = 1, relPerSample = 0;
-    float satEnv = 0.0625f, satK = 1, kSatEnv = 0;   // SAT szintkövető (teljesítmény) és a munkaszint-szorzó
+    float rms = 0, kRms = 0, grDb = 0, gNow = 1;
+    std::vector<float> rmsBox; double rmsSum = 0; size_t rmsPos = 0;
+    float grFast = 0, grSlow = 0, kFastA = 0, kFastR = 0, kSlowA = 0, kSlowR = 0, kGrSm = 0;   // COMP: a két burkoló
     float eqComp[kMaxCh] = {1, 1}, eqCompDb = 0;
     bool primed = false, dirty = true;
     // az utolsó tervezés "alakja" (a lépcsős értékek); ha változik, újratervezés

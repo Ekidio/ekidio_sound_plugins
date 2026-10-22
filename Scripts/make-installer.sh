@@ -1,10 +1,11 @@
 #!/bin/zsh
 # EKIDIO SOUND — telepítő: minden plugin buildje (ad-hoc aláírva) → .pkg (/Library/Audio/Plug-Ins/Components) → DMG
 #
-#   Scripts/make-installer.sh            # build/EKIDIO-SOUND-Plugins-<verzió>.pkg és .dmg (a régi, egyben lévő csomag)
+#   Scripts/make-installer.sh            # build/EKIDIO-SOUND-Compressor-Collection-<verzió>.pkg és .dmg (CSAK a 8 kompresszor)
 #   Scripts/make-installer.sh LIMEKI     # önálló telepítő egy pluginhoz: build/EKIDIO-SOUND-LIMEKI-<plugin verzió>.pkg és .dmg
 #
-# Kiadási elv: minden új / módosított plugin önálló telepítőt kap (saját GitHub-kiadás: <név kisbetűvel>-v<verzió>).
+# Kiadási elv (a user döntése, 2026-10-23): EGY összevont telepítő van, a COMPRESSOR COLLECTION (csak a 8 kompresszor, GitHub-címke
+# v<verzió>); minden más plugin önálló telepítőt kap (saját GitHub-kiadás: <név kisbetűvel>-v<verzió>).
 #
 # A .pkg a rendszerszintű Components mappába telepít, utána frissíti az AU-listát (AudioComponentRegistrar).
 # A pkg-vel telepített pluginok nem kerülnek "karanténba", így a DAW gond nélkül betölti őket.
@@ -22,11 +23,13 @@ if [[ -n $SINGLE ]]; then
     TITLE="EKIDIO SOUND $SINGLE"
     PLUGS=("$ROOT/Plugins/$SINGLE")
 else
-    VERSION="1.2.0"
-    NAME="EKIDIO-SOUND-Plugins-$VERSION"
+    VERSION="1.3.0"
+    NAME="EKIDIO-SOUND-Compressor-Collection-$VERSION"
     PKGID="$BUNDLE_PREFIX.compressors"
-    TITLE="EKIDIO SOUND Plugins"
-    PLUGS=("$ROOT"/Plugins/*(/))
+    TITLE="EKIDIO SOUND Compressor Collection"
+    COMPRESSORS=(OPTEKI FETEKI VARIEKI BUSEKI APEKI DBEKI TUBEKI FAIREKI)
+    PLUGS=()
+    for c in $COMPRESSORS; do PLUGS+=("$ROOT/Plugins/$c"); done
 fi
 OUT="$ROOT/build"
 STAGE="$OUT/pkg-stage"
@@ -34,7 +37,8 @@ SCRIPTS="$OUT/pkg-scripts"
 RES="$OUT/pkg-resources"
 
 echo "==> fordítás (telepítés nélkül)"
-"$ROOT/Scripts/build.sh" ${SINGLE:-all} --no-install
+if [[ -n $SINGLE ]]; then "$ROOT/Scripts/build.sh" $SINGLE --no-install
+else for c in $COMPRESSORS; do "$ROOT/Scripts/build.sh" $c --no-install; done; fi
 
 rm -rf "$STAGE" "$SCRIPTS" "$RES"
 mkdir -p "$STAGE" "$SCRIPTS" "$RES"
@@ -93,13 +97,12 @@ EOF
 else
 cat > "$RES/welcome.html" <<EOF
 <html><head><meta charset="utf-8"></head><body style="font-family:-apple-system,Helvetica;font-size:13px">
-<h2>EKIDIO SOUND &mdash; Plugins $VERSION</h2>
-<p>Eleven analog-inspired Audio Unit (AU) plugins for macOS.</p>
-<p>Compressors: <b>OPTEKI</b> optical leveler &middot; <b>FETEKI</b> FET peak limiter &middot; <b>VARIEKI</b> variable-mu dynamics &middot;
+<h2>EKIDIO SOUND &mdash; Compressor Collection $VERSION</h2>
+<p>Eight analog-inspired Audio Unit (AU) compressors for macOS:
+<b>OPTEKI</b> optical leveler &middot; <b>FETEKI</b> FET peak limiter &middot; <b>VARIEKI</b> variable-mu dynamics &middot;
 <b>BUSEKI</b> stereo bus compressor &middot; <b>APEKI</b> punch bus compressor &middot; <b>DBEKI</b> RMS compressor/limiter &middot;
 <b>TUBEKI</b> opto tube compressor &middot; <b>FAIREKI</b> variable-mu limiter.</p>
-<p>EQ, color &amp; tape: <b>DYNEKI-6</b> six-band character EQ + dynamics &middot; <b>SATEKI</b> soft tube air enhancer &middot; <b>TAPEKI</b> analog tape machine.</p>
-<p>They are installed to <code>/Library/Audio/Plug-Ins/Components</code>. Restart your DAW afterwards.</p>
+<p>They are installed to <code>/Library/Audio/Plug-Ins/Components</code>; other EKIDIO SOUND plugins are not touched. Restart your DAW afterwards.</p>
 </body></html>
 EOF
 fi
@@ -172,15 +175,17 @@ open(p, "w").write(json.dumps(d, indent=2) + "\n")' "$ROOT/docs/version.json" "$
 fi
 
 # a pluginok frissítés-figyelője ezt olvassa (a GitHub Pages-ről): commit + push a kiadással együtt
-# pluginonkénti verziók (Plugins/*/plugin.env VERSION) — a pluginok a saját bejegyzésüket nézik
-PLIST=""
-for p in "$ROOT"/Plugins/*(/); do
-    PV=$(grep '^VERSION=' "$p/plugin.env" | cut -d'"' -f2)
-    PLIST+="${PLIST:+,\n}    \"${p:t}\": \"$PV\""
-done
-printf '{\n  "version": "%s",\n  "url": "https://ekidio.github.io/ekidio_sound_plugins/",\n  "plugins": {\n'"$PLIST"'\n  }\n}\n' "$VERSION" > "$ROOT/docs/version.json"
+# a közös "version" = a gyűjtemény verziója (régi formátumú pluginoknak); a 8 kompresszor bejegyzése frissül, a többi marad
+/usr/bin/python3 -I -c '
+import json, sys, re
+p, ver, root = sys.argv[1], sys.argv[2], sys.argv[3]
+d = json.load(open(p)); d["version"] = ver
+for n in sys.argv[4:]:
+    d.setdefault("plugins", {})[n] = re.search(r"VERSION=\"([^\"]+)\"", open(f"{root}/Plugins/{n}/plugin.env").read()).group(1)
+d["plugins"] = dict(sorted(d["plugins"].items()))
+open(p, "w").write(json.dumps(d, indent=2) + "\n")' "$ROOT/docs/version.json" "$VERSION" "$ROOT" $COMPRESSORS
 # a weboldal letöltési linkje az aktuális DMG-re mutasson
-sed -i '' -E "s#download/v[0-9.]+[0-9]/EKIDIO-SOUND-(Compressors|Plugins)-[0-9.]+[0-9]\.dmg#download/v$VERSION/$NAME.dmg#g" "$ROOT/docs/index.html" "$ROOT/docs/hu/index.html"
+sed -i '' -E "s#download/v[0-9.]+[0-9]/EKIDIO-SOUND-(Compressors|Plugins|Compressor-Collection)-[0-9.]+[0-9]\.dmg#download/v$VERSION/$NAME.dmg#g" "$ROOT/docs/index.html" "$ROOT/docs/hu/index.html"
 
 echo "Kész:"
 ls -lh "$OUT/$NAME.pkg" "$OUT/$NAME.dmg" | awk '{print "  " $5 "  " $9}'

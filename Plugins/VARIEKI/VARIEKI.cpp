@@ -12,18 +12,18 @@ public:
     Varieki(AudioComponentInstance inst, const AudioComponentDescription& desc)
         : AudioUnitBase(inst, desc,
             {
-                {"THRESHOLD", -40, 0, -18, kAudioUnitParameterUnit_Decibels},
+                {"THRESHOLD", -40, 0, -24, kAudioUnitParameterUnit_Decibels},
                 {"PEAK CREST", 0, 20, 6, kAudioUnitParameterUnit_Decibels},
-                {"RATIO", 1, 20, 2, kAudioUnitParameterUnit_Ratio},
-                {"SOFT KNEE", 0, 24, 6, kAudioUnitParameterUnit_Decibels},
-                {"ATTACK", 0.1f, 100, 10, kAudioUnitParameterUnit_Milliseconds},
-                {"RELEASE PEAK", 5, 500, 50, kAudioUnitParameterUnit_Milliseconds},
-                {"RELEASE RMS", 20, 2000, 250, kAudioUnitParameterUnit_Milliseconds},
+                {"RATIO", 1, 20, 2.5f, kAudioUnitParameterUnit_Ratio},
+                {"SOFT KNEE", 0, 24, 12, kAudioUnitParameterUnit_Decibels},
+                {"ATTACK", 0.1f, 100, 20, kAudioUnitParameterUnit_Milliseconds},
+                {"RELEASE PEAK", 5, 500, 80, kAudioUnitParameterUnit_Milliseconds},
+                {"RELEASE RMS", 20, 2000, 600, kAudioUnitParameterUnit_Milliseconds},
                 {"STEREO SENS", 0, 100, 0, kAudioUnitParameterUnit_Percent},
-                {"SC LOW CUT", 0, 4, 0, kAudioUnitParameterUnit_Indexed, {"Off", "40 Hz", "80 Hz", "120 Hz", "200 Hz"}},
+                {"SC LOW CUT", 0, 4, 1, kAudioUnitParameterUnit_Indexed, {"Off", "40 Hz", "80 Hz", "120 Hz", "200 Hz"}},
                 {"MAKEUP", -12, 24, 0, kAudioUnitParameterUnit_Decibels},
                 {"AUTO GAIN", 0, 1, 1, kAudioUnitParameterUnit_Indexed, {"Off", "On"}},
-                {"ANALOG", 0, 100, 35, kAudioUnitParameterUnit_Percent},
+                {"ANALOG", 0, 100, 85, kAudioUnitParameterUnit_Percent},
                 {"MIX", 0, 100, 100, kAudioUnitParameterUnit_Percent},
                 {"METER", 0, 2, 0, kAudioUnitParameterUnit_Indexed, {"Gain Reduction", "Output +4", "Output +10"}, false, nullptr, true},
                 {"VU", -20, 3, -20, kAudioUnitParameterUnit_Decibels, {}, true},
@@ -34,7 +34,7 @@ public:
             },
             {
                 //                  THR  CREST RATIO KNEE ATK  RELP RELR  ST  CUT MK AUTO ANLG MIX METER
-                {"Default",         {-18, 6, 2, 6, 10, 50, 250, 0, 0, 0, 1, 35, 100, 0}},
+                {"Default",         {-24, 6, 2.5f, 12, 20, 80, 600, 0, 1, 0, 1, 85, 100, 0}},   // = a "Vari Glow", AUTO GAIN-nel (2026-10-23)
                 {"Velvet Bus",      {-20, 6, 2, 10, 15, 60, 350, 15, 2, 4.5f, 0, 45, 100, 0}},
                 {"Vocal Silk",      {-26, 9, 3, 6, 5, 40, 150, 0, 2, 9.5f, 0, 40, 100, 0}},
                 {"Thick Drums",     {-28, 3, 4, 6, 3, 30, 120, 0, 1, 13, 0, 70, 70, 0}},

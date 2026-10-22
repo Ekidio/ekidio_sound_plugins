@@ -24,15 +24,15 @@ public:
                 {"REPRO HF", -8, 8, 0, kAudioUnitParameterUnit_Decibels},
                 {"MIX", 0, 100, 100, kAudioUnitParameterUnit_Percent},
                 {"LEVEL OUT", -12, 12, 0, kAudioUnitParameterUnit_Decibels},
-                {"AUTO GAIN", 0, 1, 1, kAudioUnitParameterUnit_Indexed, {"Off", "On"}},
+                {"AUTO GAIN", 0, 1, 0, kAudioUnitParameterUnit_Indexed, {"Off", "On"}},
                 {"TAPE LEVEL", -20, 3, -20, kAudioUnitParameterUnit_Decibels, {}, true},
                 {"AUTO MAKEUP", -40, 40, 0, kAudioUnitParameterUnit_Decibels, {}, true},
             },
             {
-                // AUTO GAIN mindenhol be (EKI-szabály)
+                // AUTO GAIN: a Default presetben és alapértékként KI (a user döntése, 2026-10-23); a többi preset bekapcsolva hagyja
                 // alap: a user beállítása: STUDIO, 30 ips, REC 4,7, W&F 0, NOISE 1, BIAS UNDER, HEAD BUMP 0, CAL +3, REPRO LF 0, REPRO HF 0 (= +6 dB)
                 //                    REC   SPD MACH WOW NOISE BIAS BUMP CAL RLF   RHF   MIX  OUT AUTO
-                {"Default",           {4.7f, 2,  0,   0,  1,    0,   0,   0,  0,    0,    100, 0,  1}},   // a user beállítása (képről)
+                {"Default",           {4.7f, 2,  0,   0,  1,    0,   0,   0,  0,    0,    100, 0,  0}},   // a user beállítása (képről)
                 {"Warm Drums",        {6.5f, 1,  0,   1,  1,    0,   6,   1,  1,    -4,   100, 0,  1}},
                 {"Mix Bus Glue",      {5,    2,  0,   1,  1,    1,   3,   0,  0,    -3.5f, 100, 0, 1}},
                 {"Mastering Gloss",   {4.5f, 2,  1,   0,  0,    2,   2,   0,  0,    -3,   100, 0,  1}},

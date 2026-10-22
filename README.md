@@ -3,7 +3,7 @@
 Fifteen free, analog-inspired plugins for macOS (Audio Unit / AUv2): eight compressors, a character EQ, a soft tube air enhancer, an analog tape machine, a limiter and three mastering tools.
 
 **Website:** https://ekidio.github.io/ekidio_sound_plugins/ · [Magyar](https://ekidio.github.io/ekidio_sound_plugins/hu/)
-**Download:** [the collection, 11 plugins (v1.2.0)](https://github.com/Ekidio/ekidio_sound_plugins/releases/tag/v1.2.0) · [LIMEKI](https://github.com/Ekidio/ekidio_sound_plugins/releases/tag/limeki-v1.0.0) · [EK1](https://github.com/Ekidio/ekidio_sound_plugins/releases/tag/ek1-v1.0.0) · [MASTEQUI](https://github.com/Ekidio/ekidio_sound_plugins/releases/tag/mastequi-v1.0.0) · [EKIPPER](https://github.com/Ekidio/ekidio_sound_plugins/releases/tag/ekipper-v1.0.0) (own installers)
+**Download:** [Compressor Collection, 8 compressors (v1.3.0)](https://github.com/Ekidio/ekidio_sound_plugins/releases/tag/v1.3.0) · [DYNEKI-6](https://github.com/Ekidio/ekidio_sound_plugins/releases/tag/dyneki-v1.1.0) · [SATEKI](https://github.com/Ekidio/ekidio_sound_plugins/releases/tag/sateki-v1.0.0) · [TAPEKI](https://github.com/Ekidio/ekidio_sound_plugins/releases/tag/tapeki-v1.0.1) · [MASTEQUI](https://github.com/Ekidio/ekidio_sound_plugins/releases/tag/mastequi-v1.0.0) · [EK1](https://github.com/Ekidio/ekidio_sound_plugins/releases/tag/ek1-v1.1.0) · [EKIPPER](https://github.com/Ekidio/ekidio_sound_plugins/releases/tag/ekipper-v1.0.0) · [LIMEKI](https://github.com/Ekidio/ekidio_sound_plugins/releases/tag/limeki-v1.1.0)
 
 ![New plugins: EK1, MASTEQUI, EKIPPER](docs/assets/new-plugin.jpg)
 
@@ -17,11 +17,11 @@ Fifteen free, analog-inspired plugins for macOS (Audio Unit / AUv2): eight compr
 | **DBEKI** | RMS compressor / limiter |
 | **TUBEKI** | opto tube compressor |
 | **FAIREKI** | variable-mu limiter with LAT/VERT |
-| **DYNEKI-6** | six-band character EQ (BRIT / PUNCH), M/S, SAT and one-knob COMP |
-| **SATEKI** | soft tube air enhancer (three tube stages, 5–16 kHz) |
-| **TAPEKI** | analog tape machine (STUDIO / MASTER / CASSETTE, hysteresis tape model, spinning reels) |
-| **LIMEKI** | density & clean limiter (analog-style density + look-ahead true-peak limiter, AUTO −14 LUFS) — separate installer |
-| **EK1** | one-knob-per-job mastering chain (AIR / FOCUS / BASS PUNCH, PUSH density, two-stage VOLUME limiter, TRANSIENT, WIDTH) — separate installer |
+| **DYNEKI-6** | six-band character EQ (BRIT / PUNCH), M/S and an ultra-clean one-knob auto COMP — separate installer |
+| **SATEKI** | soft tube air enhancer (three tube stages, 5–16 kHz) — separate installer |
+| **TAPEKI** | analog tape machine (STUDIO / MASTER / CASSETTE, hysteresis tape model, spinning reels) — separate installer |
+| **LIMEKI** | density & clean limiter (analog-style density + the EK1 two-stage true-peak limiter, AUTO −14 LUFS) — separate installer |
+| **EK1** | one-knob-per-job mastering chain (AIR / FOCUS / BASS PUNCH, PUSH density, two-stage VOLUME limiter, TRANSIENT, WIDTH, AUTO −14 LUFS) — separate installer |
 | **MASTEQUI** | three-band mastering EQ with low and air shelves, 2× linear-phase oversampling — separate installer |
 | **EKIPPER** | soft clipper (DRIVE, OUTPUT, 2× / 4× / 8× oversampling) — separate installer |
 
@@ -29,14 +29,14 @@ Requirements: macOS 11+, Apple Silicon or Intel, an AU host (Logic Pro, GarageBa
 
 ## Install
 
-Open the DMG and run **Install EKIDIO SOUND Plugins.pkg** (or a single-plugin one, e.g. **Install EKIDIO SOUND EK1.pkg**). If macOS cannot verify the developer, click *Done*,
+Open the DMG and run **Install EKIDIO SOUND Compressor Collection.pkg** (or a single-plugin one, e.g. **Install EKIDIO SOUND EK1.pkg**). If macOS cannot verify the developer, click *Done*,
 then *System Settings → Privacy & Security → Open Anyway*. Restart your DAW.
 
 ## Build from source
 
 ```bash
 Scripts/build.sh all               # universal build, ad-hoc signing, install to ~/Library, auval -strict
-Scripts/make-installer.sh          # build/EKIDIO-SOUND-Plugins-<version>.pkg and .dmg (the collection)
+Scripts/make-installer.sh          # build/EKIDIO-SOUND-Compressor-Collection-<version>.pkg and .dmg (the 8 compressors)
 Scripts/make-installer.sh LIMEKI   # standalone installer for one plugin: build/EKIDIO-SOUND-LIMEKI-<version>.pkg and .dmg
 ```
 

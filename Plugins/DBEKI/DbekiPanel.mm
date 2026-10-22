@@ -94,7 +94,7 @@ std::unique_ptr<PanelController> buildDbekiPanel(AudioUnit au) {
     auto pct = ^NSString*(float v) { return [NSString stringWithFormat:@"%.0f %%", v]; };
 
     // a három nagy ezüst gomb (cím fölöttük, érték alattuk)
-    pc->controls.push_back({Control::Knob, kThreshold, {175, 170}, 38, nil, ticks(-40, 10, 5), -40, 0, -20,
+    pc->controls.push_back({Control::Knob, kThreshold, {175, 170}, 38, nil, ticks(-40, 10, 5), -40, 0, -16,
         ^NSString*(float v) { return [NSString stringWithFormat:@"%.1f dB", v]; }});
     pc->controls.back().tint = SILVER; pc->controls.back().labelSize = 11;
     pc->controls.push_back({Control::Knob, kRatio, {352, 170}, 42, nil, @[@"1", @"1.5", @"2", @"3", @"4", @"6", @"10", @"20", @"∞"], 1, 60, 4,
@@ -105,7 +105,7 @@ std::unique_ptr<PanelController> buildDbekiPanel(AudioUnit au) {
     pc->controls.back().tint = SILVER; pc->controls.back().labelSize = 11;
 
     // alsó sor: OVEREASY, METER gombsor
-    pc->controls.push_back({Control::LedButton, kOverEasy, {175, 266}, 0.8, @"OVEREASY", nil, 0, 1, 0});
+    pc->controls.push_back({Control::LedButton, kOverEasy, {175, 266}, 0.8, @"OVEREASY", nil, 0, 1, 1});
     pc->controls.push_back({Control::RadioRow, kMeterMode, {440, 266}, 1.2, @"METER", @[@"GAIN", @"OUT", @"IN"], 0, 2, 0});
 
     // VU alatt: AUTO GAIN, MIX

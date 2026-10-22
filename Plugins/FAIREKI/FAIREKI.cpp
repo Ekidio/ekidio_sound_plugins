@@ -13,10 +13,10 @@ public:
         : AudioUnitBase(inst, desc,
             {
                 {"INPUT GAIN", -10, 20, 0, kAudioUnitParameterUnit_Decibels},
-                {"THRESHOLD", -40, 0, -20, kAudioUnitParameterUnit_Decibels},
+                {"THRESHOLD", -40, 0, -8, kAudioUnitParameterUnit_Decibels},   // alap −8 (a user döntése, 2026-10-23)
                 {"TIME CONSTANT", 0, 5, 1, kAudioUnitParameterUnit_Indexed,
                     {"1 (0.3 s)", "2 (0.8 s)", "3 (2 s)", "4 (5 s)", "5 (auto 2/10 s)", "6 (auto 0.3/10 s)"}},
-                {"AGC", 0, 1, 0, kAudioUnitParameterUnit_Indexed, {"Left/Right", "Lat/Vert"}},
+                {"AGC", 0, 1, 1, kAudioUnitParameterUnit_Indexed, {"Left/Right", "Lat/Vert"}},   // alap LAT/VERT
                 {"AGC FILTER", 0, 3, 0, kAudioUnitParameterUnit_Indexed, {"Off", "90 Hz", "180 Hz", "Mid Range"}},
                 {"OUTPUT", -20, 20, 0, kAudioUnitParameterUnit_Decibels},
                 {"AUTO GAIN", 0, 1, 1, kAudioUnitParameterUnit_Indexed, {"Off", "On"}},
@@ -32,7 +32,7 @@ public:
             {
                 // Default: AUTO GAIN be (a gain 0-n zárva); a többi preset AUTO GAIN nélkül szól, a presetek OUTPUT értéke a mért makeup (tipikus jelen)
                 //                     IN  THR  TC AGC FILT OUT AUTO ANLG MIX METER
-                {"Default",            {0, -20, 1, 0, 0, 0, 1, 60, 100, 0}},
+                {"Default",            {0, -8, 1, 1, 0, 0, 1, 60, 100, 0}},   // LAT/VERT, THR −8 (2026-10-23)
                 {"Mix Glue",           {0, -16, 4, 0, 1, 4, 0, 55, 100, 0}},
                 {"Vocal Gold",         {2, -24, 1, 0, 0, 8, 0, 65, 100, 0}},
                 {"Drum Bus Thick",     {3, -26, 0, 0, 1, 7, 0, 75, 100, 0}},

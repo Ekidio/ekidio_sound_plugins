@@ -3,7 +3,8 @@
 //   Oszlopok: TONE (AIR, FOCUS, BASS PUNCH — ±12 dB, a MASTEQUI görbéi) · LOUDNESS (PUSH = DENSITY, nagy VOLUME) ·
 //   SHAPE (TRANSIENT, WIDTH, OUTPUT) · METER (név, EKI pajzs-VU: kék, belülről világító számlap, "EKIDIO SOUND", felül fehér /
 //   alul piros mutató; POWER). EKI fiók (2026-10-22): FOCUS FREQ, TRANSIENT ATTACK / RELEASE, RELEASE MAX (a VOLUME lassú
-//   fokozatának elengedése teljes VOLUME-nál), AUTO GAIN (alapban KI — az előlapról ide került, a user kérésére).
+//   fokozatának elengedése teljes VOLUME-nál), AUTO −14 LUFS (alapban KI; 2026-10-23 óta az AUTO GAIN helyett — bekapcsolva
+//   a VOLUME zárolva, a ténylegesen beállt érték a gomb alatt látszik).
 //   Oszlopsorrend: TONE · LOUDNESS · SHAPE · METER (a user választása, 2026-10-22: "határozottan VU jobbra"); a függőleges vonalak
 //   az oszlopok közé esnek, így a VU nem lóg beléjük.
 #include "EKIRack.h"
@@ -13,8 +14,8 @@ using namespace eki::ui::rack;
 
 namespace {
 
-enum : AudioUnitParameterID { kAir, kFocus, kPunch, kPush, kVolume, kWidth, kTransient, kOutput, kAutoGain, kRelMax, kTrAttack, kTrRelease, kFocusFreq,
-                              kPushGR, kLimGR, kAutoMakeup, kVU };
+enum : AudioUnitParameterID { kAir, kFocus, kPunch, kPush, kVolume, kWidth, kTransient, kOutput, kAutoLufs, kRelMax, kTrAttack, kTrRelease, kFocusFreq,
+                              kPushGR, kLimGR, kAutoVolume, kVU };
 
 constexpr int INK = 0x2B2F36, INK_DIM = 0x6C737D, CYAN = 0x22C3F0, CYAN_TXT = 0x1592C2, SILVER = 0xCDD2D8, RED_RIM = 0xC4222C;
 const Look LOOK = {
@@ -24,6 +25,7 @@ const Look LOOK = {
     INK, INK_DIM, 0.55, 0.16,
 };
 constexpr CGFloat ROW1 = 112, ROW2 = 236;
+constexpr CGFloat kVolValueY = 253;   // a VOLUME értékkijelzésének közepe (az AUTO −14 LUFS fedőkijelzőhöz)
 
 // ---- oszlopok ----
 enum Col { TONE, LOUD, SHAPE, METER };
@@ -51,7 +53,7 @@ void bracket(CGFloat x0, CGFloat x1, CGFloat y, NSString* name, int ink) {
 
 void drawStatic(PanelController& pc) {
     drawChrome(pc, LOOK, nil, {{290, @"FOCUS centre"}, {485, @"TRANSIENT window / decay"}, {680, @"VOLUME release at full volume"},
-                                {830, @"output locked at 0 dB"}});
+                                {830, @"VOLUME sets itself to -14 LUFS"}});
     const CGFloat mx = meterX();
     textFont(@"EK1", @"Futura-Bold", CGPointMake(mx, 84), 30, rgb(INK), 4);
     textFont(@"MASTERING  CHAIN", @"AvenirNext-DemiBold", CGPointMake(mx, 110), 6.5, rgb(INK_DIM), 1.6);
@@ -78,8 +80,16 @@ void drawFace(PanelController& pc) {
     const CGFloat mx = meterX();
     drawLed(CGPointMake(mx, 268), pc.processing ? 0.9f : 0.0f, 0x46D35A, nil, 4.5);
     textFont(@"POWER", @"AvenirNext-DemiBold", CGPointMake(mx, 286), 6.5, rgb(INK_DIM), 2);
-    if (pc.drawerOpen && pc.get(kAutoGain) >= 0.5f)   // AUTO GAIN (fiók): a ténylegesen beállt kiegyenlítés
-        textFont([NSString stringWithFormat:@"%+.1f dB", pc.get(kAutoMakeup)], @"AvenirNext-DemiBold", CGPointMake(830, H + 92), 8, rgb(CYAN_TXT), 1);
+    if (pc.drawerOpen && pc.get(kAutoLufs) >= 0.5f)   // AUTO −14 LUFS (fiók): a ténylegesen beállt VOLUME
+        textFont([NSString stringWithFormat:@"VOLUME %.1f", pc.get(kAutoVolume)], @"AvenirNext-DemiBold", CGPointMake(830, H + 92), 8, rgb(CYAN_TXT), 1);
+}
+
+/// AUTO −14 LUFS alatt a VOLUME értékkijelzése helyén a ténylegesen beállt érték
+void drawOverlay(PanelController& pc) {
+    if (pc.get(kAutoLufs) < 0.5f) return;
+    const NSRect r = NSMakeRect(colX(LOUD) + 188 - 46, kVolValueY - 8, 92, 16);
+    [rgb(0xE9ECEF, 0.96) setFill]; [[NSBezierPath bezierPathWithRoundedRect:r xRadius:4 yRadius:4] fill];
+    textFont([NSString stringWithFormat:@"AUTO %.1f", pc.get(kAutoVolume)], @"AvenirNext-DemiBold", CGPointMake(NSMidX(r), NSMidY(r)), 9.5, rgb(CYAN_TXT), 1);
 }
 
 std::unique_ptr<PanelController> buildEk1Panel(AudioUnit au) {
@@ -91,7 +101,7 @@ std::unique_ptr<PanelController> buildEk1Panel(AudioUnit au) {
     t.knob = Machined; t.coloredLine = false; t.arc = CYAN;
     theme() = t;
     auto pc = makePanel(au, "ek1");
-    pc->watched = {{kAutoMakeup, 0}, {kVU, -20}};
+    pc->watched = {{kAutoVolume, 0}, {kVU, -20}};
     pc->drawStatic = drawStatic;
     pc->drawFace = drawFace;
     auto& cs = pc->controls;
@@ -99,7 +109,7 @@ std::unique_ptr<PanelController> buildEk1Panel(AudioUnit au) {
     auto u1 = ^NSString*(float v) { return [NSString stringWithFormat:@"%.1f", v]; };
     auto dB = ^NSString*(float v) { return [NSString stringWithFormat:@"%+.1f dB", v]; };
     NSArray* tl = @[@"-12", @"", @"-6", @"", @"0", @"", @"+6", @"", @"+12"];
-    const CGFloat tx = colX(TONE), lx = colX(LOUD), sx = colX(SHAPE), mx = meterX();
+    const CGFloat tx = colX(TONE), lx = colX(LOUD), sx = colX(SHAPE);
     auto toneKnob = [&](AudioUnitParameterID id, CGFloat x, CGFloat y, NSString* name) {
         cs.push_back({Control::Knob, id, {x, y}, 24, name, tl, -12, 12, 0, dB});
         cs.back().labelSize = 9; cs.back().bipolar = true;
@@ -129,10 +139,11 @@ std::unique_ptr<PanelController> buildEk1Panel(AudioUnit au) {
     drawerKnob(kTrAttack, 430, @"TR ATTACK", @[@"1", @"3", @"8", @"15", @"30"], 1, 30, 8, ms, {1, 3, 8, 15, 30});
     drawerKnob(kTrRelease, 540, @"TR RELEASE", @[@"5", @"20", @"60", @"150", @"300"], 5, 300, 20, ms, {5, 20, 60, 150, 300});
     drawerKnob(kRelMax, 680, @"RELEASE MAX", @[@"50", @"100", @"200", @"500", @"1k"], 50, 1000, 500, ms, {50, 100, 200, 500, 1000});
-    cs.push_back({Control::LedButton, kAutoGain, {830, dy - 8}, 0.75, @"AUTO GAIN", nil, 0, 1, 0}); cs.back().drawer = true;
+    cs.push_back({Control::LedButton, kAutoLufs, {830, dy - 8}, 0.75, @"AUTO -14 LUFS", nil, 0, 1, 0}); cs.back().drawer = true;
 
     for (auto& c : cs) if (c.kind == Control::Knob) c.rim = c.pid == kOutput ? RED_RIM : SILVER;   // ezüst karima, az OUTPUT-on piros
-    pc->lock(kOutput, kAutoGain);
+    pc->lock(kVolume, kAutoLufs);   // AUTO −14 LUFS alatt a VOLUME magától áll (a ténylegesen beállt érték a gomb alatt)
+    pc->drawOverlay = drawOverlay;
     return pc;
 }
 

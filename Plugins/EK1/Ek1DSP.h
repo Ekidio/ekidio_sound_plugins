@@ -12,7 +12,7 @@
 //   VOLUME (0–15 dB): erősítés egy feszes, nem lüktető true-peak limiterbe (a user: "feszes, fixen hangos, ne lüktessen"):
 //        1,5 ms előretekintés, a jel fél periódusáig tartás (a mély így sem torzul), utána a VOLUME-mal együtt növő elengedés
 //        (30 ms → RELEASE MAX, az EKI fiókban állítható, alap 200 ms), plafon −0,1 dBTP
-//   OUTPUT / AUTO GAIN (alapban KI). Az ANALOG, a BODY, a referencia "ragasztója" és a +0,37 dB-es eltolás kikerült:
+//   OUTPUT; AUTO −14 LUFS (EKI fiók, alapban KI): a VOLUME magától áll be. Az ANALOG, a BODY, a referencia "ragasztója" és a +0,37 dB-es eltolás kikerült:
 //   semleges állásban a lánc átlátszó (PUSH 0-nál a DENSITY ki van kerülve); csak a −0,1 dBTP fölötti csúcsokat fogja a limiter.
 // Jelút: [2× túlmintavételezve: BASS PUNCH → FOCUS → AIR → TRANSIENT] → PUSH (DENSITY) → WIDTH → VOLUME → limiter → OUTPUT
 #pragma once
@@ -20,6 +20,7 @@
 #include "EKIFilters.h"
 #include "EKIOversample.h"
 #include "EKIMasterCurves.h"
+#include "EKILoudLimiter.h"
 #include "../LIMEKI/LimekiDSP.h"
 #include <cstring>
 
@@ -31,84 +32,10 @@ struct Ek1Params {
     float volume = 0;                        // 0…15 dB
     float width = 0, transient = 0;          // ±5 / ±10
     float outDb = 0;
-    float autoGain = 0;                      // alapban KI
+    float autoLufs = 0;                      // AUTO −14 LUFS (alapban KI; 2026-10-23 óta az AUTO GAIN helyett, mint a LIMEKI-ben)
     float relMaxMs = 500;                    // EKI fiók: a lassú fokozat elengedése teljes VOLUME-nál (az indulás fixen 30 ms)
     float trAttackMs = 8, trReleaseMs = 20;  // EKI fiók: a TRANSIENT ablaka (a lassú burok ráfutása) és elengedése
     float focusHz = 1000;                    // EKI fiók: a FOCUS középfrekvenciája (300 Hz…5 kHz; a kiterjesztés 2,5x felette)
-};
-
-/// feszes limiter: a szükséges erősítés csúszó minimuma (előretekintés), a jel fél periódusáig tartva (nullátmenetekből becsülve:
-/// a mélyben hosszú tartás → nincs hullámformán belüli moduláció), utána gyors elengedés, az ablakon átlagolva; true-peak becsléssel
-struct EkTightLimiter {
-    // kétszeres doboz-átlag (háromszög alakú gain-ív, 2026-10-22): a behúzás simább, a mélyben nem recseg
-    static constexpr int kMax = 2048;
-    std::deque<std::pair<long, float>> q; long n = 0;
-    std::vector<float> box, box2; double sum = 0, sum2 = 0; int bpos = 0;
-    float buf[2][kMax] = {}, hist[2][3] = {}; int pos = 0, la = 72, lat = 144, hold = 0, zcCount = 0, holdMin = 1, holdMax = 1000;
-    float env = 0, zcAvg = 0, rel = 0.01f, holdK = 0.8f, g = 1; bool zcSign = true;
-    void prepare(float fs, float laSec, float relSec, float hk) {
-        la = std::clamp(int(std::lround(laSec * fs)), 2, kMax / 2 - 1); lat = 2 * la;
-        rel = 1.0f - onePoleCoef(relSec, fs); holdK = hk;
-        holdMin = std::max(1, int(0.0006f * fs)); holdMax = int(0.025f * fs);
-        reset();
-    }
-    void reset() { q.clear(); n = 0; box.assign(size_t(la), 0.0f); box2.assign(size_t(la), 0.0f); sum = sum2 = 0; bpos = 0;
-                   std::memset(buf, 0, sizeof buf); std::memset(hist, 0, sizeof hist);
-                   pos = 0; env = 0; hold = 0; zcCount = 0; zcAvg = 0; g = 1; zcSign = true; }
-    inline void tick(float* x, int ch, float ceilDb) {
-        float pk = 0;
-        for (int c = 0; c < ch; ++c) {   // mintaközi csúcs (4x Hermite)
-            const float a = hist[c][0], b = hist[c][1], cc = hist[c][2], d = x[c];
-            pk = std::max({pk, std::fabs(b), std::fabs(cc), std::fabs(d)});
-            for (float t : {0.25f, 0.5f, 0.75f}) {
-                const float c1 = 0.5f * (cc - a), c2 = a - 2.5f * b + 2.0f * cc - 0.5f * d, c3 = 0.5f * (d - a) + 1.5f * (b - cc);
-                pk = std::max(pk, std::fabs(((c3 * t + c2) * t + c1) * t + b));
-            }
-            hist[c][0] = b; hist[c][1] = cc; hist[c][2] = d;
-        }
-        const float req = std::min(0.0f, ceilDb - gainToDb(pk + 1e-12f));
-        const bool zs = (ch == 2 ? x[0] + x[1] : x[0]) >= 0.0f;
-        if (zs != zcSign) { zcAvg += (float(zcCount) - zcAvg) * 0.3f; zcCount = 0; zcSign = zs; } else if (zcCount < holdMax) ++zcCount;
-        const int holdN = std::clamp(int(holdK * std::max(zcAvg, float(zcCount))), holdMin, holdMax);
-        while (!q.empty() && q.back().second >= req) q.pop_back();
-        q.push_back({n, req});
-        while (q.front().first <= n - (lat + 1)) q.pop_front();
-        ++n;
-        const float m = q.front().second;
-        if (m <= env) { env = m; hold = holdN; } else if (hold > 0) --hold; else env += (m - env) * rel;
-        sum += env - box[size_t(bpos)]; box[size_t(bpos)] = env;
-        const float v = float(sum / la);
-        sum2 += v - box2[size_t(bpos)]; box2[size_t(bpos)] = v; bpos = (bpos + 1) % la;
-        g = dbToGain(float(sum2 / la));
-        for (int c = 0; c < ch; ++c) { buf[c][pos] = x[c]; x[c] = buf[c][(pos - lat + kMax) % kMax] * g; }
-        pos = (pos + 1) % kMax;
-    }
-};
-
-/// A VOLUME lassú fokozata (referencia-renderek elemzése alapján, 2026-10-22): az 50 ms-os RMS-szintet a ceiling alá
-/// `crestDb`-vel tartja, 20 ms-os ráfutással és hosszú elengedéssel — az ütések körül alig mozdul (a test nem esik be, a
-/// tranziens feszes marad); a csúcsokat utána az EkTightLimiter fogja meg rövid behúzással.
-struct EkLeveler {
-    std::vector<float> ring; double sum = 0; int pos = 0, w = 2400;
-    float env = 0, att = 0.001f, rel = 0.0001f, g = 1, crestDb = 3.5f;
-    void prepare(float fs) {
-        w = std::max(1, int(std::lround(0.050f * fs))); ring.assign(size_t(w), 0.0f);
-        att = 1.0f - onePoleCoef(0.020f, fs);
-        reset();
-    }
-    void reset() { std::fill(ring.begin(), ring.end(), 0.0f); sum = 0; pos = 0; env = 0; g = 1; }
-    inline void tick(float* x, int ch, float ceilDb) {
-        float p = 0;
-        for (int c = 0; c < ch; ++c) p += x[c] * x[c];
-        p /= float(ch);
-        sum += double(p) - double(ring[size_t(pos)]); ring[size_t(pos)] = p; pos = (pos + 1) % w;
-        if (sum < 0) sum = 0;
-        const float lvl = 10.0f * std::log10(float(sum / w) + 1e-20f);
-        const float req = std::min(0.0f, ceilDb - crestDb - lvl);
-        env += (req - env) * (req < env ? att : rel);
-        g = dbToGain(env);
-        for (int c = 0; c < ch; ++c) x[c] *= g;
-    }
 };
 
 class Ek1DSP {
@@ -119,8 +46,6 @@ public:
         sr = sampleRate; srOS = 2 * sampleRate;
         for (auto& o : os) o.design(2);
         for (int c = 0; c < kMaxCh; ++c) {
-            kwIn[c][0].designMatched(Analog2::highShelf(1681.0, 4.0, 0.71), sr, 1681.0);
-            kwIn[c][1].designMatched(Analog2::highPass(38.0, 0.5), sr, 38.0);
             kwOut[c][0].designMatched(Analog2::highShelf(1681.0, 4.0, 0.71), sr, 1681.0);
             kwOut[c][1].designMatched(Analog2::highPass(38.0, 0.5), sr, 38.0);
         }
@@ -132,8 +57,7 @@ public:
         leveler.prepare(sr);
         for (int c = 0; c < kMaxCh; ++c) sideLp[c].designLP2(150.0, sr);
         totalLat = kOsLat + int(std::lround(density.latencySeconds() * sr)) + lim.lat;
-        dly.assign(size_t(kMaxCh), std::vector<float>(size_t(totalLat + 1), 0.0f));
-        autoMk.prepare(sr);
+        lufsK = 1.0f - onePoleCoef(1.0f, sr);   // ≈ rövid távú (3 s-os ablaknak megfelelő simítás)
         needle.set(sr);
         reset();
     }
@@ -144,14 +68,12 @@ public:
             os[c].reset();
             for (auto& b : eq[c]) b.reset();
             lo[c].reset(); hi[c].reset();
-            for (auto& k : kwIn[c]) k.reset();
             for (auto& k : kwOut[c]) k.reset();
         }
-        for (auto& d : dly) std::fill(d.begin(), d.end(), 0.0f);
         density.reset(); lim.reset(); leveler.reset(); for (auto& b : sideLp) b.reset();
-        trPk = 0; trFast = trSlow = 1e-6f; dpos = 0; oPos = 0; sTone = 0;
+        trPk = 0; trFast = trSlow = 1e-6f; oPos = 0; sTone = 0; lufsMs = 1e-6;
         for (auto& d : osDly) std::fill(std::begin(d), std::end(d), 0.0f);
-        autoMk.reset(); primed = false;
+        primed = false;
         for (auto& k : key) k = -1e9f;
     }
 
@@ -159,10 +81,12 @@ public:
 
     void process(const float* const* in, float* const* out, int ch, int n, const Ek1Params& p) {
         ch = std::min(ch, kMaxCh);
+        // AUTO −14 LUFS: a VOLUME lassan (≈ 0,6 dB/s) magától a −14 LUFS-os rövid távú kimeneti hangossághoz áll
+        const bool autoL = p.autoLufs >= 0.5f;
+        if (!autoL) autoVolDb = clampf(p.volume, 0, 15);   // bekapcsoláskor a kézi állásból indul
         const float t[7] = {clampf(p.air, -12, 12), clampf(p.focus, -12, 12), clampf(p.punch, -12, 12), clampf(p.push, 0, 30),
-                            clampf(p.volume, 0, 15), clampf(p.width, -5, 5), clampf(p.transient, -10, 10)};
+                            autoL ? autoVolDb : clampf(p.volume, 0, 15), clampf(p.width, -5, 5), clampf(p.transient, -10, 10)};
         const float outT = clampf(p.outDb, -12, 12);
-        const bool autoOn = p.autoGain >= 0.5f;
         if (!primed) {
             for (int k = 0; k < 7; ++k) s[k] = t[k];
             sFocusHz = clampf(p.focusHz, 300, 5000);
@@ -214,7 +138,7 @@ public:
             float* tout[kMaxCh] = {tmp2[0], tmp2[1]};
             density.process(tin, tout, ch, m, lp);
             denGr = std::min(denGr, density.takeDenGr());
-            // 3) WIDTH → VOLUME → tiszta limiter → OUTPUT / AUTO GAIN
+            // 3) WIDTH → VOLUME (kézi vagy AUTO −14 LUFS) → tiszta limiter → OUTPUT
             const float sideG = dbToGain(s[5]), volG = dbToGain(s[4]);
             // változó elengedés (a user ötlete): a lassú fokozaté a VOLUME-mal együtt nő — 30 ms-ról a RELEASE MAX-ig (EKI fiók)
             const float relMax = clampf(p.relMaxMs, 50, 1000) * 0.001f;
@@ -231,24 +155,24 @@ public:
                 leveler.tick(x, ch, -0.1f);   // lassú: az átlagszint (a test nem lüktet)
                 lim.tick(x, ch, -0.1f);       // gyors: a csúcsok (a tranziens feszes marad)
                 limGr = std::min(limGr, gainToDb(lim.g * leveler.g));
-                float pIn = 0, pOut = 0;
+                const float g = dbToGain(sOut);
+                float av = 0; double e = 0;
                 for (int c = 0; c < ch; ++c) {
-                    auto& d = dly[size_t(c)];
-                    const float xd = d[size_t(dpos)]; d[size_t(dpos)] = in[c][i0 + i];   // a bemenet a kimenettel egy időben (AUTO GAIN)
-                    const float ki = kwIn[c][1].tick(kwIn[c][0].tick(xd)), ko = kwOut[c][1].tick(kwOut[c][0].tick(x[c]));
-                    pIn += ki * ki; pOut += ko * ko;
+                    out[c][i0 + i] = x[c] * g; av += std::fabs(out[c][i0 + i]);
+                    const float k = kwOut[c][1].tick(kwOut[c][0].tick(out[c][i0 + i])); e += double(k) * k;   // K-súlyozott kimenet
                 }
-                dpos = (dpos + 1) % totalLat;
-                autoMk.trackEnergy(pIn, pOut);
-                const float g = dbToGain(autoOn ? autoMk.tickEnergyDb(true) : sOut + autoMk.tickEnergyDb(false));
-                float av = 0;
-                for (int c = 0; c < ch; ++c) { out[c][i0 + i] = x[c] * g; av += std::fabs(out[c][i0 + i]); }
+                lufsMs += (e - lufsMs) * lufsK;
+                if (autoL) {
+                    const double l = -0.691 + 10.0 * std::log10(std::max(lufsMs, 1e-12));
+                    if (l > -60.0) autoVolDb = clampf(autoVolDb + float((-14.0 - l) * 0.6 / sr), 0.0f, 15.0f);
+                }
                 needle.tick(av / float(ch));   // kimeneti VU: egyenirányított átlag, VU-ballisztika
             }
         }
     }
 
-    float autoMakeupDb() const { return autoMk.value(); }
+    /// AUTO −14 LUFS: a ténylegesen beállt VOLUME (dB)
+    float autoVolumeDb() const { return autoVolDb; }
     /// kimeneti VU (dB): 0 VU = −12 dBFS RMS (szinusz: az egyenirányított átlag 0,9 × RMS)
     float vuDb() const { return clampf(gainToDb(std::max(needle.pos, 1e-6f) / 0.9f) + 12.0f, -20.0f, 3.0f); }
     float takePushGr() { const float v = denGr; denGr = 0; return v; }
@@ -285,17 +209,16 @@ private:
     FirOversamplerHQ os[kMaxCh];
     Biquad eq[kMaxCh][2];
     Shelf1 lo[kMaxCh], hi[kMaxCh];
-    Biquad kwIn[kMaxCh][2], kwOut[kMaxCh][2];
+    Biquad kwOut[kMaxCh][2];   // K-súlyozás az AUTO −14 LUFS méréséhez
     LimekiDSP density;
     EkTightLimiter lim;
     EkLeveler leveler;
     Biquad sideLp[kMaxCh];
-    AutoMakeup autoMk;
     VUNeedle needle;
-    std::vector<std::vector<float>> dly;
     float tmp[kMaxCh][kSub] = {}, tmp2[kMaxCh][kSub] = {}, osDly[kMaxCh][kOsLat] = {}, sTone = 0;
     int oPos = 0;
-    int dpos = 0, totalLat = 1;
+    int totalLat = 1;
+    double lufsMs = 1e-6; float lufsK = 0, autoVolDb = 0;
     float pkRel = 0.99f, trFastA = 0.1f, trSlowA = 0.01f, trRel = 0.01f;
     float trPk = 0, trFast = 1e-6f, trSlow = 1e-6f, denGr = 0, limGr = 0;
     float s[7] = {}, sOut = 0, key[4], sFocusHz = 1000;

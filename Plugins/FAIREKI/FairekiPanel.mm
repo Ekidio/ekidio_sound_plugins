@@ -67,13 +67,13 @@ std::unique_ptr<PanelController> buildFairekiPanel(AudioUnit au) {
     // "csirkefej" kapcsolók: METER, AGC
     pc->controls.push_back({Control::Selector, kMeterMode, {345, 140}, 24, @"METERING", @[@"GR", @"OUT"], 0, 1, 0});
     pc->controls.back().spread = 40; pc->controls.back().labelDy = 34;
-    pc->controls.push_back({Control::Selector, kAgc, {345, 262}, 24, @"AGC", @[@"L/R", @"LAT/VERT"], 0, 1, 0});
+    pc->controls.push_back({Control::Selector, kAgc, {345, 262}, 24, @"AGC", @[@"L/R", @"LAT/VERT"], 0, 1, 1});
     pc->controls.back().spread = 45; pc->controls.back().labelDy = 34;
 
     // a nagy gombok (piros peremgyűrű)
     pc->controls.push_back({Control::Knob, kInput, {480, 152}, 40, @"INPUT GAIN", ticks(-10, 5, 7), -10, 20, 0, dB});
     pc->controls.back().labelSize = 10; pc->controls.back().cap = RED;
-    pc->controls.push_back({Control::Knob, kThreshold, {632, 152}, 40, @"THRESHOLD", ticks(-40, 8, 6), -40, 0, -20,
+    pc->controls.push_back({Control::Knob, kThreshold, {632, 152}, 40, @"THRESHOLD", ticks(-40, 8, 6), -40, 0, -8,
         ^NSString*(float v) { return [NSString stringWithFormat:@"%.1f dB", v]; }});
     pc->controls.back().labelSize = 10; pc->controls.back().cap = RED;
     pc->controls.push_back({Control::Knob, kOutput, {480, 264}, 22, @"OUTPUT", nil, -20, 20, 0, dB});
