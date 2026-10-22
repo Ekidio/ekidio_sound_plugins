@@ -47,6 +47,12 @@
   footer{padding:40px 0 60px;color:var(--dim);font-size:13px;border-top:1px solid var(--line);text-align:center}
   footer p{max-width:760px;margin-left:auto;margin-right:auto}
   [id]{scroll-margin-top:76px}
+  .viewer{display:flex;flex-direction:column;gap:12px;min-width:0}
+  .viewer img{display:none} .viewer img.on{display:block}
+  .vtabs{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+  .vtabs button{background:#1e2027;color:var(--text);border:1px solid var(--line);border-radius:8px;padding:7px 14px;font:700 12px/1 -apple-system,BlinkMacSystemFont,sans-serif;letter-spacing:.08em;cursor:pointer}
+  .vtabs button:hover{background:#262833}
+  .vtabs button.on{background:#c4222c;border-color:#c4222c;color:#fff}
   .topbar{position:sticky;top:0;z-index:50;background:rgba(11,11,13,.82);backdrop-filter:saturate(1.4) blur(12px);-webkit-backdrop-filter:saturate(1.4) blur(12px);border-bottom:1px solid var(--line)}
   @media (max-width:760px){ .plugin,.plugin:nth-child(even){grid-template-columns:1fr} .plugin:nth-child(even) img{order:0} }
 </style>
@@ -137,7 +143,7 @@
         <p>Surgical clarity with an analog soul. It boosts and cuts with curves so fine and musical, as if the music had been born that way. The oversampled, crystal-clear top band opens up the stereo field while the phase stays solid and untouched.</p>
         <p class="use">Mastering, mix bus, stems.</p>
         <p><a class="btn primary" href="https://github.com/Ekidio/ekidio_sound_plugins/releases/download/mastequi-v1.0.0/EKIDIO-SOUND-MASTEQUI-1.0.0.dmg">Download MASTEQUI</a></p></div></div>
-      <div class="plugin" id="pulteki"><img src="assets/pulteki.png" alt="PULTEKI"><div><h3>PULTEKI</h3><div class="kind">Passive tube equalizer set</div>
+      <div class="plugin" id="pulteki"><div class="viewer"><img src="assets/pulteki-1.png" alt="PULTEKI – PROGRAM EQ" class="on"><img src="assets/pulteki-2.png" alt="PULTEKI – MID-RANGE EQ"><img src="assets/pulteki-3.png" alt="PULTEKI – FILTER"><div class="vtabs"><button type="button" onclick="pultekiPage(0)" class="on" aria-pressed="true">PROGRAM EQ</button><button type="button" onclick="pultekiPage(1)" aria-pressed="false">MID-RANGE EQ</button><button type="button" onclick="pultekiPage(2)" aria-pressed="false">FILTER</button></div></div><div><h3>PULTEKI</h3><div class="kind">Passive tube equalizer set</div>
         <p>The spirit of the legendary tube equalizers, with uncompromising clarity. Three modules in one rack: the program EQ's iconic low-end trick – boost and cut at the same time, so kick and bass get both fuller and tighter –, the mid-range EQ that brings instruments forward or tucks them back, and the filter section for the final clean-up. Silky, airy highs, a round, deep bottom – and a touch of tube colour when you want it.</p>
         <p class="use">Mix bus, mastering, kick, bass, vocals.</p>
         <p><a class="btn primary" href="https://github.com/Ekidio/ekidio_sound_plugins/releases/download/pulteki-v1.0.0/EKIDIO-SOUND-PULTEKI-1.0.0.dmg">Download PULTEKI</a></p></div></div>
@@ -186,5 +192,11 @@
     <p>© 2026 EKIDIO SOUND · <a href="https://github.com/Ekidio/ekidio_sound_plugins/releases">All releases</a></p>
   </div>
 </footer>
+<script>
+  function pultekiPage(i){
+    document.querySelectorAll('#pulteki .viewer img').forEach((im,k)=>im.classList.toggle('on',k===i));
+    document.querySelectorAll('#pulteki .vtabs button').forEach((b,k)=>{b.classList.toggle('on',k===i);b.setAttribute('aria-pressed',k===i);});
+  }
+</script>
 </body>
 </html>
