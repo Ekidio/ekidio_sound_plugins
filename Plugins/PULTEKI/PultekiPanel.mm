@@ -62,7 +62,7 @@ void drawFace(PanelController& pc) {
     const int pg = page(pc);
     static NSString* const names[3] = {@"PROGRAM EQUALIZER", @"MID-RANGE EQUALIZER", @"FILTER"};
     bracket(28, SPLIT - 14, 304, names[pg], INK);
-    auto title = [pg](CGFloat x, NSString* n) { textFont(n, @"AvenirNext-DemiBold", CGPointMake(x, pg == 2 ? 132 : 112), 9, rgb(INK), 3); };   // FILTER: a kapcsolókkal együtt középen
+    auto title = [pg](CGFloat x, NSString* n) { textFont(n, @"AvenirNext-DemiBold", CGPointMake(x, pg == 2 ? 140 : pg == 1 ? 130 : 112), 9, rgb(INK), 3); };   // a user rajza szerint (2026-10-23)
     if (pg == 0) { title(MID - 138, @"LOW"); title(MID + 138, @"HIGH"); }
     if (pg == 1) { title(MID1 - 180, @"PEAK"); title(MID1, @"DIP"); title(MID1 + 180, @"PEAK"); }
     if (pg == 2) { title(MID2 - 220, @"LOW CUT-OFF"); title(MID2 + 220, @"HIGH CUT-OFF"); }
@@ -71,7 +71,7 @@ void drawFace(PanelController& pc) {
     VUStyle v = dialStyle(@"PULTEKI", false, faces[std::clamp(int(pc.get(kVuColour) + 0.5f), 0, 2)]);
     v.legendSize = 11; v.legendKern = 2.2;
     // PROGRAM EQ és MID-RANGE EQ: jobbra fent (alatta az ATTEN SEL, ill. az IN); FILTER: középen, a két nagy kapcsoló között
-    drawVU(pg == 2 ? NSMakeRect(MID2 - 63, 124, 126, 90) : pg == 1 ? NSOffsetRect(kVuRect, 0, 10) : kVuRect,
+    drawVU(pg == 2 ? NSMakeRect(MID2 - 63, 124, 126, 90) : kVuRect,
            pc.processing ? pc.get(kVU) : -20.0f, v);
     // a fülek melletti LED-ek: a modul IN állásban van-e
     const AudioUnitParameterID ins[3] = {kEqpIn, kMeqIn, kHlfIn};
@@ -128,18 +128,18 @@ std::unique_ptr<PanelController> buildPultekiPanel(AudioUnit au) {
     sel(kHighFreq, MID + 138, 254, @"HIGH FREQUENCY kHz", @[@"3", @"4", @"5", @"8", @"10", @"12", @"16"], 4, 120, 0, 22);
 
     // ---- MID-RANGE EQ: három (kapcsoló + gomb) pár a MID tengely körül, 180-as osztással ----
-    inSwitch(kMeqIn, NSMidX(kVuRect), 266, 1);   // a VU alatt (mint a PROGRAM EQ oldalon az ATTEN SEL)
-    sel(kMidLowF, MID1 - 224, 180, @"FREQ Hz", @[@"200", @"300", @"500", @"700", @"1k"], 2, 100, 1, 18);
-    gain(kMidLowG, MID1 - 136, 176, @"PEAK", 1, 30);
-    sel(kDipF, MID1 - 44, 180, @"FREQ kHz", @[@".2", @"", @".5", @"", @"1", @"", @"2", @"", @"4", @"", @"7"], 4, 140, 1, 18);
-    gain(kDipG, MID1 + 44, 176, @"DIP", 1, 30);
-    sel(kMidHighF, MID1 + 136, 180, @"FREQ kHz", @[@"1.5", @"2", @"3", @"4", @"5"], 2, 100, 1, 18);
-    gain(kMidHighG, MID1 + 224, 176, @"PEAK", 1, 30);
+    inSwitch(kMeqIn, NSMidX(kVuRect), 257, 1);   // a VU alatt (mint a PROGRAM EQ oldalon az ATTEN SEL)
+    sel(kMidLowF, MID1 - 224, 198, @"FREQ Hz", @[@"200", @"300", @"500", @"700", @"1k"], 2, 100, 1, 18);
+    gain(kMidLowG, MID1 - 136, 194, @"PEAK", 1, 30);
+    sel(kDipF, MID1 - 44, 198, @"FREQ kHz", @[@".2", @"", @".5", @"", @"1", @"", @"2", @"", @"4", @"", @"7"], 4, 140, 1, 18);
+    gain(kDipG, MID1 + 44, 194, @"DIP", 1, 30);
+    sel(kMidHighF, MID1 + 136, 198, @"FREQ kHz", @[@"1.5", @"2", @"3", @"4", @"5"], 2, 100, 1, 18);
+    gain(kMidHighG, MID1 + 224, 194, @"PEAK", 1, 30);
 
     // ---- FILTER: két kapcsoló a MID tengely körül ----
     inSwitch(kHlfIn, MID2, 250, 2);   // a VU alatt, középen (mint a MID-RANGE oldalon)
-    sel(kLowCut, MID2 - 220, 198, @"Hz", @[@"OFF", @"50", @"80", @"100", @"150", @"250", @"500", @"750", @"1k", @"1.5k", @"2k"], 0, 140, 2, 34);
-    sel(kHighCut, MID2 + 220, 198, @"kHz", @[@"1.5", @"2", @"3", @"4", @"5", @"6", @"8", @"10", @"12", @"15", @"OFF"], 10, 140, 2, 34);
+    sel(kLowCut, MID2 - 220, 206, @"Hz", @[@"OFF", @"50", @"80", @"100", @"150", @"250", @"500", @"750", @"1k", @"1.5k", @"2k"], 0, 140, 2, 34);
+    sel(kHighCut, MID2 + 220, 206, @"kHz", @[@"1.5", @"2", @"3", @"4", @"5", @"6", @"8", @"10", @"12", @"15", @"OFF"], 10, 140, 2, 34);
 
     // ---- kimenet (minden oldalon) ----
     cs.push_back({Control::Knob, kOutput, {NAME_X, 194}, 28, @"OUTPUT", @[@"-12", @"-6", @"0", @"+6", @"+12"], -12, 12, 0,
