@@ -28,8 +28,9 @@
   .btn.primary{background:var(--amber);color:#1a1006;box-shadow:0 8px 30px rgba(242,163,58,.25)} .btn.primary:hover{text-decoration:none;filter:brightness(1.08)}
   .btn.ghost{background:#1e2027;color:var(--text)} .btn.ghost:hover{text-decoration:none;background:#262833}
   .req{margin-top:12px;font-size:13px;color:var(--dim)}
-  .shot{margin:40px auto 0;border-radius:14px;overflow:hidden;border:1px solid var(--line);box-shadow:0 30px 80px rgba(0,0,0,.6)}
+  .shot{display:block;margin:40px 24px 0;border-radius:18px;overflow:hidden;border:1px solid rgba(242,163,58,.55);box-shadow:0 0 70px rgba(242,163,58,.35),0 30px 80px rgba(0,0,0,.6)}
   .shot img{display:block;width:100%;height:auto}
+  .section-cta{margin:-8px 0 28px}
   section{padding:56px 0}
   h2{font:800 clamp(26px,4vw,36px)/1.15 -apple-system,BlinkMacSystemFont,sans-serif;color:#fff;margin:0 0 10px}
   .lead{color:var(--dim);max-width:760px;margin:0 0 28px} .lead b{color:#fff}
@@ -56,15 +57,9 @@
   <div class="wrap">
     <h1>EKIDIO SOUND pluginok</h1>
     <p class="tag"><b>Analóg lélek a digitális mixeidben — teljesen ingyen.</b><br>Fedezd fel az EKIDIO SOUND folyamatosan növekvő macOS plugin-arzenálját: zenei kompresszorok, analóg szalag, csöves simítás és mastering processzorok kompromisszumok nélkül. Próbáld ki őket a legújabb projektedben!</p>
-    <div class="cta">
-      <a class="btn primary" href="https://github.com/Ekidio/ekidio_sound_plugins/releases/download/v1.2.0/EKIDIO-SOUND-Plugins-1.2.0.dmg">A gyűjtemény letöltése</a>
-      <a class="btn primary" href="https://github.com/Ekidio/ekidio_sound_plugins/releases/download/limeki-v1.0.0/EKIDIO-SOUND-LIMEKI-1.0.0.dmg">LIMEKI letöltése</a>
-      <a class="btn primary" href="#mastering">Új: mastering-eszközök</a>
-      <a class="btn ghost" href="#telepites">Telepítés</a>
-    </div>
     <div class="req"><b style="color:var(--amber)">Csak Audio Unit (AU)</b> · macOS 11 vagy újabb · Apple Silicon és Intel · Logic Pro, GarageBand, Ableton Live, Reaper és más AU-hostok</div>
-    <a class="shot" href="#mastering" style="display:block"><img src="../assets/new-plugin.jpg" alt="Három új plugin: EK1 mastering-lánc, MASTEQUI és EKIPPER"></a>
   </div>
+  <a class="shot" href="#mastering"><img src="../assets/new-plugin.jpg" alt="Három új plugin: EK1 mastering-lánc, MASTEQUI és EKIPPER"></a>
 </header>
 
 <section>
@@ -87,6 +82,7 @@
     <img class="banner" src="../assets/banner.jpg" alt="EKIDIO SOUND kompresszorcsalád">
     <h2>Kompresszorcsalád</h2>
     <p class="lead">Nyolc kompresszor, a legselymesebb optikai szintszabályzótól a legvadabb FET-es zúzásig.</p>
+    <p class="section-cta"><a class="btn primary" href="https://github.com/Ekidio/ekidio_sound_plugins/releases/download/v1.2.0/EKIDIO-SOUND-Plugins-1.2.0.dmg">Compressor Collection letöltése</a></p>
     <div>
       <div class="plugin"><img src="../assets/opteki.png" alt="OPTEKI"><div><h3>OPTEKI</h3><div class="kind">Optikai szintszabályzó</div>
         <p>A láthatatlan simaság mestere. Selymes optikai cellája úgy simítja el a dinamikát, hogy a zene természetes lélegzete érintetlen marad. Minél mélyebbre merül a kompresszióban, annál gyengédebben engedi el a hangot – énekre és akusztikus hangszerekre az a fajta azonnali bársonyosság, amitől a sáv azonnal kész dalnak hangzik. Master sávra tennéd? Teszteld le!</p>
@@ -118,8 +114,8 @@
 
 <section>
   <div class="wrap">
-    <h2>EQ, szín és szalag</h2>
-    <p class="lead">Hangszínformálás és fényes teteje ugyanabban a családi stílusban — és ugyanazzal az AUTO GAIN-nel.</p>
+    <h2>Hangszín és szaturáció</h2>
+    <p class="lead">Formáld a hangzást karakteres effektekkel — a lágy, analóg melegségtől egészen a szalagos telítésig, pontosan úgy, ahogy szeretnéd.</p>
     <div>
       <div class="plugin"><img src="../assets/dyneki.png" alt="DYNEKI-6"><div><h3>DYNEKI-6</h3><div class="kind">Hatsávos karakteres EQ + dinamika</div>
         <p>Festőecset a hangokhoz. Legyen szó a selymesen simogató BRIT karakterről vagy az arcbamászó, határozott PUNCH beállításról, minden sávja tisztán zenei. A sub szekció tiszta melegséget lehel a sávokba, a varázslatos AIR sáv pedig kinyitja a teret a zene felett.</p>
