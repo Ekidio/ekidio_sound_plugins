@@ -20,6 +20,7 @@ AUv2 (.component) Audio Unit pluginok macOS-re, közös DSP-alapra és build-scr
 | LIMEKI — density és clean limiter (DENSITY + az EK1 kétfokozatú true-peak limitere, AUTO −14 LUFS; önálló telepítő) | aufx | `Lmek` / `Ekid` | hang + saját panel kész, auval PASS |
 | EK1 — mastering-lánc (AIR / FOCUS / BASS PUNCH, PUSH, kétfokozatú VOLUME-limiter, TRANSIENT, WIDTH, AUTO −14 LUFS; önálló telepítő) | aufx | `Ek1m` / `Ekid` | hang + saját panel kész, auval PASS |
 | MASTEQUI — háromsávos mastering EQ két polccal, 2× lineáris fázisú túlmintavételezés (önálló telepítő) | aufx | `Mstq` / `Ekid` | hang + saját panel kész, auval PASS |
+| PULTEKI — passzív csöves EQ-sor: programequalizer, középsávos EQ és szűrő egy rackben, extra tiszta (önálló telepítő) | aufx | `Pltk` / `Ekid` | hang + saját panel kész, auval PASS |
 | EKIPPER — soft clipper (DRIVE, OUTPUT, 2× / 4× / 8× túlmintavételezés; önálló telepítő) | aufx | `Ekcl` / `Ekid` | hang + saját panel kész, auval PASS |
 | (szinti) — analóg mono szinti | aumu | — | tervezve |
 

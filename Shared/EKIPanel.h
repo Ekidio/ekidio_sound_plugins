@@ -543,7 +543,8 @@ inline void registerBundleFonts() {
 
 struct VUStyle {
     int bezel = 0;        // 0: fekete, 1: króm, 2: acél-fekete szögletes, 3: keret nélküli, borostyán háttérfénnyel
-    int face = 0;         // 0: krém/borostyán, 1: fehér, 2: halvány zöldes, 3: meleg, belülről világító, 4: kék, belülről világító
+    int face = 0;         // 0: krém/borostyán, 1: fehér, 2: halvány zöldes, 3: meleg, belülről világító, 4: kék, belülről világító,
+                          // 5: fekete (krém skála), 6: mély piros (krém skála, mint a piros gombperem), 7: mély éjkék (krém skála)
     bool grScale = false; // true: GR-skála (0 jobbra, 20 balra, dB-ben lineáris)
     NSString* legend = @"VU";
     NSString* legendFont = nil;   // a számlap feliratának betűtípusa (nil = a téma félkövére)
@@ -607,7 +608,13 @@ inline void drawVU(NSRect rc, float db, const VUStyle& st) {
         [rgb(0x1B9FD6) setFill]; [facePath fill];
         CGContextRestoreGState(ctx);
         [[[NSGradient alloc] initWithColorsAndLocations:rgb(0xD8F7FF), 0.0, rgb(0x8FE3FB), 0.35, rgb(0x3FC1EE), 0.7, rgb(0x1586C0), 1.0, nil] drawInBezierPath:facePath relativeCenterPosition:NSMakePoint(0, 0.25)];
-    } else if (st.face == 3)
+    } else if (st.face == 5)
+        [[[NSGradient alloc] initWithColorsAndLocations:rgb(0x2E2C2A), 0.0, rgb(0x181716), 0.6, rgb(0x070707), 1.0, nil] drawInBezierPath:facePath relativeCenterPosition:NSMakePoint(0, 0.35)];
+    else if (st.face == 6)
+        [[[NSGradient alloc] initWithColorsAndLocations:rgb(0xB0262E), 0.0, rgb(0x7E161D), 0.6, rgb(0x4A0B10), 1.0, nil] drawInBezierPath:facePath relativeCenterPosition:NSMakePoint(0, 0.35)];
+    else if (st.face == 7)
+        [[[NSGradient alloc] initWithColorsAndLocations:rgb(0x23406E), 0.0, rgb(0x142A4C), 0.6, rgb(0x08142A), 1.0, nil] drawInBezierPath:facePath relativeCenterPosition:NSMakePoint(0, 0.35)];
+    else if (st.face == 3)
         [[[NSGradient alloc] initWithColorsAndLocations:rgb(0xFFF3D2), 0.0, rgb(0xF6D592), 0.55, rgb(0xD9A453), 0.85, rgb(0xA8732E), 1.0, nil] drawInBezierPath:facePath relativeCenterPosition:NSMakePoint(0, 0.25)];
     else if (st.face == 1)
         [[[NSGradient alloc] initWithColorsAndLocations:rgb(0xFFFFFF), 0.0, rgb(0xF1F1EE), 0.6, rgb(0xD6D6D2), 1.0, nil] drawInBezierPath:facePath relativeCenterPosition:NSMakePoint(0, 0.35)];
@@ -621,7 +628,8 @@ inline void drawVU(NSRect rc, float db, const VUStyle& st) {
     const CGPoint piv = CGPointMake(NSMidX(face), NSMaxY(face) + face.size.height * 0.32);
     const CGFloat R = face.size.height * 1.02;
     const CGFloat span = 39;
-    const int ink = st.face == 4 ? 0x06283A : 0x1A1408, red = 0xB02A20;
+    const bool darkFace = st.face >= 5 && st.face <= 7;
+    const int ink = st.face == 4 ? 0x06283A : darkFace ? 0xF2EBDC : 0x1A1408, red = st.face == 6 ? 0xFFD27A : st.face == 5 ? 0xFF5A48 : 0xB02A20;
     auto ang = [&](float d) {
         float pos;
         if (st.grScale) pos = 1.0f + std::clamp(d, -21.0f, 0.5f) / 20.0f;
@@ -635,7 +643,7 @@ inline void drawVU(NSRect rc, float db, const VUStyle& st) {
     if (!st.grScale) {
         NSBezierPath* arcR = [NSBezierPath bezierPath];
         for (int i = 0; i <= 20; ++i) { float d = 3.0f * i / 20; CGPoint p = polar(piv, ang(d), R + 2 * k); i ? [arcR lineToPoint:p] : [arcR moveToPoint:p]; }
-        arcR.lineWidth = 5 * k; [rgb(0xC0352A) setStroke]; [arcR stroke];
+        arcR.lineWidth = 5 * k; [rgb(darkFace ? red : 0xC0352A) setStroke]; [arcR stroke];
         const float marks[] = {-20, -10, -7, -5, -3, -2, -1, 0, 1, 2, 3};
         for (float m : marks) {
             CGFloat a = ang(m);
@@ -678,8 +686,8 @@ inline void drawVU(NSRect rc, float db, const VUStyle& st) {
         line(polar(piv, a, R * 0.62), polar(piv, a, R + 14 * k), 1.6 * k, rgb(top));
         line(polar(piv, a, R * 0.33), polar(piv, a, R * 0.64), 2.4 * k, rgb(bot));
     } else {
-        line(polar(piv, a, R * 0.35), polar(piv, a, R + 14 * k), 1.5 * k, rgb(0x111111));
-        if (shield) line(polar(piv, a, R * 0.33), polar(piv, a, R * 0.62), 2.2 * k, rgb(0xB8261C));   // piros mutatótő
+        line(polar(piv, a, R * 0.35), polar(piv, a, R + 14 * k), 1.5 * k, rgb(darkFace ? 0xF4EEE2 : 0x111111));
+        if (shield) line(polar(piv, a, R * 0.33), polar(piv, a, R * 0.62), 2.2 * k, rgb(st.face == 6 ? 0x111111 : 0xB8261C));   // mutatótő
     }
     CGContextRestoreGState(ctx);
     // üveg csillanás
@@ -694,7 +702,7 @@ inline void drawVU(NSRect rc, float db, const VUStyle& st) {
         [facePath addClip];
         for (int i = 0; i < 7; ++i) {
             NSBezierPath* e = shieldPath(NSInsetRect(face, i * 1.1 * k, i * 1.1 * k), std::max(1.0, fr - i * k), face.size.width * 0.14, face.size.height * 0.32);
-            e.lineWidth = 2.2 * k; [rgb(st.face == 4 ? 0x03202E : 0x2A1A06, 0.26 - i * 0.035) setStroke]; [e stroke];
+            e.lineWidth = 2.2 * k; [rgb(st.face == 4 ? 0x03202E : darkFace ? 0x000000 : 0x2A1A06, 0.26 - i * 0.035) setStroke]; [e stroke];
         }
         NSBezierPath* g = [NSBezierPath bezierPath];
         [g moveToPoint:NSMakePoint(NSMaxX(face) - face.size.width * 0.34, NSMinY(face))];
@@ -755,18 +763,80 @@ inline void drawHeader(CGFloat W, CGFloat y, CGFloat margin, NSString* left, NSS
     text(right, CGPointMake(W - margin - 90, y), size * 0.9, silk(), false, 1.6);
 }
 
-/// Jelzőlámpa (ékkő): glow 0…1
+/// Kerek VU-műszer (a klasszikus csöves EQ-k / rádiós pultok kerek műszerei): króm perem, kör számlap, felül ív, középső tengely.
+/// face: 0 = krém, 5 = fekete számlap borostyán háttérfénnyel, 4 = jégkék háttérfénnyel. A fény a számlapon BELÜL marad (örök szabály).
+inline void drawRoundVU(CGPoint c, CGFloat r, float db, int face, NSString* legend = @"VU") {
+    CGContextRef ctx = cg();
+    const CGFloat k = r / 60.0;
+    // króm perem
+    NSBezierPath* rim = [NSBezierPath bezierPathWithOvalInRect:circleRect(c, r)];
+    shadowed(3 * k, 8 * k, 0.6, ^{ [[[NSGradient alloc] initWithColorsAndLocations:rgb(0xF4F4F6), 0.0, rgb(0x9A9BA0), 0.45, rgb(0xE1E2E5), 0.7, rgb(0x6E6F74), 1.0, nil] drawInBezierPath:rim angle:-90]; });
+    [rgb(0x000000, 0.45) setStroke]; rim.lineWidth = 0.8 * k; [rim stroke];
+    NSBezierPath* inner = [NSBezierPath bezierPathWithOvalInRect:circleRect(c, r * 0.9)];
+    [[[NSGradient alloc] initWithStartingColor:rgb(0x2A2B2E) endingColor:rgb(0x9FA1A6)] drawInBezierPath:inner angle:-90];
+    // számlap
+    const CGFloat fr = r * 0.86;
+    NSBezierPath* fp = [NSBezierPath bezierPathWithOvalInRect:circleRect(c, fr)];
+    int ink = 0x1A1408, red = 0xB02A20, needle = 0x111111;
+    if (face == 4) {
+        [[[NSGradient alloc] initWithColorsAndLocations:rgb(0xD8F7FF), 0.0, rgb(0x8FE3FB), 0.4, rgb(0x3FC1EE), 0.75, rgb(0x1586C0), 1.0, nil] drawInBezierPath:fp relativeCenterPosition:NSMakePoint(0, 0.3)];
+        ink = 0x06283A;
+    } else if (face == 5) {
+        [[[NSGradient alloc] initWithColorsAndLocations:rgb(0x2A2016), 0.0, rgb(0x15110C), 0.6, rgb(0x080706), 1.0, nil] drawInBezierPath:fp relativeCenterPosition:NSMakePoint(0, 0.3)];
+        ink = 0xFFC46A; red = 0xFF5A3C; needle = 0xFFE2B0;
+    } else
+        [[[NSGradient alloc] initWithColorsAndLocations:rgb(0xFBEFC9), 0.0, rgb(0xEBD39A), 0.6, rgb(0xC9A867), 1.0, nil] drawInBezierPath:fp relativeCenterPosition:NSMakePoint(0, 0.35)];
+    CGContextSaveGState(ctx);
+    [fp addClip];
+    const CGPoint piv = CGPointMake(c.x, c.y + fr * 0.66);
+    const CGFloat R = fr * 1.04, span = 40;
+    auto ang = [&](float d) {
+        const float pos = (std::pow(10.0f, d / 20.0f) - 0.1f) / (std::pow(10.0f, 3.0f / 20.0f) - 0.1f);
+        return deg(-span + 2 * span * std::clamp(pos, -0.03f, 1.04f));
+    };
+    NSBezierPath* arc = [NSBezierPath bezierPath];
+    for (int i = 0; i <= 60; ++i) { const float d = -20.0f + 20.0f * i / 60; CGPoint p = polar(piv, ang(d), R); i ? [arc lineToPoint:p] : [arc moveToPoint:p]; }
+    arc.lineWidth = 1.1 * k; [rgb(ink) setStroke]; [arc stroke];
+    NSBezierPath* arcR = [NSBezierPath bezierPath];
+    for (int i = 0; i <= 20; ++i) { const float d = 3.0f * i / 20; CGPoint p = polar(piv, ang(d), R + 1.6 * k); i ? [arcR lineToPoint:p] : [arcR moveToPoint:p]; }
+    arcR.lineWidth = 4 * k; [rgb(red) setStroke]; [arcR stroke];
+    for (float m : {-20.0f, -10.0f, -7.0f, -5.0f, -3.0f, -1.0f, 0.0f, 1.0f, 3.0f}) {
+        const CGFloat a = ang(m);
+        NSColor* col = m > 0 ? rgb(red) : rgb(ink);
+        line(polar(piv, a, R), polar(piv, a, R + (m == 0 ? 8 : 6) * k), 1.1 * k, col);
+        if (m == -7 || m == -1 || m == 1) continue;   // csak a fő számok (a kerek műszeren kevés a hely)
+        NSString* t = m > 0 ? [NSString stringWithFormat:@"+%d", int(m)] : [NSString stringWithFormat:@"%d", int(std::fabs(m))];
+        text(t, polar(piv, a, R + 11 * k), 8 * k, col, m == 0, 0.1);
+    }
+    text(legend, CGPointMake(c.x, c.y + fr * 0.22), 10 * k, rgb(ink), true, 1.4 * k);
+    // mutató
+    const CGFloat a = ang(db);
+    CGContextSetShadowWithColor(ctx, CGSizeMake(1.5 * k, -2 * k), 2 * k, rgb(0, 0.35).CGColor);
+    line(polar(piv, a, R * 0.12), polar(piv, a, R + 9 * k), 1.4 * k, rgb(needle));
+    CGContextRestoreGState(ctx);
+    // tengelysapka (a számlap alján)
+    fillOval(piv, 5.5 * k, rgb(0x2C2D31), rgb(0x0B0B0C));
+    // üveg csillanás (a számlapon belül)
+    CGContextSaveGState(ctx);
+    [fp addClip];
+    [[[NSGradient alloc] initWithStartingColor:rgb(0xFFFFFF, face == 5 ? 0.12 : 0.24) endingColor:rgb(0xFFFFFF, 0.0)]
+        drawInBezierPath:[NSBezierPath bezierPathWithOvalInRect:NSMakeRect(c.x - fr * 1.1, c.y - fr * 1.5, fr * 2.2, fr * 1.6)] angle:90];
+    CGContextRestoreGState(ctx);
+    [rgb(0x000000, 0.6) setStroke]; fp.lineWidth = 1.0 * k; [fp stroke];
+}
+
+/// Jelzőlámpa (ékkő): glow 0…1. ÖRÖK SZABÁLY (a user, 2026-10-23): a lámpa csak a lencsén BELÜL világít — kifelé nincs fényudvar.
 inline void drawJewel(CGPoint c, CGFloat glow, int color, NSString* label, CGFloat r = 7) {
     glow = std::clamp(glow, CGFloat(0), CGFloat(1));
-    if (glow > 0.01)
-        [[[NSGradient alloc] initWithStartingColor:rgb(color, 0.6 * glow) endingColor:rgb(color, 0)]
-            drawInBezierPath:[NSBezierPath bezierPathWithOvalInRect:circleRect(c, r * 2.4)] relativeCenterPosition:NSZeroPoint];
     fillOval(c, r, rgb(0xD0D0D4), rgb(0x505056));
     NSColor* base = rgb(color);
     NSColor* hot = [[base blendedColorWithFraction:0.75 ofColor:NSColor.blackColor] blendedColorWithFraction:glow ofColor:[base blendedColorWithFraction:0.35 ofColor:NSColor.whiteColor]];
     NSColor* core = [[base blendedColorWithFraction:0.88 ofColor:NSColor.blackColor] blendedColorWithFraction:glow ofColor:base];
     [[[NSGradient alloc] initWithStartingColor:hot endingColor:core]
         drawInBezierPath:[NSBezierPath bezierPathWithOvalInRect:circleRect(c, r * 0.72)] relativeCenterPosition:NSMakePoint(-0.3, 0.35)];
+    // csillanás a lencsén (belül marad)
+    [[[NSGradient alloc] initWithStartingColor:rgb(0xFFFFFF, 0.55) endingColor:rgb(0xFFFFFF, 0.0)]
+        drawInBezierPath:[NSBezierPath bezierPathWithOvalInRect:NSMakeRect(c.x - r * 0.42, c.y - r * 0.55, r * 0.55, r * 0.38)] angle:-90];
     if (label) text(label, CGPointMake(c.x, c.y + r + 8), 7, silkDim(), false, 1.2);
 }
 
