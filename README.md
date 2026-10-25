@@ -1,11 +1,11 @@
 # EKIDIO SOUND — Plugins
 
-Sixteen free, analog-inspired plugins for macOS (Audio Unit / AUv2): eight compressors, a character EQ, a soft tube air enhancer, an analog tape machine, a limiter, three mastering tools and a passive tube equalizer set.
+Eighteen free, analog-inspired plugins for macOS (Audio Unit / AUv2): eight compressors, a character EQ, a soft tube air enhancer, an analog tape machine, a limiter, three mastering tools, a passive tube equalizer set, a plate reverb and a stereo delay.
 
 **Website:** https://ekidio.github.io/ekidio_sound_plugins/ · [Magyar](https://ekidio.github.io/ekidio_sound_plugins/hu/)
-**Download:** [Compressor Collection, 8 compressors (v1.3.0)](https://github.com/Ekidio/ekidio_sound_plugins/releases/tag/v1.3.0) · [DYNEKI-6](https://github.com/Ekidio/ekidio_sound_plugins/releases/tag/dyneki-v1.1.0) · [SATEKI](https://github.com/Ekidio/ekidio_sound_plugins/releases/tag/sateki-v1.0.0) · [TAPEKI](https://github.com/Ekidio/ekidio_sound_plugins/releases/tag/tapeki-v1.0.1) · [MASTEQUI](https://github.com/Ekidio/ekidio_sound_plugins/releases/tag/mastequi-v1.0.0) · [PULTEKI](https://github.com/Ekidio/ekidio_sound_plugins/releases/tag/pulteki-v1.0.0) · [EK1](https://github.com/Ekidio/ekidio_sound_plugins/releases/tag/ek1-v1.1.0) · [EKIPPER](https://github.com/Ekidio/ekidio_sound_plugins/releases/tag/ekipper-v1.0.0) · [LIMEKI](https://github.com/Ekidio/ekidio_sound_plugins/releases/tag/limeki-v1.1.0)
+**Download:** [Compressor Collection, 8 compressors (v1.3.0)](https://github.com/Ekidio/ekidio_sound_plugins/releases/tag/v1.3.0) · [DYNEKI-6](https://github.com/Ekidio/ekidio_sound_plugins/releases/tag/dyneki-v1.1.0) · [SATEKI](https://github.com/Ekidio/ekidio_sound_plugins/releases/tag/sateki-v1.0.0) · [TAPEKI](https://github.com/Ekidio/ekidio_sound_plugins/releases/tag/tapeki-v1.0.1) · [MASTEQUI](https://github.com/Ekidio/ekidio_sound_plugins/releases/tag/mastequi-v1.0.0) · [PULTEKI](https://github.com/Ekidio/ekidio_sound_plugins/releases/tag/pulteki-v1.0.0) · [EK1](https://github.com/Ekidio/ekidio_sound_plugins/releases/tag/ek1-v1.1.0) · [EKIPPER](https://github.com/Ekidio/ekidio_sound_plugins/releases/tag/ekipper-v1.0.0) · [LIMEKI](https://github.com/Ekidio/ekidio_sound_plugins/releases/tag/limeki-v1.1.0) · [REVEKI](https://github.com/Ekidio/ekidio_sound_plugins/releases/tag/reveki-v1.0.0) · [DELEKI](https://github.com/Ekidio/ekidio_sound_plugins/releases/tag/deleki-v1.0.0)
 
-![New plugin: PULTEKI](docs/assets/new-plugin.jpg)
+![New plugins: REVEKI and DELEKI](docs/assets/new-plugin.jpg)
 
 | Plugin | Character |
 |---|---|
@@ -25,6 +25,8 @@ Sixteen free, analog-inspired plugins for macOS (Audio Unit / AUv2): eight compr
 | **MASTEQUI** | three-band mastering EQ with low and air shelves, 2× linear-phase oversampling — separate installer |
 | **PULTEKI** | passive tube equalizer set: program EQ, mid-range EQ and filter in one rack, extra clean — separate installer |
 | **EKIPPER** | soft clipper (DRIVE, OUTPUT, 2× / 4× / 8× oversampling) — separate installer |
+| **REVEKI** | classic plate reverb (PRE-DELAY and BUILD with tempo sync, DECAY up to 60 s, DAMP, FREEZE, live decay window) — separate installer |
+| **DELEKI** | clean stereo delay (TIME with tempo sync, PING-PONG / STEREO, OFFSET, FEEDBACK with LOW / HIGH CUT in the loop, DUCK, FREEZE) — separate installer |
 
 Requirements: macOS 11+, Apple Silicon or Intel, an AU host (Logic Pro, GarageBand, Ableton Live, Reaper…). **Audio Unit (AU) only** — no VST3 version is planned.
 
