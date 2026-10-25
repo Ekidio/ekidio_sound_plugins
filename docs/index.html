@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EKIDIO SOUND – Free Audio Unit Plugins</title>
+<meta name="description" content="Sixteen free analog-inspired plugins (Audio Unit) for macOS by EKIDIO SOUND: eight compressors (optical, FET, variable-mu, VCA bus, punch bus, RMS, opto-tube, vari-mu limiter), the DYNEKI-6 character EQ, the SATEKI soft tube air enhancer, the TAPEKI analog tape machine, the LIMEKI density &amp; clean limiter three mastering tools (EK1, MASTEQUI, EKIPPER) and the PULTEKI passive tube equalizer set.">
+<link rel="alternate" hreflang="en" href="https://ekidio.github.io/ekidio_sound_plugins/">
+<link rel="alternate" hreflang="hu" href="https://ekidio.github.io/ekidio_sound_plugins/hu/">
+<meta property="og:title" content="EKIDIO SOUND – Free Audio Unit Plugins">
+<meta property="og:description" content="Sixteen free analog-inspired plugins for macOS (AU): eight compressors, a character EQ, a soft tube air enhancer, an analog tape machine, a limiter and three mastering tools. New: PULTEKI.">
+<meta property="og:image" content="https://ekidio.github.io/ekidio_sound_plugins/assets/new-plugin.jpg">
+<style>
+  :root{ --bg:#0b0b0d; --panel:#16171c; --line:rgba(255,255,255,.08); --text:#dcdee8; --dim:#8a8d9c; --amber:#f2a33a; --cream:#ede3cf; }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif}
+  a{color:var(--amber);text-decoration:none} a:hover{text-decoration:underline}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+  nav{display:flex;justify-content:space-between;align-items:center;padding:18px 0;font-size:14px}
+  .brand{font-weight:700;letter-spacing:.32em;color:var(--cream)} .brand span{font-weight:400;color:#9c9486}
+  .banner{display:block;width:100%;height:auto;border-radius:16px;border:1px solid var(--line);box-shadow:0 30px 80px rgba(0,0,0,.6);margin:0 0 30px}
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+  header.hero{text-align:center;padding:8px 0 30px;background:radial-gradient(60% 50% at 50% 30%,rgba(242,163,58,.14),transparent 70%)}
+  h1{font:800 clamp(34px,6vw,60px)/1.05 -apple-system,BlinkMacSystemFont,sans-serif;color:#fff;margin:0 0 14px;letter-spacing:-.01em}
+  .tag{font-size:clamp(17px,2.4vw,21px);max-width:780px;margin:0 auto 28px;color:#e9eaf1}
+  .cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+  .btn{display:inline-flex;align-items:center;gap:10px;padding:13px 22px;border-radius:12px;font-weight:800;border:1px solid var(--line)}
+  .btn.primary{background:var(--amber);color:#1a1006;box-shadow:0 8px 30px rgba(242,163,58,.25)} .btn.primary:hover{text-decoration:none;filter:brightness(1.08)}
+  .btn.ghost{background:#1e2027;color:var(--text)} .btn.ghost:hover{text-decoration:none;background:#262833}
+  .req{margin-top:12px;font-size:13px;color:var(--dim)}
+  .shot{display:block;margin:40px 24px 0;border-radius:18px;overflow:hidden;border:1px solid rgba(242,163,58,.55);box-shadow:0 0 70px rgba(242,163,58,.35),0 30px 80px rgba(0,0,0,.6)}
+  .shot img{display:block;width:100%;height:auto}
+  .section-cta{margin:-8px 0 28px}
+  section{padding:56px 0}
+  h2{font:800 clamp(26px,4vw,36px)/1.15 -apple-system,BlinkMacSystemFont,sans-serif;color:#fff;margin:0 0 10px}
+  .lead{color:var(--dim);max-width:760px;margin:0 0 28px} .lead b{color:#fff}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 20px;border-top:3px solid var(--amber)}
+  .card h3{margin:2px 0 6px;color:#fff;font-size:17px} .card p{margin:0;color:#c3c6d3;font-size:14.5px}
+  .plugin{display:grid;grid-template-columns:1.5fr 1fr;gap:30px;align-items:center;padding:30px 0;border-top:1px solid var(--line)}
+  .plugin:nth-child(even){grid-template-columns:1fr 1.5fr} .plugin:nth-child(even) img{order:2}
+  .plugin img{width:100%;border-radius:12px;border:1px solid var(--line);box-shadow:0 20px 60px rgba(0,0,0,.5)}
+  .plugin h3{margin:0 0 2px;color:#fff;font:800 26px/1.2 -apple-system,sans-serif;letter-spacing:.06em}
+  .plugin .kind{color:var(--amber);font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px}
+  .plugin p{margin:0 0 10px;color:#c3c6d3} .plugin .use{font-size:14px;color:var(--dim)}
+  ol li{margin-bottom:8px} code{background:#1e2027;padding:2px 6px;border-radius:5px;font-size:14px}
+  footer{padding:40px 0 60px;color:var(--dim);font-size:13px;border-top:1px solid var(--line);text-align:center}
+  footer p{max-width:760px;margin-left:auto;margin-right:auto}
+  [id]{scroll-margin-top:76px}
+  .viewer{display:flex;flex-direction:column;gap:12px;min-width:0}
+  .viewer img{display:none} .viewer img.on{display:block}
+  .vtabs{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+  .vtabs button{background:#1e2027;color:var(--text);border:1px solid var(--line);border-radius:8px;padding:7px 14px;font:700 12px/1 -apple-system,BlinkMacSystemFont,sans-serif;letter-spacing:.08em;cursor:pointer}
+  .vtabs button:hover{background:#262833}
+  .vtabs button.on{background:#c4222c;border-color:#c4222c;color:#fff}
+  .topbar{position:sticky;top:0;z-index:50;background:rgba(11,11,13,.82);backdrop-filter:saturate(1.4) blur(12px);-webkit-backdrop-filter:saturate(1.4) blur(12px);border-bottom:1px solid var(--line)}
+  @media (max-width:760px){ .plugin,.plugin:nth-child(even){grid-template-columns:1fr} .plugin:nth-child(even) img{order:0} }
+</style>
+</head>
+<body>
+<div class="topbar"><div class="wrap">
+  <nav><div class="brand">EKIDIO <span>SOUND</span></div><a href="hu/">Magyar</a></nav>
+</div></div>
+
+<header class="hero">
+  <div class="wrap">
+    <h1>EKIDIO SOUND EFFECTS</h1>
+    <p class="tag"><b>Analog soul in your digital mixes — completely free.</b><br>Discover the ever-growing EKIDIO SOUND plugin arsenal for macOS: musical compressors, analog tape, tube smoothing and mastering processors, with no compromises. Try them in your latest project!</p>
+    <div class="req"><b style="color:var(--amber)">Audio Unit (AU) only</b> · macOS 11 or newer · Apple Silicon &amp; Intel · Logic Pro, GarageBand, Ableton Live, Reaper and other AU hosts</div>
+  </div>
+  <a class="shot" href="#pulteki"><img src="assets/new-plugin.jpg" alt="New plugin: PULTEKI passive tube equalizer set"></a>
+</header>
+
+<section>
+  <div class="wrap">
+    <h2>One family, one way of working</h2>
+    <p class="lead">Every unit gets you there in one or two moves. The rarely touched settings live in the fold-out <b>EKI drawer</b>, so the faceplate stays clean.</p>
+    <div class="grid">
+      <div class="card"><h3>Character first</h3><p>Tube, transformer, FET and console colour you can hear — with a clean setting where it makes sense.</p></div>
+      <div class="card"><h3>AUTO GAIN</h3><p>Keeps the output at the input level and locks the gain knob at 0 dB. On at startup on the compressors, DYNEKI-6 and SATEKI; off on TAPEKI and MASTEQUI. EK1 and LIMEKI set their level with AUTO −14 LUFS instead.</p></div>
+      <div class="card"><h3>Parallel MIX</h3><p>Phase-aligned dry/wet blend on every unit — no comb filtering, no hollow sound.</p></div>
+      <div class="card"><h3>Living meters</h3><p>Glowing VU meters, gain-reduction scales and LEDs that follow the audio.</p></div>
+      <div class="card"><h3>Presets</h3><p>Starting points for vocals, drums, bass, buses and mastering — level-matched.</p></div>
+      <div class="card"><h3>Resizable</h3><p>Drag the corner from 75 % to 200 %. Each plugin remembers its size.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <img class="banner" src="assets/banner.jpg" alt="EKIDIO SOUND Compressor Collection">
+    <h2>Compressor Collection</h2>
+    <p class="lead">Eight compressors, from the smoothest optical leveller to the fiercest FET smash.</p>
+    <p class="section-cta"><a class="btn primary" href="https://github.com/Ekidio/ekidio_sound_plugins/releases/download/v1.3.0/EKIDIO-SOUND-Compressor-Collection-1.3.0.dmg">Download the Compressor Collection</a></p>
+    <div>
+      <div class="plugin"><img src="assets/opteki.png" alt="OPTEKI"><div><h3>OPTEKI</h3><div class="kind">Optical leveling amplifier</div>
+        <p>The master of invisible smoothness. Its silky optical cell evens out the dynamics while the music's natural breath stays untouched. The deeper it digs into compression, the more gently it lets go – on vocals and acoustic instruments it brings that instant velvet that makes a track sound like a finished song. Thinking of the master bus? Try it!</p>
+        <p class="use">Vocals, bass, acoustic instruments.</p></div></div>
+      <div class="plugin"><img src="assets/feteki.png" alt="FETEKI"><div><h3>FETEKI</h3><div class="kind">FET peak limiter</div>
+        <p>Lightning-fast energy and raw power. No politeness here: it catches even the wildest transients like a lightning strike, and the iconic ALL mode gives drums and room tracks a biting, exciting crunch and analog attitude that almost blows the speakers apart.</p>
+        <p class="use">Drums, room mics, vocals with attitude, bass.</p></div></div>
+      <div class="plugin"><img src="assets/varieki.png" alt="VARIEKI"><div><h3>VARIEKI</h3><div class="kind">Variable-mu dynamics</div>
+        <p>The refined luxury of the studio's golden age. Its dual detection wraps around stray peaks almost unnoticed, while the vari-mu tube action quietly makes the whole picture sound “master-done”.</p>
+        <p class="use">Mix bus, mastering, smooth vocal levelling.</p></div></div>
+      <div class="plugin"><img src="assets/buseki.png" alt="BUSEKI"><div><h3>BUSEKI</h3><div class="kind">Stereo bus compressor</div>
+        <p>The legendary console glue that forges your tracks into one unified, pulsing whole. It pulls the mix together without the kick swallowing the space, and gives it that tight, professional posture that turns a song into a finished radio hit.</p>
+        <p class="use">Mix bus, drum bus, the "glue".</p></div></div>
+      <div class="plugin"><img src="assets/apeki.png" alt="APEKI"><div><h3>APEKI</h3><div class="kind">Punch bus compressor</div>
+        <p>For when you want the drums to hit you in the chest. Thanks to the THRUST circuit, the lows of the kick and bass break through the mix untouched and with elemental force, while the tracks get an instant, explosive, tight American character.</p>
+        <p class="use">Drum bus, mix bus, punchy bass.</p></div></div>
+      <div class="plugin"><img src="assets/dbeki.png" alt="DBEKI"><div><h3>DBEKI</h3><div class="kind">RMS compressor / limiter</div>
+        <p>It responds to energy the way the human ear hears it: kick and snare get exactly the slap they need to cut through the densest arrangement, while OverEasy mode keeps the limits soft. You won't hear this anywhere else!</p>
+        <p class="use">Kick, snare, bass, guitars.</p></div></div>
+      <div class="plugin"><img src="assets/tubeki.png" alt="TUBEKI"><div><h3>TUBEKI</h3><div class="kind">Opto tube compressor</div>
+        <p>It blends the finesse of an optical cell with the glowing soul of overdriven vacuum tubes. Push the signal into it and it doesn't just compress – it brings thin drums, bass or vocals to life.</p>
+        <p class="use">Vocals, bass, acoustic guitar, mix bus warmth.</p></div></div>
+      <div class="plugin"><img src="assets/faireki.png" alt="FAIREKI"><div><h3>FAIREKI</h3><div class="kind">Variable-mu limiter</div>
+        <p>The uncrowned king of vintage iron. The harder you drive it, the more majestically and massively it holds the picture together. In LAT/VERT mode the surround of the stereo image comes alive.</p>
+        <p class="use">Mix bus, mastering, drums and vocals that need weight.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Tone &amp; Saturation</h2>
+    <p class="lead">Shape your sound with character effects — from soft analog warmth all the way to tape saturation, exactly the way you like it.</p>
+    <div>
+      <div class="plugin"><img src="assets/dyneki.png" alt="DYNEKI-6"><div><h3>DYNEKI-6</h3><div class="kind">Six-band character EQ + dynamics</div>
+        <p>A paintbrush for sound. Whether it's the silky, caressing BRIT character or the bold, in-your-face PUNCH voice, every band is purely musical. The sub section breathes clean warmth into your tracks, and the magical AIR band opens up the space above the music.</p>
+        <p class="use">Vocals, drums, bass, buses, mastering.</p>
+        <p><a class="btn primary" href="https://github.com/Ekidio/ekidio_sound_plugins/releases/download/dyneki-v1.1.0/EKIDIO-SOUND-DYNEKI-1.1.0.dmg">Download DYNEKI-6</a></p></div></div>
+      <div class="plugin"><img src="assets/sateki.png" alt="SATEKI"><div><h3>SATEKI</h3><div class="kind">Soft tube air enhancer</div>
+        <p>Pure light and sparkle – with a restrained edge. A modern reincarnation of the legendary studio air trick: it squeezes silky tube harmonics out of three separate frequency bands, so the vocal practically steps off the microphone and into the listener's ear.</p>
+        <p><b>A must for AI-generated music!</b></p>
+        <p class="use">Vocals, overheads, acoustic instruments, mix bus.</p>
+        <p><a class="btn primary" href="https://github.com/Ekidio/ekidio_sound_plugins/releases/download/sateki-v1.0.0/EKIDIO-SOUND-SATEKI-1.0.0.dmg">Download SATEKI</a></p></div></div>
+      <div class="plugin" id="tapeki"><img src="assets/tapeki.png" alt="TAPEKI"><div><h3>TAPEKI</h3><div class="kind">Analog tape machine</div>
+        <p>The living, pulsing soul of real magnetic tape. The character of three iconic machines spins before your eyes, from the studio deck to the vintage cassette. Too squeaky-clean? Smooth away the digital harshness!</p>
+        <p class="use">Drums, bass, mix bus, anything that needs warmth and glue.</p>
+        <p><a class="btn primary" href="https://github.com/Ekidio/ekidio_sound_plugins/releases/download/tapeki-v1.0.1/EKIDIO-SOUND-TAPEKI-1.0.1.dmg">Download TAPEKI</a></p></div></div>
+      <div class="plugin" id="mastequi"><img src="assets/mastequi.png" alt="MASTEQUI"><div><h3>MASTEQUI</h3><div class="kind">Three-band mastering EQ</div>
+        <p>Surgical clarity with an analog soul. It boosts and cuts with curves so fine and musical, as if the music had been born that way. The oversampled, crystal-clear top band opens up the stereo field while the phase stays solid and untouched.</p>
+        <p class="use">Mastering, mix bus, stems.</p>
+        <p><a class="btn primary" href="https://github.com/Ekidio/ekidio_sound_plugins/releases/download/mastequi-v1.0.0/EKIDIO-SOUND-MASTEQUI-1.0.0.dmg">Download MASTEQUI</a></p></div></div>
+      <div class="plugin" id="pulteki"><div class="viewer"><img src="assets/pulteki-1.png?v=101" alt="PULTEKI – PROGRAM EQ" class="on"><img src="assets/pulteki-2.png?v=101" alt="PULTEKI – MID-RANGE EQ"><img src="assets/pulteki-3.png?v=101" alt="PULTEKI – FILTER"><div class="vtabs"><button type="button" onclick="pultekiPage(0)" class="on" aria-pressed="true">PROGRAM EQ</button><button type="button" onclick="pultekiPage(1)" aria-pressed="false">MID-RANGE EQ</button><button type="button" onclick="pultekiPage(2)" aria-pressed="false">FILTER</button></div></div><div><h3>PULTEKI</h3><div class="kind">Passive tube equalizer set</div>
+        <p>The spirit of the legendary tube equalizers, with uncompromising clarity. Three modules in one rack: the program EQ's iconic low-end trick – boost and cut at the same time, so kick and bass get both fuller and tighter –, the mid-range EQ that brings instruments forward or tucks them back, and the filter section for the final clean-up. Silky, airy highs, a round, deep bottom – and a touch of tube colour when you want it.</p>
+        <p class="use">Mix bus, mastering, kick, bass, vocals.</p>
+        <p><a class="btn primary" href="https://github.com/Ekidio/ekidio_sound_plugins/releases/download/pulteki-v1.0.1/EKIDIO-SOUND-PULTEKI-1.0.1.dmg">Download PULTEKI</a></p></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="mastering">
+  <div class="wrap">
+    <h2>Mastering</h2>
+    <p class="lead">Give your songs that final analog cohesion, dynamics and studio sheen that makes them instantly competitive on any player.</p>
+    <div>
+      <div class="plugin" id="ek1"><img src="assets/ek1.png" alt="EK1"><div><h3>EK1</h3><div class="kind">One-knob-per-job mastering chain</div>
+        <p>The fastest way to a finished, radio-ready master. PUSH instantly thickens and saturates the picture, WIDTH precisely widens the stereo field, and the built-in two-stage limiter keeps the transients in check with musical finesse.</p>
+        <p class="use">Mastering, mix bus, quick loud references.</p>
+        <p><a class="btn primary" href="https://github.com/Ekidio/ekidio_sound_plugins/releases/download/ek1-v1.1.0/EKIDIO-SOUND-EK1-1.1.0.dmg">Download EK1</a></p></div></div>
+      <div class="plugin" id="ekipper"><img src="assets/ekipper.png" alt="EKIPPER"><div><h3>EKIPPER</h3><div class="kind">Soft clipper</div>
+        <p>The secret weapon of gentle peak clipping. Its warm, rounded curve trims the unnecessary spikes before the limiter while the transients keep their punch. It frees up headroom unnoticed and lends the rhythm section a pleasant density and cohesion.</p>
+        <p class="use">Drums, mix bus, before the limiter.</p>
+        <p><a class="btn primary" href="https://github.com/Ekidio/ekidio_sound_plugins/releases/download/ekipper-v1.0.0/EKIDIO-SOUND-EKIPPER-1.0.0.dmg">Download EKIPPER</a></p></div></div>
+      <div class="plugin" id="limeki"><img src="assets/limeki.png" alt="LIMEKI"><div><h3>LIMEKI</h3><div class="kind">Density &amp; clean limiter</div>
+        <p>The perfect alliance of two worlds. The DENSITY stage gives the production analog thickness and musical body, while CLEAN guards the peaks as the cleanest bastion of the digital age.</p>
+        <p class="use">Mix bus, mastering, drum bus, streaming masters.</p>
+        <p><a class="btn primary" href="https://github.com/Ekidio/ekidio_sound_plugins/releases/download/limeki-v1.1.0/EKIDIO-SOUND-LIMEKI-1.1.0.dmg">Download LIMEKI</a></p></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="install">
+  <div class="wrap">
+    <h2>Install</h2>
+    <ol>
+      <li>Download the DMG and open it. The eight compressors come in one installer (Compressor Collection); every other plugin has its own — install whichever you like.</li>
+      <li>Double-click <b>Install EKIDIO SOUND Compressor Collection.pkg</b> (or the single-plugin one, e.g. <b>Install EKIDIO SOUND EK1.pkg</b>). If macOS says it cannot verify the developer: click <b>Done</b>, then open <b>System Settings → Privacy &amp; Security</b> and click <b>Open Anyway</b>.</li>
+      <li>Restart your DAW. In Logic Pro, if a plugin does not show up: <b>Plug-in Manager → Reset &amp; Rescan Selection</b>.</li>
+      <li>The plugins appear under the manufacturer <b>EKIDIO SOUND</b>.</li>
+    </ol>
+    <p class="lead">Uninstall: delete the <code>*EKI.component</code> files (and <code>DYNEKI</code>, <code>SATEKI</code>, <code>TAPEKI</code>, <code>LIMEKI</code>, <code>EK1</code>, <code>MASTEQUI</code>, <code>PULTEKI</code>, <code>EKIPPER.component</code>) from <code>/Library/Audio/Plug-Ins/Components</code>.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p><b>Free to use</b>, including in commercial music and audio productions. You may not sell, rent or redistribute the plugins or their source code. Provided "as is", without warranty.</p>
+    <p>Any product names that may be mentioned are trademarks of their respective owners; EKIDIO SOUND is not affiliated with them. The plugins are inspired by the sound character of classic studio gear.</p>
+    <p>© 2026 EKIDIO SOUND · <a href="https://github.com/Ekidio/ekidio_sound_plugins/releases">All releases</a></p>
+  </div>
+</footer>
+<script>
+  function pultekiPage(i){
+    document.querySelectorAll('#pulteki .viewer img').forEach((im,k)=>im.classList.toggle('on',k===i));
+    document.querySelectorAll('#pulteki .vtabs button').forEach((b,k)=>{b.classList.toggle('on',k===i);b.setAttribute('aria-pressed',k===i);});
+  }
+</script>
+</body>
+</html>

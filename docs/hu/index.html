@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EKIDIO SOUND – Ingyenes Audio Unit pluginok</title>
+<meta name="description" content="Tizenhat ingyenes, analóg ihletésű plugin (Audio Unit) macOS-re az EKIDIO SOUND-tól: nyolc kompresszor (optikai, FET, vari-mu, VCA busz, punch busz, RMS, opto-csöves, vari-mu limiter), a DYNEKI-6 karakteres EQ, a SATEKI lágy, csöves Air-fresher, a TAPEKI analóg szalagos magnó, a LIMEKI density és clean limiter, három mastering-eszköz (EK1, MASTEQUI, EKIPPER) és a PULTEKI passzív csöves EQ-sor.">
+<link rel="alternate" hreflang="en" href="https://ekidio.github.io/ekidio_sound_plugins/">
+<link rel="alternate" hreflang="hu" href="https://ekidio.github.io/ekidio_sound_plugins/hu/">
+<meta property="og:title" content="EKIDIO SOUND – Ingyenes Audio Unit pluginok">
+<meta property="og:description" content="Tizenhat ingyenes, analóg ihletésű plugin macOS-re (AU): nyolc kompresszor, egy karakteres EQ, egy lágy, csöves Air-fresher, egy analóg szalagos magnó, egy limiter és három mastering-eszköz. Új: PULTEKI.">
+<meta property="og:image" content="https://ekidio.github.io/ekidio_sound_plugins/assets/new-plugin.jpg">
+<style>
+  :root{ --bg:#0b0b0d; --panel:#16171c; --line:rgba(255,255,255,.08); --text:#dcdee8; --dim:#8a8d9c; --amber:#f2a33a; --cream:#ede3cf; }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif}
+  a{color:var(--amber);text-decoration:none} a:hover{text-decoration:underline}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+  nav{display:flex;justify-content:space-between;align-items:center;padding:18px 0;font-size:14px}
+  .brand{font-weight:700;letter-spacing:.32em;color:var(--cream)} .brand span{font-weight:400;color:#9c9486}
+  .banner{display:block;width:100%;height:auto;border-radius:16px;border:1px solid var(--line);box-shadow:0 30px 80px rgba(0,0,0,.6);margin:0 0 30px}
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+  header.hero{text-align:center;padding:8px 0 30px;background:radial-gradient(60% 50% at 50% 30%,rgba(242,163,58,.14),transparent 70%)}
+  h1{font:800 clamp(34px,6vw,60px)/1.05 -apple-system,BlinkMacSystemFont,sans-serif;color:#fff;margin:0 0 14px;letter-spacing:-.01em}
+  .tag{font-size:clamp(17px,2.4vw,21px);max-width:780px;margin:0 auto 28px;color:#e9eaf1}
+  .cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+  .btn{display:inline-flex;align-items:center;gap:10px;padding:13px 22px;border-radius:12px;font-weight:800;border:1px solid var(--line)}
+  .btn.primary{background:var(--amber);color:#1a1006;box-shadow:0 8px 30px rgba(242,163,58,.25)} .btn.primary:hover{text-decoration:none;filter:brightness(1.08)}
+  .btn.ghost{background:#1e2027;color:var(--text)} .btn.ghost:hover{text-decoration:none;background:#262833}
+  .req{margin-top:12px;font-size:13px;color:var(--dim)}
+  .shot{display:block;margin:40px 24px 0;border-radius:18px;overflow:hidden;border:1px solid rgba(242,163,58,.55);box-shadow:0 0 70px rgba(242,163,58,.35),0 30px 80px rgba(0,0,0,.6)}
+  .shot img{display:block;width:100%;height:auto}
+  .section-cta{margin:-8px 0 28px}
+  section{padding:56px 0}
+  h2{font:800 clamp(26px,4vw,36px)/1.15 -apple-system,BlinkMacSystemFont,sans-serif;color:#fff;margin:0 0 10px}
+  .lead{color:var(--dim);max-width:760px;margin:0 0 28px} .lead b{color:#fff}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 20px;border-top:3px solid var(--amber)}
+  .card h3{margin:2px 0 6px;color:#fff;font-size:17px} .card p{margin:0;color:#c3c6d3;font-size:14.5px}
+  .plugin{display:grid;grid-template-columns:1.5fr 1fr;gap:30px;align-items:center;padding:30px 0;border-top:1px solid var(--line)}
+  .plugin:nth-child(even){grid-template-columns:1fr 1.5fr} .plugin:nth-child(even) img{order:2}
+  .plugin img{width:100%;border-radius:12px;border:1px solid var(--line);box-shadow:0 20px 60px rgba(0,0,0,.5)}
+  .plugin h3{margin:0 0 2px;color:#fff;font:800 26px/1.2 -apple-system,sans-serif;letter-spacing:.06em}
+  .plugin .kind{color:var(--amber);font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px}
+  .plugin p{margin:0 0 10px;color:#c3c6d3} .plugin .use{font-size:14px;color:var(--dim)}
+  ol li{margin-bottom:8px} code{background:#1e2027;padding:2px 6px;border-radius:5px;font-size:14px}
+  footer{padding:40px 0 60px;color:var(--dim);font-size:13px;border-top:1px solid var(--line);text-align:center}
+  footer p{max-width:760px;margin-left:auto;margin-right:auto}
+  [id]{scroll-margin-top:76px}
+  .viewer{display:flex;flex-direction:column;gap:12px;min-width:0}
+  .viewer img{display:none} .viewer img.on{display:block}
+  .vtabs{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+  .vtabs button{background:#1e2027;color:var(--text);border:1px solid var(--line);border-radius:8px;padding:7px 14px;font:700 12px/1 -apple-system,BlinkMacSystemFont,sans-serif;letter-spacing:.08em;cursor:pointer}
+  .vtabs button:hover{background:#262833}
+  .vtabs button.on{background:#c4222c;border-color:#c4222c;color:#fff}
+  .topbar{position:sticky;top:0;z-index:50;background:rgba(11,11,13,.82);backdrop-filter:saturate(1.4) blur(12px);-webkit-backdrop-filter:saturate(1.4) blur(12px);border-bottom:1px solid var(--line)}
+  @media (max-width:760px){ .plugin,.plugin:nth-child(even){grid-template-columns:1fr} .plugin:nth-child(even) img{order:0} }
+</style>
+</head>
+<body>
+<div class="topbar"><div class="wrap">
+  <nav><div class="brand">EKIDIO <span>SOUND</span></div><a href="../">English</a></nav>
+</div></div>
+
+<header class="hero">
+  <div class="wrap">
+    <h1>EKIDIO SOUND EFFEKTEK</h1>
+    <p class="tag"><b>Analóg lélek a digitális mixeidben — teljesen ingyen.</b><br>Fedezd fel az EKIDIO SOUND folyamatosan növekvő macOS plugin-arzenálját: zenei kompresszorok, analóg szalag, csöves simítás és mastering processzorok kompromisszumok nélkül. Próbáld ki őket a legújabb projektedben!</p>
+    <div class="req"><b style="color:var(--amber)">Csak Audio Unit (AU)</b> · macOS 11 vagy újabb · Apple Silicon és Intel · Logic Pro, GarageBand, Ableton Live, Reaper és más AU-hostok</div>
+  </div>
+  <a class="shot" href="#pulteki"><img src="../assets/new-plugin.jpg" alt="Új plugin: PULTEKI passzív csöves EQ-sor"></a>
+</header>
+
+<section>
+  <div class="wrap">
+    <h2>Egy család, egy kezelési logika</h2>
+    <p class="lead">Mindegyikkel egy-két mozdulattal célba érsz. A ritkán állított beállítások a lenyitható <b>EKI fiókban</b> vannak, így az előlap letisztult marad.</p>
+    <div class="grid">
+      <div class="card"><h3>A karakter az első</h3><p>Hallható cső-, trafó-, FET- és konzolszín — ahol van értelme, tiszta beállítással is.</p></div>
+      <div class="card"><h3>AUTO GAIN</h3><p>A kimenetet a bemenet szintjén tartja, a gain gombot 0 dB-en zárolja. A kompresszorokon, a DYNEKI-6-on és a SATEKI-n induláskor bekapcsolva; a TAPEKI-n és a MASTEQUI-n kikapcsolva vár. Az EK1 és a LIMEKI helyette AUTO −14 LUFS-szel állítja a hangerőt.</p></div>
+      <div class="card"><h3>Párhuzamos MIX</h3><p>Fázishelyes száraz/kompresszált keverés mindegyiken — nincs fésűszűrő, nincs „üres” hang.</p></div>
+      <div class="card"><h3>Élő műszerek</h3><p>Világító VU-műszerek, gain-reduction skálák és LED-ek, amelyek a hangot követik.</p></div>
+      <div class="card"><h3>Presetek</h3><p>Kiindulópontok énekre, dobra, basszusra, buszra és masteringre — hangerőre illesztve.</p></div>
+      <div class="card"><h3>Méretezhető</h3><p>A sarkát húzva 75–200 % között. Minden plugin megjegyzi a saját méretét.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <img class="banner" src="../assets/banner.jpg" alt="EKIDIO SOUND kompresszorcsalád">
+    <h2>Kompresszorcsalád</h2>
+    <p class="lead">Nyolc kompresszor, a legselymesebb optikai szintszabályzótól a legvadabb FET-es zúzásig.</p>
+    <p class="section-cta"><a class="btn primary" href="https://github.com/Ekidio/ekidio_sound_plugins/releases/download/v1.3.0/EKIDIO-SOUND-Compressor-Collection-1.3.0.dmg">Compressor Collection letöltése</a></p>
+    <div>
+      <div class="plugin"><img src="../assets/opteki.png" alt="OPTEKI"><div><h3>OPTEKI</h3><div class="kind">Optikai szintszabályzó</div>
+        <p>A láthatatlan simaság mestere. Selymes optikai cellája úgy simítja el a dinamikát, hogy a zene természetes lélegzete érintetlen marad. Minél mélyebbre merül a kompresszióban, annál gyengédebben engedi el a hangot – énekre és akusztikus hangszerekre az a fajta azonnali bársonyosság, amitől a sáv azonnal kész dalnak hangzik. Master sávra tennéd? Teszteld le!</p>
+        <p class="use">Ének, basszus, akusztikus hangszerek.</p></div></div>
+      <div class="plugin"><img src="../assets/feteki.png" alt="FETEKI"><div><h3>FETEKI</h3><div class="kind">FET-es csúcslimiter</div>
+        <p>Villámgyors energia és nyers erő. Nem udvariaskodik: a legvadabb tranzienseket is villámcsapásként kapja el, az ikonikus ALL móddal pedig olyan harapós, izgalmas zúzást és analóg dögöt ad a doboknak és a roomsávoknak, amitől szinte robbannak a hangfalak.</p>
+        <p class="use">Dob, roommikrofon, karakteres ének, basszus.</p></div></div>
+      <div class="plugin"><img src="../assets/varieki.png" alt="VARIEKI"><div><h3>VARIEKI</h3><div class="kind">Vari-mu dinamika</div>
+        <p>A stúdióaranykor finom luxusa. Kettős érzékelése szinte észrevétlenül öleli körbe a kósza csúcsokat, miközben a vari-mu csöves hatásfoktól észrevétlenül lesz „master-done” a hangkép.</p>
+        <p class="use">Mixbusz, mastering, sima énekszint.</p></div></div>
+      <div class="plugin"><img src="../assets/buseki.png" alt="BUSEKI"><div><h3>BUSEKI</h3><div class="kind">Sztereó busz-kompresszor</div>
+        <p>A legendás konzol glue, ami egyetlen egységes, lüktető egésszé kovácsolja a sávokat. Összerántja a mixet anélkül, hogy a lábdob elnyelné a teret; megadja azt a feszes, professzionális tartást, amitől a zene kész rádiós slágerré érik.</p>
+        <p class="use">Mixbusz, dobbusz, a „ragasztó”.</p></div></div>
+      <div class="plugin"><img src="../assets/apeki.png" alt="APEKI"><div><h3>APEKI</h3><div class="kind">Punchos busz-kompresszor</div>
+        <p>Ha azt akarod, hogy a dob mellkason vágjon. A THRUST áramkörnek köszönhetően a lábdob és a basszus mélyei érintetlenül és elementáris erővel törnek át a mixen, miközben a hangsávok azonnali, robbanékony és feszes amerikai karaktert kapnak.</p>
+        <p class="use">Dobbusz, mixbusz, punchos basszus.</p></div></div>
+      <div class="plugin"><img src="../assets/dbeki.png" alt="DBEKI"><div><h3>DBEKI</h3><div class="kind">RMS kompresszor / limiter</div>
+        <p>Úgy reagál az energiára, ahogyan az emberi fül hallja: a lábdob és a pergő pontosan akkora pofont kap tőle, ami átüti a legsűrűbb hangszerelést is, miközben az OverEasy mód lágyan tartja a határokat. Ilyet nem hallasz máshol!</p>
+        <p class="use">Lábdob, pergő, basszus, gitárok.</p></div></div>
+      <div class="plugin"><img src="../assets/tubeki.png" alt="TUBEKI"><div><h3>TUBEKI</h3><div class="kind">Opto-csöves kompresszor</div>
+        <p>Az optikai cella finomságát ötvözi a túlvezérelt vákuumcsövek izzó lelkével. Ha belehajtod a jelet, nem egyszerűen komprimál, hanem életre kelti a sovány dobot, basszust vagy vokált.</p>
+        <p class="use">Ének, basszus, akusztikus gitár, mixbusz melegítés.</p></div></div>
+      <div class="plugin"><img src="../assets/faireki.png" alt="FAIREKI"><div><h3>FAIREKI</h3><div class="kind">Vari-mu limiter</div>
+        <p>A vintage vasak koronázatlan királya. Minél jobban terheled, annál méltóságteljesebben és masszívabban fogja össze a hangképet. LAT/VERT módban a hangkép surroundja kel életre.</p>
+        <p class="use">Mixbusz, mastering, súlyt kívánó dob és ének.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Hangszín és szaturáció</h2>
+    <p class="lead">Formáld a hangzást karakteres effektekkel — a lágy, analóg melegségtől egészen a szalagos telítésig, pontosan úgy, ahogy szeretnéd.</p>
+    <div>
+      <div class="plugin"><img src="../assets/dyneki.png" alt="DYNEKI-6"><div><h3>DYNEKI-6</h3><div class="kind">Hatsávos karakteres EQ + dinamika</div>
+        <p>Festőecset a hangokhoz. Legyen szó a selymesen simogató BRIT karakterről vagy az arcbamászó, határozott PUNCH beállításról, minden sávja tisztán zenei. A sub szekció tiszta melegséget lehel a sávokba, a varázslatos AIR sáv pedig kinyitja a teret a zene felett.</p>
+        <p class="use">Ének, dob, basszus, buszok, mastering.</p>
+        <p><a class="btn primary" href="https://github.com/Ekidio/ekidio_sound_plugins/releases/download/dyneki-v1.1.0/EKIDIO-SOUND-DYNEKI-1.1.0.dmg">DYNEKI-6 letöltése</a></p></div></div>
+      <div class="plugin"><img src="../assets/sateki.png" alt="SATEKI"><div><h3>SATEKI</h3><div class="kind">Lágy, csöves Air-fresher</div>
+        <p>Tiszta fény és csillogás – visszafogott karcossággal. A legendás stúdiós levegő-trükk modern reinkarnációja: három különálló frekvenciasávban facsar ki selymes csöves harmonikusokat, amitől az ének szinte lelép a mikrofonról és a hallgató fülébe mászik.</p>
+        <p><b>AI-generált zenékre kötelező elem!</b></p>
+        <p class="use">Ének, overhead, akusztikus hangszerek, mixbusz.</p>
+        <p><a class="btn primary" href="https://github.com/Ekidio/ekidio_sound_plugins/releases/download/sateki-v1.0.0/EKIDIO-SOUND-SATEKI-1.0.0.dmg">SATEKI letöltése</a></p></div></div>
+      <div class="plugin" id="tapeki"><img src="../assets/tapeki.png" alt="TAPEKI"><div><h3>TAPEKI</h3><div class="kind">Analóg szalagos magnó</div>
+        <p>A valódi mágnesszalag élő, pulzáló lelke. Három ikonikus gép karaktere forog a szemed előtt a stúdiómagnótól a vintage kazettáig. Túl vegytiszta a hangkép? Simítsd el a digitális ridegséget!</p>
+        <p class="use">Dob, basszus, mixbusz, minden, aminek melegség és ragasztás kell.</p>
+        <p><a class="btn primary" href="https://github.com/Ekidio/ekidio_sound_plugins/releases/download/tapeki-v1.0.1/EKIDIO-SOUND-TAPEKI-1.0.1.dmg">TAPEKI letöltése</a></p></div></div>
+      <div class="plugin" id="mastequi"><img src="../assets/mastequi.png" alt="MASTEQUI"><div><h3>MASTEQUI</h3><div class="kind">Háromsávos mastering EQ</div>
+        <p>Sebészi tisztaság analóg lélekkel. Olyan finom és zenei görbékkel emel vagy vág, mintha a zene eredendően így született volna. A túlmintavételezett, kristálytiszta felső band úgy nyitja meg a sztereó teret, hogy a fázisok szilárdak és érintetlenek maradnak.</p>
+        <p class="use">Mastering, mix busz, stemek.</p>
+        <p><a class="btn primary" href="https://github.com/Ekidio/ekidio_sound_plugins/releases/download/mastequi-v1.0.0/EKIDIO-SOUND-MASTEQUI-1.0.0.dmg">MASTEQUI letöltése</a></p></div></div>
+      <div class="plugin" id="pulteki"><div class="viewer"><img src="../assets/pulteki-1.png?v=101" alt="PULTEKI – PROGRAM EQ" class="on"><img src="../assets/pulteki-2.png?v=101" alt="PULTEKI – MID-RANGE EQ"><img src="../assets/pulteki-3.png?v=101" alt="PULTEKI – FILTER"><div class="vtabs"><button type="button" onclick="pultekiPage(0)" class="on" aria-pressed="true">PROGRAM EQ</button><button type="button" onclick="pultekiPage(1)" aria-pressed="false">MID-RANGE EQ</button><button type="button" onclick="pultekiPage(2)" aria-pressed="false">FILTER</button></div></div><div><h3>PULTEKI</h3><div class="kind">Passzív csöves EQ-sor</div>
+        <p>A legendás csöves equalizerek szelleme, kompromisszum nélküli tisztasággal. Három modul egy rackben: a programequalizer ikonikus mély trükkje – egyszerre emel és vág, amitől a lábdob és a basszus egyszerre lesz dús és feszes –, a középsávos EQ, ami előhozza vagy hátrébb teszi a hangszereket, és a szűrőegység a végső tisztításhoz. Selymes, levegős magasak, kerek, mély alj – és ha kell, egy csipetnyi csőszín is.</p>
+        <p class="use">Mixbusz, mastering, lábdob, basszus, ének.</p>
+        <p><a class="btn primary" href="https://github.com/Ekidio/ekidio_sound_plugins/releases/download/pulteki-v1.0.1/EKIDIO-SOUND-PULTEKI-1.0.1.dmg">PULTEKI letöltése</a></p></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="mastering">
+  <div class="wrap">
+    <h2>Mastering</h2>
+    <p class="lead">Add meg a dalaidnak azt a végső analóg kohéziót, dinamikát és stúdiófényt, amitől azonnal versenyképesen szólnak bármelyik lejátszón.</p>
+    <div>
+      <div class="plugin" id="ek1"><img src="../assets/ek1.png" alt="EK1"><div><h3>EK1</h3><div class="kind">Egy gomb egy feladat — mastering-lánc</div>
+        <p>A leggyorsabb út a kész, rádiókész masterhez. A PUSH azonnal dúsítja és telíti a hangképet, a WIDTH funkció precízen szélesíti a sztereó teret, míg az integrált kétszintű limiter zenei finomsággal kordában tartja a tranzienseket.</p>
+        <p class="use">Mastering, mix busz, gyors hangos referenciák.</p>
+        <p><a class="btn primary" href="https://github.com/Ekidio/ekidio_sound_plugins/releases/download/ek1-v1.1.0/EKIDIO-SOUND-EK1-1.1.0.dmg">EK1 letöltése</a></p></div></div>
+      <div class="plugin" id="ekipper"><img src="../assets/ekipper.png" alt="EKIPPER"><div><h3>EKIPPER</h3><div class="kind">Soft clipper</div>
+        <p>A kíméletes csúcsvágás titkos fegyvere. Meleg, kerekített görbéjével úgy metszi le a limiter elől a felesleges tüskéket, hogy a tranziensek megtartják ütőerejüket. Észrevétlen hangerő-tartalékot szabadít fel, miközben kellemes sűrűséget és kohéziót kölcsönöz a ritmusszekciónak.</p>
+        <p class="use">Dob, mix busz, a limiter elé.</p>
+        <p><a class="btn primary" href="https://github.com/Ekidio/ekidio_sound_plugins/releases/download/ekipper-v1.0.0/EKIDIO-SOUND-EKIPPER-1.0.0.dmg">EKIPPER letöltése</a></p></div></div>
+      <div class="plugin" id="limeki"><img src="../assets/limeki.png" alt="LIMEKI"><div><h3>LIMEKI</h3><div class="kind">Density és clean limiter</div>
+        <p>Két világ tökéletes szövetsége. A DENSITY fokozat analóg sűrűséget és zenei testet ad a produkciónak, a CLEAN pedig a digitális korszak legtisztább védőbástyájaként óvja a csúcsokat.</p>
+        <p class="use">Mix busz, mastering, dobbusz, streaming masterek.</p>
+        <p><a class="btn primary" href="https://github.com/Ekidio/ekidio_sound_plugins/releases/download/limeki-v1.1.0/EKIDIO-SOUND-LIMEKI-1.1.0.dmg">LIMEKI letöltése</a></p></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="telepites">
+  <div class="wrap">
+    <h2>Telepítés</h2>
+    <ol>
+      <li>Töltsd le a DMG-t, és nyisd meg. A nyolc kompresszor egy telepítőben van (Compressor Collection), minden más plugin saját telepítőt kapott — azt telepítsd, amelyiket szeretnéd.</li>
+      <li>Kattints duplán az <b>Install EKIDIO SOUND Compressor Collection.pkg</b> (vagy az egy-pluginos, pl. <b>Install EKIDIO SOUND EK1.pkg</b>) fájlra. Ha a macOS szerint nem tudja ellenőrizni a fejlesztőt: kattints a <b>Kész</b> gombra, majd <b>Rendszerbeállítások → Adatvédelem és biztonság</b>, és ott <b>Megnyitás mindenképp</b>.</li>
+      <li>Indítsd újra a DAW-ot. Logic Próban, ha egy plugin nem jelenik meg: <b>Plug-in Manager → Reset &amp; Rescan Selection</b>.</li>
+      <li>A pluginok az <b>EKIDIO SOUND</b> gyártó alatt jelennek meg.</li>
+    </ol>
+    <p class="lead">Eltávolítás: töröld a <code>*EKI.component</code> fájlokat (és a <code>DYNEKI</code>, <code>SATEKI</code>, <code>TAPEKI</code>, <code>LIMEKI</code>, <code>EK1</code>, <code>MASTEQUI</code>, <code>PULTEKI</code>, <code>EKIPPER.component</code> fájlokat) a <code>/Library/Audio/Plug-Ins/Components</code> mappából.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p><b>Ingyenesen használható</b>, kereskedelmi zenei és hangprodukciókban is. A pluginokat és a forráskódjukat nem szabad eladni, bérbe adni vagy továbbterjeszteni. Garancia nélkül, „ahogy van” alapon.</p>
+    <p>Az esetleg említett terméknevek a jogtulajdonosaik védjegyei; az EKIDIO SOUND nem áll velük kapcsolatban. A pluginok a klasszikus stúdiógépek hangkarakteréből merítenek ihletet.</p>
+    <p>© 2026 EKIDIO SOUND · <a href="https://github.com/Ekidio/ekidio_sound_plugins/releases">Összes kiadás</a></p>
+  </div>
+</footer>
+<script>
+  function pultekiPage(i){
+    document.querySelectorAll('#pulteki .viewer img').forEach((im,k)=>im.classList.toggle('on',k===i));
+    document.querySelectorAll('#pulteki .vtabs button').forEach((b,k)=>{b.classList.toggle('on',k===i);b.setAttribute('aria-pressed',k===i);});
+  }
+</script>
+</body>
+</html>

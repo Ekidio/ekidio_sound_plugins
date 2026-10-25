@@ -1,0 +1,22 @@
+{
+  "version": "1.3.0",
+  "url": "https://ekidio.github.io/ekidio_sound_plugins/",
+  "plugins": {
+    "APEKI": "1.0.2",
+    "BUSEKI": "1.0.2",
+    "DBEKI": "1.0.3",
+    "DYNEKI": "1.1.0",
+    "EK1": "1.1.0",
+    "EKIPPER": "1.0.0",
+    "FAIREKI": "1.0.3",
+    "FETEKI": "1.0.2",
+    "LIMEKI": "1.1.0",
+    "MASTEQUI": "1.0.0",
+    "OPTEKI": "1.0.2",
+    "PULTEKI": "1.0.1",
+    "SATEKI": "1.0.0",
+    "TAPEKI": "1.0.1",
+    "TUBEKI": "1.0.2",
+    "VARIEKI": "1.0.3"
+  }
+}
