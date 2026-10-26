@@ -5,8 +5,6 @@ Eighteen free, analog-inspired plugins for macOS (Audio Unit / AUv2): eight comp
 **Website:** https://ekidio.github.io/ekidio_sound_plugins/ · [Magyar](https://ekidio.github.io/ekidio_sound_plugins/hu/)
 **Download:** [Compressor Collection, 8 compressors (v1.3.0)](https://github.com/Ekidio/ekidio_sound_plugins/releases/tag/v1.3.0) · [DYNEKI-6](https://github.com/Ekidio/ekidio_sound_plugins/releases/tag/dyneki-v1.1.0) · [SATEKI](https://github.com/Ekidio/ekidio_sound_plugins/releases/tag/sateki-v1.0.0) · [TAPEKI](https://github.com/Ekidio/ekidio_sound_plugins/releases/tag/tapeki-v1.0.1) · [MASTEQUI](https://github.com/Ekidio/ekidio_sound_plugins/releases/tag/mastequi-v1.0.0) · [PULTEKI](https://github.com/Ekidio/ekidio_sound_plugins/releases/tag/pulteki-v1.0.0) · [EK1](https://github.com/Ekidio/ekidio_sound_plugins/releases/tag/ek1-v1.1.0) · [EKIPPER](https://github.com/Ekidio/ekidio_sound_plugins/releases/tag/ekipper-v1.0.0) · [LIMEKI](https://github.com/Ekidio/ekidio_sound_plugins/releases/tag/limeki-v1.1.0) · [REVEKI](https://github.com/Ekidio/ekidio_sound_plugins/releases/tag/reveki-v1.0.1) · [DELEKI](https://github.com/Ekidio/ekidio_sound_plugins/releases/tag/deleki-v1.0.0)
 
-![New plugins: REVEKI and DELEKI](docs/assets/new-plugin.jpg)
-
 | Plugin | Character |
 |---|---|
 | **OPTEKI** | optical leveling amplifier |
